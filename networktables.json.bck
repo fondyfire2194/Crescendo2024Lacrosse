@@ -1,0 +1,203 @@
+[
+  {
+    "name": "/Preferences/DriveKp",
+    "type": "double",
+    "value": 0.001,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/DriveFF",
+    "type": "double",
+    "value": 0.6,
+    "properties": {
+      "persistent": true,
+      "retained": true
+    }
+  },
+  {
+    "name": "/Preferences/AngleKp",
+    "type": "double",
+    "value": 0.01,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ShooterTopKp",
+    "type": "double",
+    "value": 0.0007,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/IntakeSpeed",
+    "type": "double",
+    "value": 0.8,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TransferToShootSpeed",
+    "type": "double",
+    "value": 0.75,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TransferIntakingSpeed",
+    "type": "double",
+    "value": 0.5,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/AlignKp",
+    "type": "double",
+    "value": 0.01,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ShooterTopKd",
+    "type": "double",
+    "value": 0.001,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armKp",
+    "type": "double",
+    "value": 1e-05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armKIZone",
+    "type": "double",
+    "value": 1e-05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armFFKs",
+    "type": "double",
+    "value": 0.001,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armFFKv",
+    "type": "double",
+    "value": 2.01,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armKi",
+    "type": "double",
+    "value": 1e-05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armFFKa",
+    "type": "double",
+    "value": 1e-05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armKd",
+    "type": "double",
+    "value": 1e-05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armFFKg",
+    "type": "double",
+    "value": 1e-05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ShooterBottomKd",
+    "type": "double",
+    "value": 0.001,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ShooterBottomKp",
+    "type": "double",
+    "value": 0.0007,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ShooterBottomKi",
+    "type": "double",
+    "value": 0.001,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ShooterTopKi",
+    "type": "double",
+    "value": 0.001,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/SensorDistance",
+    "type": "double",
+    "value": 3.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ShooterTopKpFF",
+    "type": "double",
+    "value": 0.0007,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/ShooterBottomKpFF",
+    "type": "double",
+    "value": 0.0007,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/armUpFFKv",
+    "type": "double",
+    "value": 2.75,
+    "properties": {
+      "persistent": true
+    }
+  }
+]

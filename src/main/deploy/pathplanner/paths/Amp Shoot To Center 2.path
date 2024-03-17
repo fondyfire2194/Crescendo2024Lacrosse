@@ -1,0 +1,64 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.38225880731362,
+        "y": 6.312140898176232
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.034579094278995,
+        "y": 6.227429177407744
+      },
+      "isLocked": false,
+      "linkedName": "Amp side shooting point"
+    },
+    {
+      "anchor": {
+        "x": 7.965774790322761,
+        "y": 5.8788399459823175
+      },
+      "prevControl": {
+        "x": 7.392761222643203,
+        "y": 6.030863953734038
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Center 2"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Pickup Zone",
+      "minWaypointRelativePos": 0.85,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 540.0
+      }
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 167.31961650818022,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Amp Start",
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

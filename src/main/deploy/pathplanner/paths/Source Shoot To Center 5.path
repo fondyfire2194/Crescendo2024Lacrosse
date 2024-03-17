@@ -1,0 +1,64 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.377283014655716,
+        "y": 2.0523241046482092
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.071407787520646,
+        "y": 2.1312596471346783
+      },
+      "isLocked": false,
+      "linkedName": "ShootingPoint"
+    },
+    {
+      "anchor": {
+        "x": 8.27830153714782,
+        "y": 0.9872120133345318
+      },
+      "prevControl": {
+        "x": 8.612236508341212,
+        "y": 0.9564303540180534
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Center 5"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Pickup Zone",
+      "minWaypointRelativePos": 0.65,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 540.0
+      }
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Source",
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

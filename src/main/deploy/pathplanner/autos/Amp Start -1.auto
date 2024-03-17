@@ -1,0 +1,206 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.89,
+      "y": 6.62
+    },
+    "rotation": -119.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Arm Shooter SubWfr"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp to Wing 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm To Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Start Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Transfer To Sensor"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm Shooter Wing 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align Then Shoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Wing 1 To Center 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm To Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Transfer To Sensor"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Center 1 To Amp Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm Shooter Amp Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align Then Shoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp Shoot To Center 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm To Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Transfer To Sensor"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Center 2 To Amp Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm Shooter Amp Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align Then Shoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Shooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Transfer Stop"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Amp Start",
+  "choreoAuto": false
+}

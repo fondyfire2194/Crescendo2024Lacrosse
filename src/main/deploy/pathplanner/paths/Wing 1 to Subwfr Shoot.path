@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.4261946281740108,
+        "y": 6.819606105579925
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1428644532397656,
+        "y": 6.533987878851318
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.34,
+        "y": 5.55
+      },
+      "prevControl": {
+        "x": 1.6894083002572058,
+        "y": 5.656334051612468
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "SubWfr",
+  "previewStartingState": {
+    "rotation": -156.0744633715317,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

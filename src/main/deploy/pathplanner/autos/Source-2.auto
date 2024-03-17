@@ -1,0 +1,175 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.72,
+      "y": 4.4
+    },
+    "rotation": 120.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Arm Shooter SubWfr"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Source To Center 4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm To Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Start Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Transfer To Sensor"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Center 4 To Source Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm Shooter Source"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align Then Shoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Source Shoot To Center 5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm To Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Transfer To Sensor"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Center 5 To Source Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm Shooter Source"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align Then Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Transfer Stop"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm To Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Shooter"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Source Start",
+  "choreoAuto": false
+}

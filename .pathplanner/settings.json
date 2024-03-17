@@ -1,0 +1,21 @@
+{
+  "robotWidth": 0.812,
+  "robotLength": 0.91,
+  "holonomicMode": true,
+  "pathFolders": [
+    "Amp Start",
+    "Source",
+    "SubWfr"
+  ],
+  "autoFolders": [
+    "Amp Start",
+    "Test Commands",
+    "Source Start",
+    "SubWfrStart"
+  ],
+  "defaultMaxVel": 3.0,
+  "defaultMaxAccel": 3.0,
+  "defaultMaxAngVel": 360.0,
+  "defaultMaxAngAccel": 540.0,
+  "maxModuleSpeed": 3.25
+}

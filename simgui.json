@@ -1,0 +1,188 @@
+{
+  "HALProvider": {
+    "Other Devices": {
+      "CANCoder (v6)[6]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/ArmSubsystem/ArmSubsystem": "Subsystem",
+      "/Shuffleboard/Autonomous/AmpStart": "String Chooser",
+      "/Shuffleboard/Autonomous/AutoSelection": "String Chooser",
+      "/Shuffleboard/Autonomous/CenterStart": "String Chooser",
+      "/Shuffleboard/Autonomous/DelayChooser": "String Chooser",
+      "/Shuffleboard/Autonomous/DelayOnStart": "String Chooser",
+      "/Shuffleboard/Autonomous/DelayonStart": "String Chooser",
+      "/Shuffleboard/Autonomous/SendableChooser[0]": "String Chooser",
+      "/Shuffleboard/Autonomous/SendableChooser[1]": "String Chooser",
+      "/Shuffleboard/Autonomous/SendableChooser[2]": "String Chooser",
+      "/Shuffleboard/Autonomous/SendableChooser[3]": "String Chooser",
+      "/Shuffleboard/Autonomous/SourceStart": "String Chooser",
+      "/Shuffleboard/Drivetrain/LoadPath AutooneP1": "Command",
+      "/Shuffleboard/Drivetrain/On-the-fly path": "Command",
+      "/Shuffleboard/Drivetrain/Pathfind to Pickup Pos": "Command",
+      "/Shuffleboard/Drivetrain/Pathfind to Scoring Pos": "Command",
+      "/Shuffleboard/Drivetrain/PathfindPickup": "Command",
+      "/Shuffleboard/Drivetrain/PathfindScore": "Command",
+      "/Shuffleboard/Drivetrain/ResetPose": "Command",
+      "/Shuffleboard/Drivetrain/SetAlignKp": "Command",
+      "/Shuffleboard/Drivetrain/SetAngleKp": "Command",
+      "/Shuffleboard/Drivetrain/SetDriveFF": "Command",
+      "/Shuffleboard/Drivetrain/SetDriveKp": "Command",
+      "/Shuffleboard/Drivetrain/SetFF": "Command",
+      "/Shuffleboard/Drivetrain/SetKp": "Command",
+      "/Shuffleboard/Drivetrain/SwerveSubsystem": "Subsystem",
+      "/Shuffleboard/IntakeSubsystem/ClearFault": "Command",
+      "/Shuffleboard/IntakeSubsystem/ClearFaultTfr": "Command",
+      "/Shuffleboard/IntakeSubsystem/ElaevatorToAmp": "Command",
+      "/Shuffleboard/IntakeSubsystem/ElevatorSubsystem": "Subsystem",
+      "/Shuffleboard/IntakeSubsystem/ElevatorToAmp": "Command",
+      "/Shuffleboard/IntakeSubsystem/ElevatorToIntake": "Command",
+      "/Shuffleboard/IntakeSubsystem/HoldNoteSubsystem": "Subsystem",
+      "/Shuffleboard/IntakeSubsystem/IntakeSubsystem": "Subsystem",
+      "/Shuffleboard/IntakeSubsystem/Set-KpKd": "Command",
+      "/Shuffleboard/IntakeSubsystem/SetKP": "Command",
+      "/Shuffleboard/IntakeSubsystem/SetKpKd": "Command",
+      "/Shuffleboard/IntakeSubsystem/StartHoldNote": "Command",
+      "/Shuffleboard/IntakeSubsystem/StartIntake": "Command",
+      "/Shuffleboard/IntakeSubsystem/StopHoldNote": "Command",
+      "/Shuffleboard/IntakeSubsystem/StopIntake": "Command",
+      "/Shuffleboard/IntakeSubsystem/TransferSubsystem": "Subsystem",
+      "/Shuffleboard/ShooterAngleSubsystem/ShooterAngleSubsystem": "Subsystem",
+      "/Shuffleboard/ShooterSubsystem/Arm to 0 Deg": "Command",
+      "/Shuffleboard/ShooterSubsystem/Arm to 15 Deg": "Command",
+      "/Shuffleboard/ShooterSubsystem/Arm to 25 Deg": "Command",
+      "/Shuffleboard/ShooterSubsystem/Arm to 30 Deg": "Command",
+      "/Shuffleboard/ShooterSubsystem/Arm to 45 Deg": "Command",
+      "/Shuffleboard/ShooterSubsystem/Arm to 60 Deg": "Command",
+      "/Shuffleboard/ShooterSubsystem/Arm to 90 Deg": "Command",
+      "/Shuffleboard/ShooterSubsystem/ArmSubsystem": "Subsystem",
+      "/Shuffleboard/ShooterSubsystem/BottomShooterRollerSubsystem": "Subsystem",
+      "/Shuffleboard/ShooterSubsystem/ClearFault": "Command",
+      "/Shuffleboard/ShooterSubsystem/FeedShooterSubsystem": "Subsystem",
+      "/Shuffleboard/ShooterSubsystem/JogDown": "Command",
+      "/Shuffleboard/ShooterSubsystem/JogUo": "Command",
+      "/Shuffleboard/ShooterSubsystem/LeftShooterRollerSubsystem": "Subsystem",
+      "/Shuffleboard/ShooterSubsystem/RightShooterRollerSubsystem": "Subsystem",
+      "/Shuffleboard/ShooterSubsystem/SetAllPID": "Command",
+      "/Shuffleboard/ShooterSubsystem/SetFeederKp": "Command",
+      "/Shuffleboard/ShooterSubsystem/SetKp": "Command",
+      "/Shuffleboard/ShooterSubsystem/SetLeftKp": "Command",
+      "/Shuffleboard/ShooterSubsystem/SetLeftKpKd": "Command",
+      "/Shuffleboard/ShooterSubsystem/SetRightKp": "Command",
+      "/Shuffleboard/ShooterSubsystem/SetRightKpKd": "Command",
+      "/Shuffleboard/ShooterSubsystem/SetShooterAngleKp": "Command",
+      "/Shuffleboard/ShooterSubsystem/SetTopKpKd": "Command",
+      "/Shuffleboard/ShooterSubsystem/SettopKpKd": "Command",
+      "/Shuffleboard/ShooterSubsystem/Shooter/ClearFaultTfr": "Command",
+      "/Shuffleboard/ShooterSubsystem/Shooter/SetBottomGains": "Command",
+      "/Shuffleboard/ShooterSubsystem/Shooter/SetBottomKpKd": "Command",
+      "/Shuffleboard/ShooterSubsystem/Shooter/SetTopGains": "Command",
+      "/Shuffleboard/ShooterSubsystem/Shooter/SetTopKpKd": "Command",
+      "/Shuffleboard/ShooterSubsystem/ShooterAngleSubsystem": "Subsystem",
+      "/Shuffleboard/ShooterSubsystem/ShooterSubsystem": "Subsystem",
+      "/Shuffleboard/ShooterSubsystem/ShooterToIntake": "Command",
+      "/Shuffleboard/ShooterSubsystem/ShooterToMaxAngle": "Command",
+      "/Shuffleboard/ShooterSubsystem/ShooterToMinAngle": "Command",
+      "/Shuffleboard/ShooterSubsystem/StartFeeder": "Command",
+      "/Shuffleboard/ShooterSubsystem/StartLeft": "Command",
+      "/Shuffleboard/ShooterSubsystem/StartRight": "Command",
+      "/Shuffleboard/ShooterSubsystem/SwerveSubsystem": "Subsystem",
+      "/Shuffleboard/ShooterSubsystem/TopShooterRollerSubsystem": "Subsystem",
+      "/Shuffleboard/TuneTab/SetDriveKp": "Command",
+      "/SmartDashboard/AmpStartChooser": "String Chooser",
+      "/SmartDashboard/Auto Chooser": "String Chooser",
+      "/SmartDashboard/Auto Mode": "String Chooser",
+      "/SmartDashboard/CenterStartChooser": "String Chooser",
+      "/SmartDashboard/CommSchd": "Scheduler",
+      "/SmartDashboard/DelayChooser": "String Chooser",
+      "/SmartDashboard/FC": "Command",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/On-the-fly path": "Command",
+      "/SmartDashboard/Pathfind to Pickup Pos": "Command",
+      "/SmartDashboard/Pathfind to Scoring Pos": "Command",
+      "/SmartDashboard/ResetPose": "Command",
+      "/SmartDashboard/SetDriveKp": "Command",
+      "/SmartDashboard/SourceStartChooser": "String Chooser",
+      "/SmartDashboard/VisAct": "Mechanism2d",
+      "/SmartDashboard/VisSet": "Mechanism2d"
+    },
+    "windows": {
+      "/Shuffleboard/Autonomous/AutoSelection": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/ShooterSubsystem/Arm to 0 Deg": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/ShooterSubsystem/Arm to 30 Deg": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/ShooterSubsystem/Arm to 90 Deg": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Field": {
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
+    "Retained Values": {
+      "open": false
+    },
+    "transitory": {
+      "Shuffleboard": {
+        "Autonomous": {
+          "CenterStart": {
+            "open": true,
+            "string[]##v_/Shuffleboard/Autonomous/CenterStart/options": {
+              "open": true
+            }
+          },
+          "open": true
+        },
+        "Drivetrain": {
+          "open": true
+        }
+      },
+      "SmartDashboard": {
+        "open": true
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    },
+    "shuffleboard@1": {
+      "open": true
+    },
+    "visible": true
+  }
+}
