@@ -135,7 +135,6 @@ public class TransferSubsystem extends SubsystemBase {
   public Command transferToShooterCommand() {
     return Commands
         .run(() -> transferToShooter(), this)
-        .until(() -> noteSensorDebouncer.calculate(!noteAtIntake()))
         .withTimeout(TransferConstants.clearShooterTime)
         .andThen(stopTransferCommand());
   }
