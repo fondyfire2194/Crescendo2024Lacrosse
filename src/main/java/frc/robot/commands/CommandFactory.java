@@ -70,6 +70,7 @@ public class CommandFactory {
                                 m_shooter.startShooterCommand(shooterSpeed),
                                 new CheckShooterAtSpeed(m_shooter, .2));
         }
+
         public Command positionArmRunShooterAmp(double armAngleDeg, double shooterSpeed) {
                 return new ParallelCommandGroup(
                                 m_arm.setGoalCommand(Units.degreesToRadians(armAngleDeg)),
@@ -80,7 +81,6 @@ public class CommandFactory {
 
         public Command runToSensorCommand() {
                 return new TransferIntakeToSensor(m_transfer, m_intake, m_swerve);
-                               // .andThen(m_transfer.positionAfterSensorCommand());
         }
 
         public Command alignToTag() {
@@ -102,7 +102,8 @@ public class CommandFactory {
         }
 
         public Command shootCommand() {
-                return m_transfer.transferToShooterCommand();
+                return m_transfer.transferToShooterCommand()
+                                .andThen(Commands.runOnce(() -> m_intake.notePresent = false));
         }
 
         public Command clearStickyFaultsCommand() {

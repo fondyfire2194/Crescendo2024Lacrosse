@@ -249,14 +249,14 @@ public final class Constants {
         public class PDPConstants {
 
                 public static final int FRONT_LEFT_DRIVE_CHANNEL = 1;
-                public static final int FRONT_RIGHT_DRIVE_CHANNEL = 1;
-                public static final int BACK_LEFT_DRIVE_CHANNEL = 1;
-                public static final int BACK_RIGHT_DRIVE_CHANNEL = 1;
+                public static final int FRONT_RIGHT_DRIVE_CHANNEL = 2;
+                public static final int BACK_LEFT_DRIVE_CHANNEL = 3;
+                public static final int BACK_RIGHT_DRIVE_CHANNEL = 8;
 
-                public static final int FRONT_LEFT_TURN_CHANNEL = 1;
-                public static final int FRONT_RIGHT_TURN_CHANNEL = 1;
-                public static final int BACK_LEFT_TURN_CHANNEL = 1;
-                public static final int BACK_RIGHT_TURN_CHANNEL = 1;
+                public static final int FRONT_LEFT_TURN_CHANNEL = 4;
+                public static final int FRONT_RIGHT_TURN_CHANNEL = 5;
+                public static final int BACK_LEFT_TURN_CHANNEL = 6;
+                public static final int BACK_RIGHT_TURN_CHANNEL = 7;
 
         }
 
@@ -504,16 +504,12 @@ public final class Constants {
                 public static final IdleMode intakeIdleMode = IdleMode.kBrake;
                 public static final int intakeContinuousCurrentLimit = 60;
                 public static double jogSpeed = 1;
-                public static double stuckNoteAmps = 30;
-                public static double anpsHighTimeLimit = .5;
-                public static double ampsLowTimeLimit = 2;
-
-                public static double freeNoteAmps;
+                public static double reverseRPM = -500;
 
                 public static final double intakeKp = .0001;
                 public static final double intakeKi = 0.0;
                 public static final double intakeKd = 0.0;
-                public static final double intakeKFF = .75 / maxIntakeMotorRPM;
+                public static final double intakeKFF = .95 / maxIntakeMotorRPM;
 
         }
 

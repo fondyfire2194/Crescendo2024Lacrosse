@@ -44,10 +44,8 @@ public class TransferSubsystem extends SubsystemBase {
   private int transferFaultSeen;
   private int transferStickyFaultSeen;
 
-  private Debouncer noteSensorDebouncer;
-
   private int loopctr;
-  public double sensedPosition;
+
   public SparkLimitSwitch m_limitSwitch;
 
   /** Creates a new transfer. */
@@ -58,11 +56,9 @@ public class TransferSubsystem extends SubsystemBase {
     transferController = transferMotor.getPIDController();
 
     configMotor(transferMotor, transferEncoder, true);
-    noteSensorDebouncer = new Debouncer(.25);
 
-     m_limitSwitch = transferMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
-     m_limitSwitch.enableLimitSwitch(true);
-
+    m_limitSwitch = transferMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+    m_limitSwitch.enableLimitSwitch(true);
 
     m_detectNoteSensor.setRangingMode(RangingMode.Short, 40);
 
@@ -170,10 +166,10 @@ public class TransferSubsystem extends SubsystemBase {
       loopctr = 0;
     }
 
-     SmartDashboard.putBoolean("LSE", m_limitSwitch.isLimitSwitchEnabled());
+    SmartDashboard.putBoolean("LSE", m_limitSwitch.isLimitSwitchEnabled());
 
-    SmartDashboard.putBoolean("PLLIM", m_limitSwitch.isPressed());;
-
+    SmartDashboard.putBoolean("PLLIM", m_limitSwitch.isPressed());
+    ;
 
   }
 
@@ -198,32 +194,17 @@ public class TransferSubsystem extends SubsystemBase {
     REVLibError okp = transferController.setP(TransferConstants.transferKp, 0);
   }
 
-  public void setPosPID() {
-    transferController.setP(TransferConstants.transferPositionKp, 1);
-  }
-
-  public void positionAfterSensor() {
-    transferController.setReference(sensedPosition, ControlType.kPosition, 1);
-  }
-
-  public Command positionAfterSensorCommand() {
-    return Commands.runOnce(() -> positionAfterSensorCommand());
-  }
-
   public Command setTransferPIDCommand() {
-    return Commands.runOnce(() -> setVelPID())
-        .alongWith(
-            Commands.runOnce(() -> setPosPID()));
-
+    return Commands.runOnce(() -> setVelPID());
   }
 
-   public boolean onPlusHardwareLimit() {
-        return transferMotor.getFault(FaultID.kHardLimitRev);
-    }
+  public boolean onPlusHardwareLimit() {
+    return transferMotor.getFault(FaultID.kHardLimitRev);
+  }
 
-    public boolean onMinusHardwareLimit() {
-        return transferMotor.getFault(FaultID.kHardLimitRev);
-    }
+  public boolean onMinusHardwareLimit() {
+    return transferMotor.getFault(FaultID.kHardLimitRev);
+  }
 
   public int getFaults() {
     return transferMotor.getFaults();

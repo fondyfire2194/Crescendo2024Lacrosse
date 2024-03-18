@@ -41,12 +41,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private boolean m_showScreens;
   private boolean runIntake;
   public boolean jogging;
-  private double intakeAmpsHighStartTime;
-  private double intakeAmpsHighStopTime;
-  private LinearFilter filter;
-  private double filteredAmps;
-  private boolean noteStuck;
-  private boolean noteClear;
+  public boolean notePresent;
 
   /** Creates a new Intake. */
   public IntakeSubsystem(boolean showScreens) {
@@ -55,8 +50,6 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeController = intakeMotor.getPIDController();
     intakeEncoder = intakeMotor.getEncoder();
     configMotor(intakeMotor, intakeEncoder, false);
-
-    filter = LinearFilter.movingAverage(3);
 
     if (m_showScreens) {
 
@@ -102,10 +95,6 @@ public class IntakeSubsystem extends SubsystemBase {
     motor.enableVoltageCompensation(Constants.IntakeConstants.voltageComp);
     intakeMotor.setClosedLoopRampRate(1);
     intakeMotor.setOpenLoopRampRate(1);
-
-    intakeAmpsHighStartTime = 0;
-    intakeAmpsHighStopTime = 0;
-
     motor.burnFlash();
     encoder.setPosition(0.0);
   }
@@ -121,11 +110,13 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command startIntakeCommand() {
-    return Commands.runOnce(() -> setRunIntake(), this);
+    return Commands.runOnce(() -> setRunIntake(), this)
+        .alongWith(Commands.runOnce(() -> notePresent = false));
   }
 
   public void setRunIntake() {
     runIntake = true;
+    notePresent = false;
   }
 
   public void resetRunIntake() {
@@ -152,56 +143,23 @@ public class IntakeSubsystem extends SubsystemBase {
       loopctr = 0;
     }
 
-    if (runIntake && !noteStuck)
-      intakeController.setReference(Pref.getPref("IntakeSpeed"), ControlType.kVelocity);
+    if (runIntake && !notePresent)
+      runAtVelocity(Pref.getPref("IntakeSpeed"));
     if (!runIntake && !jogging)
       stopMotor();
 
-    if (runIntake) {
-      filteredAmps = filter.calculate(intakeMotor.getOutputCurrent());
-    } else
-      filteredAmps = 0;
+    if (runIntake && notePresent)
+      runAtVelocity(IntakeConstants.reverseRPM);
+  }
 
-    noteStuck = false;//runIntake && checkNoteStuck() && !noteClear;
-
-    if (runIntake && noteStuck)
-      intakeController.setReference(-500, ControlType.kVelocity);
-
-    // noteClear = noteStuck && checkNoteClear();
-
-    // if (noteClear) {
-    //   intakeAmpsHighStartTime = 0;
-    //   intakeAmpsHighStopTime = 0;
-    // }
-
+  private void runAtVelocity(double rpm) {
+    intakeController.setReference(rpm, ControlType.kVelocity);
   }
 
   public double getAmps() {
-    return filteredAmps;
+    return intakeMotor.getOutputCurrent();
   }
 
-  private boolean checkNoteStuck() {
-
-    if (intakeAmpsHighStartTime == 0 && getAmps() > IntakeConstants.stuckNoteAmps) {
-      intakeAmpsHighStartTime = Timer.getFPGATimestamp();
-    }
-
-    if (intakeAmpsHighStartTime != 0 && getAmps() < IntakeConstants.stuckNoteAmps)
-      intakeAmpsHighStartTime = 0;
-
-    return (intakeAmpsHighStartTime != 0
-        && Timer.getFPGATimestamp() > intakeAmpsHighStartTime + IntakeConstants.anpsHighTimeLimit);
-  }
-
-  // private boolean checkNoteClear() {
-  //   if (getAmps() < IntakeConstants.freeNoteAmps)
-  //     intakeAmpsHighStopTime = Timer.getFPGATimestamp();
-
-  //   return intakeAmpsHighStopTime != 0
-  //       && Timer.getFPGATimestamp() > intakeAmpsHighStopTime + IntakeConstants.anpsHighTimeLimit;
-  // }
-
- 
   public void setPID() {
     intakeController.setP(IntakeConstants.intakeKp);
     intakeController.setFF(IntakeConstants.intakeKFF);

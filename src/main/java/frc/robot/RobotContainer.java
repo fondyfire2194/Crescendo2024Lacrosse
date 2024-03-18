@@ -88,14 +88,14 @@ public class RobotContainer {
                 Pref.deleteUnused();
 
                 Pref.addMissing();
+
                 m_arm.setKPKIKD();
+
                 configureShuffleboardAuto();
 
                 m_transfer.setVelPID();
 
                 configureDriverBindings();
-
-                m_transfer.setPosPID();
 
                 configureCodriverBindings();
 
@@ -135,17 +135,16 @@ public class RobotContainer {
                                 .withTimeout(10));
 
                 driver.y().whileTrue(new AlignToNote(m_swerve, m_transfer, m_llv,
-                () -> -driver.getLeftY(),
-                () -> driver.getLeftX(),
-                () -> driver.getRightX(),
-                CameraConstants.rearCamera));
+                                () -> -driver.getLeftY(),
+                                () -> driver.getLeftX(),
+                                () -> driver.getRightX(),
+                                CameraConstants.rearCamera));
 
                 driver.rightTrigger().onTrue(Commands.sequence(
-                                m_transfer.transferToShooterCommand(),
-                                m_shooter.stopShooterCommand(),
+                                m_cf.shootCommand(),
                                 m_arm.setGoalCommand(Units.degreesToRadians(15)),
-
                                 new WaitCommand(2),
+                                m_shooter.stopShooterCommand(),
                                 m_arm.setGoalCommand(ArmConstants.pickupAngle),
                                 m_intake.stopIntakeCommand()));
 
@@ -174,27 +173,27 @@ public class RobotContainer {
                 // KEEP IN BUTTON ORDER
                 // jogs are in case note gets stuck
 
-                 codriver.leftTrigger().whileTrue(m_climber.lowerClimberArmsCommand(0.4))
-                .onFalse(m_climber.stopClimberCommand());
+                codriver.leftTrigger().whileTrue(m_climber.lowerClimberArmsCommand(0.4))
+                                .onFalse(m_climber.stopClimberCommand());
 
-                 codriver.leftBumper().onTrue(m_arm.positionToIntakeUDACommand());
+                codriver.leftBumper().onTrue(m_arm.positionToIntakeUDACommand());
 
                 codriver.rightTrigger().whileTrue(m_climber.raiseClimberArmsCommand(0.4))
-                .onFalse(m_climber.stopClimberCommand());
+                                .onFalse(m_climber.stopClimberCommand());
 
-                // use this control for the amp codriver.rightBumper(). 
+                // use this control for the amp codriver.rightBumper().
 
                 codriver.a().onTrue(m_cf.positionArmRunShooterSpecialCase(Constants.subwfrArmAngle,
                                 Constants.subwfrShooterSpeed));
 
                 codriver.b().onTrue(m_cf.positionArmRunShooterSpecialCase(Constants.safeStageArmAngle,
-                Constants.safeStageShooterSpeed));
+                                Constants.safeStageShooterSpeed));
 
                 codriver.x().onTrue(m_cf.positionArmRunShooterSpecialCase(Constants.tapeLineArmAngle,
-                                Constants.tapeLineShooterSpeed)); 
-                
+                                Constants.tapeLineShooterSpeed));
+
                 codriver.y().onTrue(m_cf.positionArmRunShooterSpecialCase(Constants.allianceLineArmAngle,
-                                Constants.allianceLineShooterSpeed)); 
+                                Constants.allianceLineShooterSpeed));
 
                 codriver.povUp().onTrue(m_climber.raiseClimberArmsCommand(.3));
 
@@ -310,7 +309,9 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("Arm Shooter SubWfr",
                                 m_cf.positionArmRunShooterSpecialCase(Constants.subwfrArmAngle,
-                                                Constants.subwfrShooterSpeed).asProxy()); //Constants.subwfrShooterSpeed lower speed to decrease time
+                                                Constants.subwfrShooterSpeed).asProxy()); // Constants.subwfrShooterSpeed
+                                                                                          // lower speed to decrease
+                                                                                          // time
 
                 NamedCommands.registerCommand("Arm Shooter Wing 1",
                                 m_cf.positionArmRunShooterSpecialCase(Constants.wing1ArmAngle,
@@ -326,7 +327,7 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("Arm Shooter Amp Shoot",
                                 m_cf.positionArmRunShooterSpecialCase(27,
-                                                4000).asProxy()); //add constants later felt lazy sorry John
+                                                4000).asProxy()); // add constants later felt lazy sorry John
 
                 NamedCommands.registerCommand("Arm Shooter Source",
                                 m_cf.positionArmRunShooterSpecialCase(Constants.farShotSourceAngle,
@@ -396,14 +397,12 @@ public class RobotContainer {
 
                 armLayout.addNumber("Arm Angle", () -> round2dp(m_arm.getAngleDegrees(), 2))
                                 .withSize(1, 1).withPosition(4, 1);
-                                armLayout.addNumber("Arm Amps", () -> round2dp(m_arm.getAmps(), 2))
+                armLayout.addNumber("Arm Amps", () -> round2dp(m_arm.getAmps(), 2))
                                 .withSize(1, 1).withPosition(4, 1);
 
                 armLayout.addBoolean("AtGoal", () -> m_arm.atSetpoint())
                                 .withSize(1, 1).withPosition(4, 3)
                                 .withProperties(Map.of("colorWhenTrue", "green", "colorWhenFalse", "red"));
-
-               
 
                 ShuffleboardLayout intfrLayout = Shuffleboard.getTab("Autonomous")
                                 .getLayout("IntTFR", BuiltInLayouts.kList)

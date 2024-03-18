@@ -18,7 +18,7 @@ public class TransferIntakeToSensor extends Command {
   private Debouncer sensorDebouncer;
   private double robotStoppedTime;
   private final SwerveSubsystem m_swerve;
-  private double nonoteTime = 2;
+  private double nonoteTime = 5;
 
   /** Creates a new TransferIntakeToSensor. */
   public TransferIntakeToSensor(TransferSubsystem transfer, IntakeSubsystem intake, SwerveSubsystem swerve) {
@@ -50,7 +50,7 @@ public class TransferIntakeToSensor extends Command {
   @Override
   public void end(boolean interrupted) {
     m_transfer.stopMotor();
-    m_transfer.sensedPosition = m_transfer.getPosition();
+    m_intake.notePresent = true;
     if (DriverStation.isTeleopEnabled())
       m_intake.stopMotor();
     m_transfer.enableLimitSwitch(false);
