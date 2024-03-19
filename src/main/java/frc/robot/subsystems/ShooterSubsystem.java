@@ -37,8 +37,6 @@ public class ShooterSubsystem extends SubsystemBase {
   public double commandRPM = 500;
 
   public boolean m_showScreens;
-  public int shooterFaultSeen;
-  public int shooterStickyFaultSeen;
 
   private int loopctr;
   private boolean runShooterVel;
@@ -254,8 +252,6 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public Command clearFaultsCommand() {
-    shooterFaultSeen = 0;
-    shooterStickyFaultSeen = 0;
     return Commands.parallel(
         Commands.runOnce(() -> topRoller.clearFaults()),
         Commands.runOnce(() -> bottomRoller.clearFaults()));
@@ -273,14 +269,8 @@ public class ShooterSubsystem extends SubsystemBase {
   public void periodic() {
     //topBottomSpeedRatio = Pref.getPref("ShooterSpeedRatio");
     loopctr++;
-    if (loopctr > 50) {
-      shooterStickyFaultSeen = getStickyFaults();
-      shooterFaultSeen = getFaults();
-      loopctr = 0;
-    }
 
     if (runShooterVel) {
-
       double bottomrpm = getCommandRPM();
       double toprpm = bottomrpm * topBottomSpeedRatio;
 

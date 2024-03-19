@@ -94,10 +94,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private int loopctr;
 
-  private boolean swerveStickyFaultSeen;
-
-  private boolean swerveFaultSeen;
-
   double xlim = Units.inchesToMeters(12);
   double ylim = Units.inchesToMeters(12);
   double deglim = Units.degreesToRadians(5);

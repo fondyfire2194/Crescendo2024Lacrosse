@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
-
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -48,8 +46,6 @@ public class SwerveModule extends SubsystemBase {
   private double m_simDrivePosition;
   private double m_simRotatePosition;
   private boolean driveReversed;
-  private boolean moduleFaultSeen;
-  private boolean moduleStickyFaultSeen;
   private int loopctr;
 
   public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants) {
@@ -241,20 +237,6 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void periodic() {
 
-    if (loopctr > 50) {
-      moduleStickyFaultSeen = getStickyFaults() != 0;
-      moduleFaultSeen = getFaults() != 0;
-      loopctr = 0;
-    }
-    // SmartDashboard.putNumber(String.valueOf(moduleNumber) + " DRIVEVEL",
-    // getDriveVelocity());
-    // SmartDashboard.putNumber(String.valueOf(moduleNumber) + " SETVEL",
-    // currentDesiredState.speedMetersPerSecond);
-    // SmartDashboard.putNumber(String.valueOf(moduleNumber) + " ACTPOS",
-    // getDrivePosition());
-    // SmartDashboard.putNumber(String.valueOf(moduleNumber) + " CC",
-    // m_turnCancoder.getAbsolutePosition().getValueAsDouble() * 360);
-
     SmartDashboard.putNumber(
       String.valueOf(moduleNumber)+ "cancoder", getCancoderDeg());
 
@@ -279,8 +261,6 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public Command clearFaultsCommand() {
-    moduleFaultSeen = false;
-    moduleStickyFaultSeen = false;
     return Commands.parallel(
         Commands.runOnce(() -> driveMotor.clearFaults()),
         Commands.runOnce(() -> angleMotor.clearFaults()));

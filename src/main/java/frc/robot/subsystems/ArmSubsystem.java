@@ -50,10 +50,6 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
 
     public boolean armMotorConnected;
 
-    public int armFaultSeen;
-
-    public int armStickyFaultSeen;
-
     public double appliedOutput;
 
     private boolean useSoftwareLimit;
@@ -426,8 +422,6 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
     }
 
     public Command clearFaultsCommand() {
-        armFaultSeen = 0;
-        armStickyFaultSeen = 0;
         return Commands.runOnce(() -> armMotor.clearFaults());
     }
 

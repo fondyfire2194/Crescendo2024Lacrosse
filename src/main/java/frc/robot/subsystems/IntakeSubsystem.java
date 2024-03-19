@@ -27,8 +27,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public CANSparkMax intakeMotor;
   RelativeEncoder intakeEncoder;
   public SparkPIDController intakeController;
-  public int intakeFaultSeen;
-  public int intakeStickyFaultSeen;
+
 
   private int loopctr;
   private boolean m_showScreens;
@@ -130,12 +129,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     loopctr++;
 
-    if (loopctr > 50) {
-      intakeStickyFaultSeen = getStickyFaults();
-      intakeFaultSeen = getFaults();
-      loopctr = 0;
-    }
-
     if (runIntake && !notePresent)
       runAtVelocity(Pref.getPref("IntakeSpeed"));
     if (!runIntake && !jogging)
@@ -159,8 +152,6 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command clearFaultsCommand() {
-    intakeFaultSeen = 0;
-    intakeStickyFaultSeen = 0;
     return Commands.runOnce(() -> intakeMotor.clearFaults());
   }
 

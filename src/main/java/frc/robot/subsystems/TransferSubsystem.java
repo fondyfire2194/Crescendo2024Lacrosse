@@ -41,9 +41,6 @@ public class TransferSubsystem extends SubsystemBase {
 
   public boolean m_showScreens;
 
-  private int transferFaultSeen;
-  private int transferStickyFaultSeen;
-
   private int loopctr;
 
   public SparkLimitSwitch m_limitSwitch;
@@ -160,12 +157,6 @@ public class TransferSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("SENSINCHES", getSensorDistanceInches());
     loopctr++;
-    if (loopctr > 50) {
-      transferStickyFaultSeen = getStickyFaults();
-      transferFaultSeen = getFaults();
-      loopctr = 0;
-    }
-
     SmartDashboard.putBoolean("LSE", m_limitSwitch.isLimitSwitchEnabled());
 
     SmartDashboard.putBoolean("PLLIM", m_limitSwitch.isPressed());
@@ -219,8 +210,6 @@ public class TransferSubsystem extends SubsystemBase {
   }
 
   public Command clearFaultsCommand() {
-    transferFaultSeen = 0;
-    transferStickyFaultSeen = 0;
     return Commands.runOnce(() -> transferMotor.clearFaults());
   }
 
