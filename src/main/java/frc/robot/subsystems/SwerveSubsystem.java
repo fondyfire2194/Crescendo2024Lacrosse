@@ -525,13 +525,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
     SmartDashboard.putBoolean("SwerveStopped", isStopped());
 
-    if (loopctr > 50) {
-      for (SwerveModule mod : mSwerveMods) {
-        swerveStickyFaultSeen = mod.getStickyFaults() != 0;
-        swerveFaultSeen = mod.getFaults() != 0;
-      }
-      loopctr = 0;
-    }
 
     swervePoseEstimator.update(getYaw(), getPositions());
 
