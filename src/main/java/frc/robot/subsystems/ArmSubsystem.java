@@ -9,7 +9,6 @@ import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -26,21 +25,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.util.CANSparkMaxUtil;
 import frc.lib.util.CANSparkMaxUtil.Usage;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.CANIDConstants;
 import frc.robot.Pref;
+import static edu.wpi.first.units.Units.Volts;
 
 public class ArmSubsystem extends ProfiledPIDSubsystem {
 
-    /**
-     * Arm arms are defined with respect to the extend arm. positive angles are up
-     * and negative down
-     * 
-     */
-
-    public final CANSparkMax armMotor;
+    public final CANSparkMax armMotor = new CANSparkMax(CANIDConstants.armID, MotorType.kBrushless);
 
     public final CANcoder armCancoder;
 
@@ -101,7 +97,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
         m_showScreens = showScreens;
         useSoftwareLimit = false;
 
-        armMotor = new CANSparkMax(CANIDConstants.armID, MotorType.kBrushless);
+        // armMotor = new CANSparkMax(CANIDConstants.armID, MotorType.kBrushless);
         armEncoder = armMotor.getEncoder();
         armCancoder = new CANcoder(CANIDConstants.armCancoderID, "CV1");
 
@@ -110,8 +106,6 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
         setSoftwareLimits();
 
         enableSoftLimits(useSoftwareLimit);
-
-    
 
         armfeedforward = new ArmFeedforward(ArmConstants.armKs, ArmConstants.armKg, ArmConstants.armKv,
                 ArmConstants.armKa);
@@ -272,7 +266,6 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
         lastTime = Timer.getFPGATimestamp();
 
         double out = pidout + feedforward;
-    
 
         armMotor.setVoltage(out);
     }
@@ -397,10 +390,6 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
         return armMotor.getOutputCurrent();
     }
 
-    // public Command StopCommand() {
-    //     return Commands.runOnce(() -> stop(), this);
-    // }
-
     public void setSoftwareLimits() {
         armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float) ArmConstants.armMinRadians);
         armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float) ArmConstants.armMaxRadians);
@@ -478,6 +467,29 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
         setKd();
     }
 
-   
+    private SysIdRoutine sysIdRoutine = new SysIdRoutine(
+            new SysIdRoutine.Config(),
+            new SysIdRoutine.Mechanism(
+                    (volts) -> {
+                        armMotor.setVoltage(volts.in(Volts));
+                    },
+                    null,
+                    this));
+
+    public Command quasistaticForward() {
+        return sysIdRoutine.quasistatic(Direction.kForward);
+    }
+
+    public Command quasistaticBackward() {
+        return sysIdRoutine.quasistatic(Direction.kReverse);
+    }
+
+    public Command dynamicForward() {
+        return sysIdRoutine.dynamic(Direction.kForward);
+    }
+
+    public Command dynamicBackward() {
+        return sysIdRoutine.dynamic(Direction.kReverse);
+    }
 
 }

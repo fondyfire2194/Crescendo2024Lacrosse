@@ -4,15 +4,29 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.littletonrobotics.urcl.URCL;
+
 import com.revrobotics.REVPhysicsSim;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.CANIDConstants;
 import frc.robot.Constants.CameraConstants;
+import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.utils.LLPipelines;
 
 public class Robot extends TimedRobot {
@@ -35,8 +49,37 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    if (RobotBase.isReal()) {
+      DriverStation.startDataLog(DataLogManager.getLog());
 
-    DataLogManager.start();
+      Map<Integer, String> motorNameMap = new HashMap<>();
+
+      motorNameMap.put(SwerveConstants.Mod0.driveMotorID, "Front Left Drive");
+      motorNameMap.put(SwerveConstants.Mod0.angleMotorID, "Front Left Turn");
+
+      motorNameMap.put(SwerveConstants.Mod1.driveMotorID, "Front Right Drive");
+      motorNameMap.put(SwerveConstants.Mod1.angleMotorID, "Front Right Turn");
+
+      motorNameMap.put(SwerveConstants.Mod2.driveMotorID, "Back Left Drive");
+      motorNameMap.put(SwerveConstants.Mod2.angleMotorID, "Back Left Turn");
+
+      motorNameMap.put(SwerveConstants.Mod3.driveMotorID, "Back Right Drive");
+      motorNameMap.put(SwerveConstants.Mod3.angleMotorID, "Back Right Turn");
+
+      motorNameMap.put(CANIDConstants.armID, "Arm Main");
+
+      motorNameMap.put(CANIDConstants.topShooterID, "Shooter Top");
+      motorNameMap.put(CANIDConstants.bottomShooterID, "Shooter Bottom");
+
+      motorNameMap.put(CANIDConstants.intakeID, "Intake");
+      motorNameMap.put(CANIDConstants.transferID, "Transfer");
+
+      motorNameMap.put(CANIDConstants.climberID, "Climber");
+
+      URCL.start(motorNameMap);
+    } else {
+      DriverStation.silenceJoystickConnectionWarning(true);
+    }
 
     m_robotContainer = new RobotContainer();
 
@@ -54,6 +97,8 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     m_robotContainer.m_arm.periodicRobot();
+
+    SmartDashboard.putNumber("Volts", RobotController.getBatteryVoltage());
 
   }
 
@@ -81,7 +126,6 @@ public class Robot extends TimedRobot {
     }
   }
 
-  
   @Override
   public void disabledExit() {
 

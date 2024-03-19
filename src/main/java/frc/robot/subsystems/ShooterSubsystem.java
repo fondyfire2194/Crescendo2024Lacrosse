@@ -18,11 +18,17 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.util.CANSparkMaxUtil;
 import frc.lib.util.CANSparkMaxUtil.Usage;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Pref;
+
+import static edu.wpi.first.units.Units.Minute;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volts;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -148,6 +154,7 @@ public class ShooterSubsystem extends SubsystemBase {
         Commands.runOnce(() -> commandRPM = rpm),
         Commands.runOnce(() -> setRunShooter(), this));
   }
+
   public Command startShooterCommandAmp(double rpm) {
     return Commands.parallel(
         Commands.runOnce(() -> commandRPM = rpm),
@@ -267,7 +274,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //topBottomSpeedRatio = Pref.getPref("ShooterSpeedRatio");
+    // topBottomSpeedRatio = Pref.getPref("ShooterSpeedRatio");
     loopctr++;
 
     if (runShooterVel) {
@@ -309,4 +316,38 @@ public class ShooterSubsystem extends SubsystemBase {
     bottomController.setD(Pref.getPref("ShooterBottomKd"), 0);
     bottomController.setI(Pref.getPref("ShooterBottomKi"), 0);
   }
+
+  private final SysIdRoutine sysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(),
+      new SysIdRoutine.Mechanism(
+          (volts) -> {
+            bottomRoller.setVoltage(volts.in(Volts));
+            topRoller.setVoltage(volts.in(Volts));
+          },
+          log -> {
+            log.motor("Top")
+                .angularVelocity(Rotations.per(Minute).of(topEncoder.getVelocity()))
+                .angularPosition(Rotations.of(topEncoder.getPosition()));
+            log.motor("Bottom")
+                .angularVelocity(Rotations.per(Minute).of(bottomEncoder.getVelocity()))
+                .angularPosition(Rotations.of(bottomEncoder.getPosition()));
+          },
+          this));
+
+  public Command quasistaticForward() {
+    return sysIdRoutine.quasistatic(Direction.kForward);
+  }
+
+  public Command quasistaticBackward() {
+    return sysIdRoutine.quasistatic(Direction.kReverse);
+  }
+
+  public Command dynamicForward() {
+    return sysIdRoutine.dynamic(Direction.kForward);
+  }
+
+  public Command dynamicBackward() {
+    return sysIdRoutine.dynamic(Direction.kReverse);
+  }
+
 }

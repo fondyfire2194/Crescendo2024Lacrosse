@@ -5,6 +5,7 @@ import java.util.function.BooleanSupplier;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -39,12 +40,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
 import frc.robot.Constants.CANIDConstants;
 import frc.robot.Constants.CameraConstants;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.Constants.SwerveConstants.Mod0;
+import frc.robot.utils.LLPipelines;
 import frc.robot.LimelightHelpers;
 import frc.robot.Pref;
+import java.util.Optional;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
 
 public class SwerveSubsystem extends SubsystemBase {
   // The gyro sensor
@@ -97,6 +107,12 @@ public class SwerveSubsystem extends SubsystemBase {
   double xlim = Units.inchesToMeters(12);
   double ylim = Units.inchesToMeters(12);
   double deglim = Units.degreesToRadians(5);
+
+  private boolean usePPOverride;
+
+  private double characterizationVolts;
+
+  private boolean characterizing;
 
   public SwerveSubsystem(boolean showScreens) {
     m_showScreens = showScreens;
@@ -262,6 +278,24 @@ public class SwerveSubsystem extends SubsystemBase {
     setModuleDriveKp();
     setModuleAngleKp();
 
+    // Set the method that will be used to get rotation overrides
+    PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
+
+  }
+
+  public Optional<Rotation2d> getRotationTargetOverride() {
+    // Some condition that should decide if we want to override rotation
+    if (usePPOverride && LimelightHelpers
+        .getCurrentPipelineIndex(CameraConstants.rearCamera.camname) == LLPipelines.pipelines.NOTE_DETECT.ordinal()
+        && LimelightHelpers.getTV(CameraConstants.rearCamera.camname)) {
+      // Return an optional containing the rotation override (this should be a field
+      // relative rotation)
+      return Optional.of(
+          new Rotation2d(Units.degreesToRadians(LimelightHelpers.getTY(CameraConstants.rearCamera.camname))));
+    } else {
+      // return an empty optional when we don't want to override the path's rotation
+      return Optional.empty();
+    }
   }
 
   public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
@@ -525,7 +559,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
     SmartDashboard.putBoolean("SwerveStopped", isStopped());
 
-
     swervePoseEstimator.update(getYaw(), getPositions());
 
     if (CameraConstants.frontLeftCamera.isUsed && CameraConstants.frontLeftCamera.isActive
@@ -552,10 +585,6 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   private void doVisionCorrection(String camname) {
-
-    if (!LimelightHelpers.getTV(camname)) {
-      return;
-    }
 
     double xyStds;
     double degStds;
@@ -750,6 +779,119 @@ public class SwerveSubsystem extends SubsystemBase {
         mSwerveMods[1].clearFaultsCommand(),
         mSwerveMods[2].clearFaultsCommand(),
         mSwerveMods[3].clearFaultsCommand());
+  }
+
+  private final SysIdRoutine sysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(Volts.per(Second).of(1.0), Volts.of(4.0), null, null),
+      new SysIdRoutine.Mechanism(
+          (volts) -> {
+            mSwerveMods[0].setCharacterizationVolts(volts.in(Volts));
+            mSwerveMods[1].setCharacterizationVolts(volts.in(Volts));
+
+            mSwerveMods[2].setCharacterizationVolts(volts.in(Volts));
+            mSwerveMods[3].setCharacterizationVolts(volts.in(Volts));
+          },
+          t -> {
+            t.motor("Front Left")
+                .linearVelocity(MetersPerSecond.of(mSwerveMods[0].getDriveVelocity()))
+                .linearPosition(Meters.of(mSwerveMods[0].getPosition().distanceMeters))
+                .voltage(Volts.of(mSwerveMods[0].getVoltage()));
+
+            t.motor("Front Right")
+                .linearVelocity(MetersPerSecond.of(mSwerveMods[1].getDriveVelocity()))
+                .linearPosition(Meters.of(mSwerveMods[1].getPosition().distanceMeters))
+                .voltage(Volts.of(mSwerveMods[1].getVoltage()));
+
+            t.motor("Back Left")
+                .linearVelocity(MetersPerSecond.of(mSwerveMods[2].getDriveVelocity()))
+                .linearPosition(Meters.of(mSwerveMods[2].getPosition().distanceMeters))
+                .voltage(Volts.of(mSwerveMods[2].getVoltage()));
+
+            t.motor("Back Right")
+                .linearVelocity(MetersPerSecond.of(mSwerveMods[3].getDriveVelocity()))
+                .linearPosition(Meters.of(mSwerveMods[3].getPosition().distanceMeters))
+                .voltage(Volts.of(mSwerveMods[3].getVoltage()));
+          },
+          this));
+
+  public Command quasistaticForward() {
+    return Commands.sequence(
+        runOnce(
+            () -> {
+              mSwerveMods[0].setCharacterizationVolts(0.0);
+              mSwerveMods[1].setCharacterizationVolts(0.0);
+              mSwerveMods[2].setCharacterizationVolts(0.0);
+              mSwerveMods[3].setCharacterizationVolts(0.0);
+            }),
+        Commands.waitSeconds(0.50),
+        sysIdRoutine.quasistatic(Direction.kForward))
+        .finallyDo(
+            () -> {
+              mSwerveMods[0].stopCharacterizing();
+              mSwerveMods[1].stopCharacterizing();
+              mSwerveMods[2].stopCharacterizing();
+              mSwerveMods[3].stopCharacterizing();
+            });
+  }
+
+  public Command quasistaticBackward() {
+    return Commands.sequence(
+        runOnce(
+            () -> {
+              mSwerveMods[0].setCharacterizationVolts(0.0);
+              mSwerveMods[1].setCharacterizationVolts(0.0);
+              mSwerveMods[2].setCharacterizationVolts(0.0);
+              mSwerveMods[3].setCharacterizationVolts(0.0);
+            }),
+        Commands.waitSeconds(0.50),
+        sysIdRoutine.quasistatic(Direction.kReverse))
+        .finallyDo(
+            () -> {
+              mSwerveMods[0].stopCharacterizing();
+              mSwerveMods[1].stopCharacterizing();
+              mSwerveMods[2].stopCharacterizing();
+              mSwerveMods[3].stopCharacterizing();
+            });
+  }
+
+  public Command dynamicForward() {
+    return Commands.sequence(
+        runOnce(
+            () -> {
+              mSwerveMods[0].setCharacterizationVolts(0.0);
+              mSwerveMods[1].setCharacterizationVolts(0.0);
+              mSwerveMods[2].setCharacterizationVolts(0.0);
+              mSwerveMods[3].setCharacterizationVolts(0.0);
+            }),
+        Commands.waitSeconds(0.50),
+        sysIdRoutine.dynamic(Direction.kForward))
+        .finallyDo(
+            () -> {
+              mSwerveMods[0].stopCharacterizing();
+              mSwerveMods[1].stopCharacterizing();
+              mSwerveMods[2].stopCharacterizing();
+              mSwerveMods[3].stopCharacterizing();
+            });
+  }
+
+  public Command dynamicBackward() {
+    return Commands.sequence(
+        runOnce(
+            () -> {
+              mSwerveMods[0].setCharacterizationVolts(0.0);
+              mSwerveMods[1].setCharacterizationVolts(0.0);
+              mSwerveMods[2].setCharacterizationVolts(0.0);
+              mSwerveMods[3].setCharacterizationVolts(0.0);
+            }),
+        Commands.waitSeconds(0.50),
+        sysIdRoutine.dynamic(Direction.kReverse))
+        .finallyDo(
+            () -> {
+              mSwerveMods[0].stopCharacterizing();
+              mSwerveMods[1].stopCharacterizing();
+              mSwerveMods[2].stopCharacterizing();
+              mSwerveMods[3].stopCharacterizing();
+            });
   }
 
 }

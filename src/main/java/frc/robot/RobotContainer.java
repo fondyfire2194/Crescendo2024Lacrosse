@@ -27,16 +27,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.CameraConstants;
 import frc.robot.commands.CommandFactory;
-import frc.robot.commands.Arm.JogArm;
 import frc.robot.commands.Drive.AlignTag;
 import frc.robot.commands.Drive.AlignToNote;
 import frc.robot.commands.Drive.TeleopSwerve;
-import frc.robot.commands.Intake.JogIntake;
-import frc.robot.commands.Shooter.JogShooters;
-import frc.robot.commands.Transfer.JogTransfer;
 import frc.robot.commands.Transfer.TransferIntakeToSensor;
 import frc.robot.subsystems.ArmSubsystem;
-
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightVision;
@@ -215,13 +210,25 @@ public class RobotContainer {
                 // KEEP IN BUTTON ORDER
                 // jogs are in case note gets stuck
 
-                setup.leftTrigger().whileTrue(new JogIntake(m_intake, setup));
+                // setup.leftTrigger().whileTrue(new JogIntake(m_intake, setup));
 
-                setup.leftBumper().whileTrue(new JogArm(m_arm, setup));
+                // setup.leftBumper().whileTrue(new JogArm(m_arm, setup));
 
-                setup.rightTrigger().whileTrue(new JogTransfer(m_transfer, setup));
+                // setup.rightTrigger().whileTrue(new JogTransfer(m_transfer, setup));
 
-                setup.rightBumper().whileTrue(new JogShooters(m_shooter, setup));
+                // setup.rightBumper().whileTrue(new JogShooters(m_shooter, setup));
+
+                setup.leftBumper().whileTrue(m_shooter.quasistaticForward())
+                                .onFalse(m_shooter.stopShooterCommand());
+
+                setup.leftTrigger().whileTrue(m_shooter.quasistaticBackward())
+                                .onFalse(m_shooter.stopShooterCommand());
+
+                setup.rightBumper().whileTrue(m_shooter.dynamicForward())
+                                .onFalse(m_shooter.stopShooterCommand());
+
+                setup.rightTrigger().whileTrue(m_shooter.dynamicBackward())
+                                .onFalse(m_shooter.stopShooterCommand());
 
                 setup.a().onTrue(m_arm.setGoalCommand(Units.degreesToRadians(25)));
 

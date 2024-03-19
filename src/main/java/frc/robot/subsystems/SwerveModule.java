@@ -31,7 +31,7 @@ public class SwerveModule extends SubsystemBase {
   private Rotation2d angleOffset;
 
   private CANSparkMax angleMotor;
-  private CANSparkMax driveMotor;
+  CANSparkMax driveMotor;
 
   private RelativeEncoder driveEncoder;
   private RelativeEncoder integratedAngleEncoder;
@@ -47,6 +47,8 @@ public class SwerveModule extends SubsystemBase {
   private double m_simRotatePosition;
   private boolean driveReversed;
   private int loopctr;
+  private double characterizationVolts;
+  private boolean characterizing;
 
   public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants) {
     this.moduleNumber = moduleNumber;
@@ -215,6 +217,10 @@ public class SwerveModule extends SubsystemBase {
     return new SwerveModuleState(getDriveVelocity(), getAngle());
   }
 
+  public double getVoltage() {
+    return driveMotor.getAppliedOutput() * driveMotor.getBusVoltage();
+  }
+
   public double getDriveVelocity() {
     if (RobotBase.isReal())
       return driveEncoder.getVelocity();
@@ -238,12 +244,17 @@ public class SwerveModule extends SubsystemBase {
   public void periodic() {
 
     SmartDashboard.putNumber(
-      String.valueOf(moduleNumber)+ "cancoder", getCancoderDeg());
+        String.valueOf(moduleNumber) + "cancoder", getCancoderDeg());
+
+    if (characterizing) {
+      driveMotor.setVoltage(characterizationVolts);
+      angleController.setReference(0, ControlType.kPosition);
+    }
 
   }
 
-  private double getCancoderDeg(){
-    return m_turnCancoder.getAbsolutePosition().getValueAsDouble()*360;
+  private double getCancoderDeg() {
+    return m_turnCancoder.getAbsolutePosition().getValueAsDouble() * 360;
   }
 
   public boolean isStopped() {
@@ -275,6 +286,16 @@ public class SwerveModule extends SubsystemBase {
         + m_turnCancoder.getStickyFaultField().getValueAsDouble();
   }
 
+  public void setCharacterizationVolts(double volts) {
+    characterizationVolts = volts;
+    characterizing = true;
+  }
+
+  public void stopCharacterizing() {
+    characterizationVolts = 0.0;
+    characterizing = false;
+  }
+
   @Override
   public void simulationPeriodic() {
 
@@ -285,7 +306,5 @@ public class SwerveModule extends SubsystemBase {
     number /= 100;
     return number;
   }
-
-
 
 }
