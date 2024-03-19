@@ -4,21 +4,15 @@
 
 package frc.robot.subsystems;
 
-import java.io.NotSerializableException;
 import java.util.Map;
 
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.FaultID;
 
-import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,7 +20,6 @@ import frc.lib.util.CANSparkMaxUtil;
 import frc.lib.util.CANSparkMaxUtil.Usage;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.utils.SpikeFilter;
 import frc.robot.Pref;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -161,7 +154,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void setPID() {
-    intakeController.setP(IntakeConstants.intakeKp);
+    intakeController.setP(Pref.getPref("IntakeKp"));
     intakeController.setFF(IntakeConstants.intakeKFF);
   }
 

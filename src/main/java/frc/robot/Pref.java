@@ -60,6 +60,7 @@ public class Pref {
     prefDict.put("ShooterBottomKpFF", .0007);
 
     prefDict.put("IntakeSpeed", 3000.);
+    prefDict.put("IntakeKp", 0.001);
 
     prefDict.put("TransferToShootSpeed", 2000.);
     prefDict.put("TransferIntakingSpeed", 3000.);

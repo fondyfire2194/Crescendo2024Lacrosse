@@ -18,7 +18,7 @@ public class TransferIntakeToSensor extends Command {
   private Debouncer sensorDebouncer;
   private double robotStoppedTime;
   private final SwerveSubsystem m_swerve;
-  private double nonoteTime = 5;
+  private double nonoteTime = 100;
 
   /** Creates a new TransferIntakeToSensor. */
   public TransferIntakeToSensor(TransferSubsystem transfer, IntakeSubsystem intake, SwerveSubsystem swerve) {
@@ -50,7 +50,7 @@ public class TransferIntakeToSensor extends Command {
   @Override
   public void end(boolean interrupted) {
     m_transfer.stopMotor();
-    m_intake.notePresent = true;
+    m_intake.notePresent = m_transfer.noteAtIntake();
     if (DriverStation.isTeleopEnabled())
       m_intake.stopMotor();
     m_transfer.enableLimitSwitch(false);
@@ -59,7 +59,12 @@ public class TransferIntakeToSensor extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return sensorDebouncer.calculate(m_transfer.noteAtIntake()) || !m_intake.getRunIntake()
-        || robotStoppedTime != 0 && Timer.getFPGATimestamp() > robotStoppedTime + nonoteTime;
+    // return sensorDebouncer.calculate(m_transfer.noteAtIntake()) ||
+    // !m_intake.getRunIntake()
+    // || robotStoppedTime != 0 && Timer.getFPGATimestamp() > robotStoppedTime +
+    // nonoteTime;
+
+    return sensorDebouncer.calculate(m_transfer.m_limitSwitch.isPressed());
+
   }
 }

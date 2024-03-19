@@ -12,6 +12,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -65,10 +66,16 @@ public class ClimberSubsystem extends SubsystemBase {
       climberFaultSeen = getFaults();
       loopctr = 0;
     }
+
+    SmartDashboard.putNumber("Climber RPM", climberEncoder.getVelocity());
+    SmartDashboard.putNumber("Amps", climberMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Position", climberEncoder.getPosition());
+
   }
 
   public void stopMotor() {
     climberMotor.stopMotor();
+    climberMotor.setVoltage(0);
     simRPM = 0;
   }
 
@@ -76,16 +83,24 @@ public class ClimberSubsystem extends SubsystemBase {
     climberMotor.setVoltage(speed * RobotController.getBatteryVoltage());
   }
 
+  public void runLowerClimberMotor(double speed) {
+    if (climberEncoder.getPosition() < -60) {
+      climberMotor.setVoltage(speed * RobotController.getBatteryVoltage());
+    } else {
+      climberMotor.setVoltage(speed * 0.5 * RobotController.getBatteryVoltage());
+    }
+  }
+
   public Command stopClimberCommand() {
     return Commands.runOnce(() -> stopMotor(), this);
   }
 
   public Command raiseClimberArmsCommand(double speed) {
-    return Commands.run(() -> runClimberMotor(speed));
+    return Commands.run(() -> runClimberMotor(-speed));
   }
 
   public Command lowerClimberArmsCommand(double speed) {
-    return Commands.run(() -> runClimberMotor(-speed));
+    return Commands.run(() -> runLowerClimberMotor(speed));
   }
 
   public Command lockClimberArm() {

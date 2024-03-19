@@ -60,7 +60,7 @@ public class RobotContainer {
 
         SendableChooser<Command> autoChooser;
 
-        public final LimelightVision m_llv = new LimelightVision(false);
+        public final LimelightVision m_llv = new LimelightVision(true);
 
         public final SendableChooser<Double> m_startDelayChooser = new SendableChooser<Double>();
 
@@ -70,7 +70,7 @@ public class RobotContainer {
 
         private final CommandXboxController setup = new CommandXboxController(2);
 
-        final ShooterSubsystem m_shooter = new ShooterSubsystem(false);
+        final ShooterSubsystem m_shooter = new ShooterSubsystem(true);
 
         public final CommandFactory m_cf = new CommandFactory(m_swerve, m_shooter, m_arm, m_intake, m_transfer,
                         m_climber, m_llv);
@@ -173,12 +173,12 @@ public class RobotContainer {
                 // KEEP IN BUTTON ORDER
                 // jogs are in case note gets stuck
 
-                codriver.leftTrigger().whileTrue(m_climber.lowerClimberArmsCommand(0.4))
+                codriver.leftTrigger().whileTrue(m_climber.raiseClimberArmsCommand(0.6))
                                 .onFalse(m_climber.stopClimberCommand());
 
                 codriver.leftBumper().onTrue(m_arm.positionToIntakeUDACommand());
 
-                codriver.rightTrigger().whileTrue(m_climber.raiseClimberArmsCommand(0.4))
+                codriver.rightTrigger().whileTrue(m_climber.lowerClimberArmsCommand(0.6))
                                 .onFalse(m_climber.stopClimberCommand());
 
                 // use this control for the amp codriver.rightBumper().

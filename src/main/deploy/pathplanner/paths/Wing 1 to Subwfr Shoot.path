@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4261946281740108,
-        "y": 6.819606105579925
+        "x": 2.78,
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1428644532397656,
-        "y": 6.533987878851318
+        "x": 2.4966698250657546,
+        "y": 6.714381773271393
       },
       "isLocked": false,
       "linkedName": null
@@ -45,7 +45,7 @@
   "reversed": false,
   "folder": "SubWfr",
   "previewStartingState": {
-    "rotation": -156.0744633715317,
+    "rotation": 180.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

@@ -12,6 +12,7 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -63,7 +64,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private final TimeOfFlight m_rearRightSensor = new TimeOfFlight(CANIDConstants.rearRightSensor);
 
   private boolean allowVisionCorrectionfl = false;
-  private boolean allowVisionCorrectionfr = false;
+  private boolean allowVisionCorrectionfr = true;
 
   private boolean lookForNote;
 
@@ -538,61 +539,14 @@ public class SwerveSubsystem extends SubsystemBase {
 
     swervePoseEstimator.update(getYaw(), getPositions());
 
-    // if (CameraConstants.frontLeftCamera.isUsed && CameraConstants.frontLeftCamera.isActive
-    //     && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname)) {
-
-    //   LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers
-    //       .getBotPoseEstimate_wpiBlue(CameraConstants.frontLeftCamera.camname);
-
-    //   double xfrlcam = limelightMeasurement.pose.getX();
-    //   double yfrlcam = limelightMeasurement.pose.getY();
-    //   Rotation2d rfrlcam = limelightMeasurement.pose.getRotation().plus(new Rotation2d(Math.PI));
-    //   double xcorr = xfrlcam - getX();
-    //   double ycorr = yfrlcam - getY();
-    //   double rcorr = rfrlcam.getDegrees() - getHeading().getDegrees();
-    //   SmartDashboard.putNumber("LCAMXCORR", xcorr);
-    //   SmartDashboard.putNumber("LCAMYCORR", ycorr);
-    //   SmartDashboard.putNumber("LCAMDCORR", rcorr);
-
-    //   boolean okcorrectlcam = allowVisionCorrectionfl && Math.abs(xfrlcam - getX()) < xlim
-    //       && Math.abs(yfrlcam - getY()) < ylim
-    //       && Math.abs(rfrlcam.getDegrees() - getHeading().getDegrees()) < deglim;
-
-    //   if (okcorrectlcam) {
-    //     swervePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
-    //     swervePoseEstimator.addVisionMeasurement(
-    //         limelightMeasurement.pose.rotateBy(new Rotation2d(Math.PI)),
-    //         limelightMeasurement.timestampSeconds);
-    //   }
-
-    //   SmartDashboard.putBoolean("OKLcam", okcorrectlcam);
-
-    // }
+    if (CameraConstants.frontLeftCamera.isUsed && CameraConstants.frontLeftCamera.isActive
+        && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname)) {
+      doVisionCorrection(CameraConstants.frontLeftCamera.camname);
+    }
 
     if (CameraConstants.frontRightCamera.isUsed && CameraConstants.frontRightCamera.isActive
         && LimelightHelpers.getTV(CameraConstants.frontRightCamera.camname)) {
-
-      LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers
-          .getBotPoseEstimate_wpiBlue(CameraConstants.frontRightCamera.camname);
-
-      double xfrrcam = limelightMeasurement.pose.getX();
-      double yfrrcam = limelightMeasurement.pose.getY();
-      Rotation2d rfrrcam = limelightMeasurement.pose.getRotation().plus(new Rotation2d(Math.PI));
-
-      boolean okcorrectrcam = Math.abs(xfrrcam - getX()) < xlim
-          && Math.abs(yfrrcam - getY()) < ylim
-          && Math.abs(rfrrcam.getDegrees() - getHeading().getDegrees()) < deglim;
-
-      SmartDashboard.putBoolean("OKRcam", okcorrectrcam);
-
-      if (okcorrectrcam) {
-        swervePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
-        swervePoseEstimator.addVisionMeasurement(
-            limelightMeasurement.pose.rotateBy(new Rotation2d(Math.PI)),
-            limelightMeasurement.timestampSeconds);
-      }
-
-      SmartDashboard.putBoolean("OKRcam", okcorrectrcam);
+      doVisionCorrection(CameraConstants.frontRightCamera.camname);
     }
 
     field.setRobotPose(getPose());
@@ -606,6 +560,55 @@ public class SwerveSubsystem extends SubsystemBase {
 
     putStates();
 
+  }
+
+  private void doVisionCorrection(String camname) {
+
+    if (!LimelightHelpers.getTV(camname)) {
+      return;
+    }
+
+    double xyStds;
+    double degStds;
+    double area = LimelightHelpers.getTA(camname);
+    int numberTragets = LimelightHelpers.getLatestResults(camname).targetingResults.targets_Fiducials.length;
+
+    LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers
+        .getBotPoseEstimate_wpiBlue(camname);
+    if (limelightMeasurement.pose.getX() == 0.0) {
+      return;
+    }
+
+    // distance from current pose to vision estimated pose
+    double poseDifference = swervePoseEstimator.getEstimatedPosition().getTranslation()
+        .getDistance(limelightMeasurement.pose.getTranslation());
+
+    // multiple targets detected
+    if (numberTragets >= 2) {
+      xyStds = 0.5;
+      degStds = 6;
+    }
+    // 1 target with large area and close to estimated pose
+    if (area > 0.8 && poseDifference < 0.5) {
+      xyStds = 1.0;
+      degStds = 12;
+    }
+    // 1 target farther away and estimated pose is close
+    if (area > 0.1 && poseDifference < 0.3) {
+      xyStds = 2.0;
+      degStds = 30;
+    }
+    // conditions don't match to add a vision measurement
+    else {
+      return;
+    }
+    // swervePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.3, .3,
+    // 0.8));
+    swervePoseEstimator.setVisionMeasurementStdDevs(
+        VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
+    swervePoseEstimator.addVisionMeasurement(
+        limelightMeasurement.pose.rotateBy(new Rotation2d(Math.PI)),
+        limelightMeasurement.timestampSeconds);
   }
 
   /**

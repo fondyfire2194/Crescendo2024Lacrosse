@@ -294,7 +294,7 @@ public final class Constants {
                 }
 
                 public static CameraValues frontLeftCamera = new CameraValues("limelight-frleft", "10.21.94.5",
-                                0,
+                                Units.inchesToMeters(10.75),
                                 Units.inchesToMeters(6.75),
                                 0,
                                 0,
@@ -304,7 +304,7 @@ public final class Constants {
                                 false);
 
                 public static CameraValues frontRightCamera = new CameraValues("limelight-frright", "10.21.94.6",
-                                0,
+                                Units.inchesToMeters(10.75),
                                 Units.inchesToMeters(-6.75),
                                 0,
                                 0,
