@@ -1,7 +1,14 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
+
 import java.util.List;
-import java.util.function.BooleanSupplier;
+import java.util.Optional;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -10,10 +17,7 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
-import com.playingwithfusion.TimeOfFlight;
-import com.playingwithfusion.TimeOfFlight.RangingMode;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -43,18 +47,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
-import frc.robot.Constants.CANIDConstants;
 import frc.robot.Constants.CameraConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.Constants.SwerveConstants.Mod0;
-import frc.robot.utils.LLPipelines;
 import frc.robot.LimelightHelpers;
 import frc.robot.Pref;
-import java.util.Optional;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Volts;
+import frc.robot.utils.LLPipelines;
 
 public class SwerveSubsystem extends SubsystemBase {
   // The gyro sensor
@@ -68,10 +66,6 @@ public class SwerveSubsystem extends SubsystemBase {
   private Field2d field;
 
   private Pose2d simOdometryPose = new Pose2d();
-
-  private final TimeOfFlight m_rearLeftSensor = new TimeOfFlight(CANIDConstants.rearLeftSensor);
-
-  private final TimeOfFlight m_rearRightSensor = new TimeOfFlight(CANIDConstants.rearRightSensor);
 
   private boolean allowVisionCorrectionfl = false;
   private boolean allowVisionCorrectionfr = true;
@@ -96,7 +90,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private final Timer m_keepAngleTimer = new Timer();
 
-  SwerveModuleState[] lockStates = new SwerveModuleState[4];
+  SwerveModuleState[] xLockStates = new SwerveModuleState[4];
 
   public boolean m_showScreens;
 
@@ -110,16 +104,16 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private boolean usePPOverride;
 
-  private double characterizationVolts;
+  private int odometryUpdateCount;
 
-  private boolean characterizing;
+  public static final ReadWriteLock odometryLock = new ReentrantReadWriteLock();
 
   public SwerveSubsystem(boolean showScreens) {
     m_showScreens = showScreens;
-    lockStates[0] = new SwerveModuleState(0, Rotation2d.fromDegrees(45));
-    lockStates[1] = new SwerveModuleState(0, Rotation2d.fromDegrees(-45));
-    lockStates[2] = new SwerveModuleState(0, Rotation2d.fromDegrees(-45));
-    lockStates[3] = new SwerveModuleState(0, Rotation2d.fromDegrees(45));
+    xLockStates[0] = new SwerveModuleState(0, Rotation2d.fromDegrees(45));
+    xLockStates[1] = new SwerveModuleState(0, Rotation2d.fromDegrees(-45));
+    xLockStates[2] = new SwerveModuleState(0, Rotation2d.fromDegrees(-45));
+    xLockStates[3] = new SwerveModuleState(0, Rotation2d.fromDegrees(45));
 
     if (RobotBase.isSimulation()) {
 
@@ -137,12 +131,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
     gyro = new AHRS(SPI.Port.kMXP, (byte) 100);
 
-    // Configure time of flight sensor for short ranging mode and sample
-    // distance every 40 ms
-    m_rearLeftSensor.setRangingMode(RangingMode.Short, 40);
-
-    m_rearRightSensor.setRangingMode(RangingMode.Short, 40);
-
     mSwerveMods = new SwerveModule[] {
         new SwerveModule(0, Constants.SwerveConstants.Mod0.constants),
         new SwerveModule(1, Constants.SwerveConstants.Mod1.constants),
@@ -157,9 +145,6 @@ public class SwerveSubsystem extends SubsystemBase {
         new Pose2d(),
         ODOMETRY_STDDEV,
         VISION_STDDEV);
-
-    // VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-    // VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
     simOdometryPose = swervePoseEstimator.getEstimatedPosition();
 
@@ -308,6 +293,10 @@ public class SwerveSubsystem extends SubsystemBase {
     setStates(targetStates);
   }
 
+  public ChassisSpeeds getFieldRelativeSpeeds(double translation, double strafe, double rotation) {
+    return ChassisSpeeds.fromFieldRelativeSpeeds(translation, strafe, rotation, getHeading());
+  }
+
   public void drive(double translation, double strafe, double rotation, boolean fieldRelative, boolean isOpenLoop,
       boolean keepAngle) {
     if (keepAngle) {
@@ -344,38 +333,35 @@ public class SwerveSubsystem extends SubsystemBase {
   /**
    * Sets the wheels into an X formation to prevent movement.
    */
-  public void lock() {
-    setStates(lockStates);
+  public void xLock() {
+    setStates(xLockStates);
   }
 
-  public Command lockCommand() {
-    return Commands.runOnce(() -> lock());
+  public Command xLockCommand() {
+    return Commands.runOnce(() -> xLock());
   }
 
   public void resetModuleEncoders() {
+    odometryLock.writeLock().lock();
     mSwerveMods[0].resetAngleToAbsolute();
     mSwerveMods[1].resetAngleToAbsolute();
     mSwerveMods[2].resetAngleToAbsolute();
     mSwerveMods[3].resetAngleToAbsolute();
+    odometryLock.writeLock().unlock();
   }
 
-  // public void resetAngleEncoders() {
-  // mSwerveMods[0].resetAngleEncoder(0);
-  // mSwerveMods[1].resetAngleEncoder(180);
-  // mSwerveMods[2].resetAngleEncoder(0);
-  // mSwerveMods[3].resetAngleEncoder(180);
-
-  // }
-
   public double getHeadingDegrees() {
-    return Math.IEEEremainder((gyro.getAngle()), 360);
+    odometryLock.writeLock().lock();
+    double heading = Math.IEEEremainder((gyro.getAngle()), 360);
+    odometryLock.writeLock().unlock();
+    return heading;
   }
 
   public Pose2d getPose() {
-    if (RobotBase.isReal())
-      return swervePoseEstimator.getEstimatedPosition();
-    else
-      return simOdometryPose;
+    odometryLock.readLock().lock();
+    Pose2d pose = swervePoseEstimator.getEstimatedPosition();
+    odometryLock.readLock().unlock();
+    return pose;
   }
 
   public double getX() {
@@ -454,16 +440,22 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public Rotation2d getHeading() {
+    odometryLock.readLock().lock();
+    Rotation2d heading = new Rotation2d();
     if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red)
-      return getPose().getRotation().plus(new Rotation2d(Math.PI));
+      heading = getPose().getRotation().plus(new Rotation2d(Math.PI));
     else
-      return getPose().getRotation();
+      heading = getPose().getRotation();
+    odometryLock.readLock().unlock();
+    return heading;
   }
 
   public void resetPoseEstimator(Pose2d pose) {
+    odometryLock.writeLock().lock();
     zeroGyro();
     swervePoseEstimator.resetPosition(getYaw(), getPositions(), pose);
     simOdometryPose = pose;
+    odometryLock.writeLock().unlock();
   }
 
   public Command setPose(Pose2d pose) {
@@ -526,22 +518,6 @@ public class SwerveSubsystem extends SubsystemBase {
     return Constants.SwerveConstants.swerveKinematics.toChassisSpeeds(getStates());
   }
 
-  public double getRearLeftSensorInches() {
-    return Units.metersToFeet(m_rearLeftSensor.getRange() / 1000);
-  }
-
-  public double getRearRightSensorInches() {
-    return Units.metersToFeet(m_rearRightSensor.getRange() / 1000);
-  }
-
-  public double getRearLeftSensorStdDevMM() {
-    return m_rearLeftSensor.getRangeSigma();
-  }
-
-  public double getRearRightSensorStdDevMM() {
-    return m_rearRightSensor.getRangeSigma();
-  }
-
   public void setLookForNote() {
     lookForNote = true;
   }
@@ -559,6 +535,28 @@ public class SwerveSubsystem extends SubsystemBase {
 
     SmartDashboard.putBoolean("SwerveStopped", isStopped());
 
+    field.setRobotPose(getPose());
+    SmartDashboard.putNumber("X Meters", round2dp(getX(), 2));
+    SmartDashboard.putNumber("Y Meters", round2dp(getY(), 2));
+    SmartDashboard.putNumber("Est Pose Heaading", round2dp(getHeading().getDegrees(), 2));
+
+    SmartDashboard.putNumber("GyroYaw", round2dp(getYaw().getDegrees(), 2));
+    SmartDashboard.putNumberArray("Odometry",
+        new double[] { getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees() });
+
+    putStates();
+  }
+
+  public void updateOdometry() {
+    double timestamp = Timer.getFPGATimestamp();
+    odometryLock.writeLock().lock();
+    odometryUpdateCount++;
+    odometryLock.writeLock().unlock();
+
+    odometryLock.readLock().lock();
+    Rotation2d heading = getHeading();
+    odometryLock.readLock().unlock();
+
     swervePoseEstimator.update(getYaw(), getPositions());
 
     if (CameraConstants.frontLeftCamera.isUsed && CameraConstants.frontLeftCamera.isActive
@@ -571,17 +569,6 @@ public class SwerveSubsystem extends SubsystemBase {
       doVisionCorrection(CameraConstants.frontRightCamera.camname);
     }
 
-    field.setRobotPose(getPose());
-    SmartDashboard.putNumber("X Meters", round2dp(getX(), 2));
-    SmartDashboard.putNumber("Y Meters", round2dp(getY(), 2));
-    SmartDashboard.putNumber("Est Pose Heaading", round2dp(getHeading().getDegrees(), 2));
-
-    SmartDashboard.putNumber("GyroYaw", round2dp(getYaw().getDegrees(), 2));
-    SmartDashboard.putNumberArray("Odometry",
-        new double[] { getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees() });
-
-    putStates();
-
   }
 
   private void doVisionCorrection(String camname) {
@@ -589,20 +576,26 @@ public class SwerveSubsystem extends SubsystemBase {
     double xyStds;
     double degStds;
     double area = LimelightHelpers.getTA(camname);
-    int numberTragets = LimelightHelpers.getLatestResults(camname).targetingResults.targets_Fiducials.length;
+    int numberTargets = LimelightHelpers.getLatestResults(camname).targetingResults.targets_Fiducials.length;
 
     LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers
         .getBotPoseEstimate_wpiBlue(camname);
-    if (limelightMeasurement.pose.getX() == 0.0) {
+
+    if (limelightMeasurement.pose.getX() == 0.0
+        || limelightMeasurement.pose.getX() > FieldConstants.FIELD_LENGTH
+        || limelightMeasurement.pose.getY() < 0.0
+        || limelightMeasurement.pose.getY() > FieldConstants.FIELD_WIDTH)
       return;
-    }
+
+    if (numberTargets < 2)
+      return;
 
     // distance from current pose to vision estimated pose
     double poseDifference = swervePoseEstimator.getEstimatedPosition().getTranslation()
         .getDistance(limelightMeasurement.pose.getTranslation());
 
     // multiple targets detected
-    if (numberTragets >= 2) {
+    if (numberTargets >= 2) {
       xyStds = 0.5;
       degStds = 6;
     }
@@ -677,12 +670,17 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   private void resetAll() {
+
     // gyro.reset();
     resetModuleEncoders();
     swervePoseEstimator.resetPosition(getYaw(), getPositions(), new Pose2d());
     simOdometryPose = new Pose2d();
     updateKeepAngle();
 
+  }
+
+  public void alignToAngle(double angle) {
+    drive(0, 0, m_alignPID.calculate(angle, 0), false, false, false);
   }
 
   public Command setPoseToX0Y0() {

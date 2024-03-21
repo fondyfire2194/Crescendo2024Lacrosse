@@ -59,6 +59,8 @@ public class RobotContainer {
 
         public final SendableChooser<Double> m_startDelayChooser = new SendableChooser<Double>();
 
+        public final SendableChooser<String> m_batteryChooser = new SendableChooser<String>();
+
         private final CommandXboxController driver = new CommandXboxController(0);
 
         private final CommandXboxController codriver = new CommandXboxController(1);
@@ -85,6 +87,8 @@ public class RobotContainer {
                 Pref.addMissing();
 
                 m_arm.setKPKIKD();
+
+                m_pd.resetTotalEnergy();
 
                 configureShuffleboardAuto();
 
@@ -268,6 +272,10 @@ public class RobotContainer {
                 return autoChooser.getSelected();
         }
 
+        public void updateSwerveOdometry() {
+                m_swerve.updateOdometry();
+        }
+
         private void configureCommandScheduler() {
                 SmartDashboard.putData("CommSchd", CommandScheduler.getInstance());
 
@@ -353,6 +361,13 @@ public class RobotContainer {
                 m_startDelayChooser.addOption("4 sec", 4.);
                 m_startDelayChooser.addOption("5 sec", 5.);
 
+                m_batteryChooser.setDefaultOption("A", "A");
+                m_batteryChooser.addOption("B", "B");
+                m_batteryChooser.addOption("C", "C");
+                m_batteryChooser.addOption("D", "D");
+                m_batteryChooser.addOption("E", "E");
+                m_batteryChooser.addOption("F", "F");
+
                 autoChooser = AutoBuilder.buildAutoChooser();
 
                 Shuffleboard.getTab("Autonomous").add("AutoSelection", autoChooser)
@@ -361,6 +376,12 @@ public class RobotContainer {
                 Shuffleboard.getTab("Autonomous").add("DelayChooser", m_startDelayChooser)
                                 .withSize(1, 1).withPosition(3, 0);
 
+                Shuffleboard.getTab("Autonomous").add("BatteryChooser", m_batteryChooser)
+                                .withSize(1, 1).withPosition(4, 0);
+
+                Shuffleboard.getTab("Autonomous").addNumber("PDEnergy", () -> m_pd.getTotalEnergy())
+                                .withSize(1, 1).withPosition(5, 0);
+                                
                 boolean stickYFault = false;
                 Shuffleboard.getTab("Autonomous").addBoolean("Sticky Fault", () -> stickYFault)
                                 .withSize(1, 1).withPosition(0, 2)

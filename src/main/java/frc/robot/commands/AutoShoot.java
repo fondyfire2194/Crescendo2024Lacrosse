@@ -56,14 +56,11 @@ public class AutoShoot extends Command {
 
     SmartDashboard.putNumber("DIST", distance);
 
-    double angle = Constants.armAngleMap.get(distance);
-    arm.setGoal(angle);
-
-    double shooterRPM = Constants.shooterRPMMap.get(distance);
+    arm.trackDistance(distance);
+    double shooterRPM = shooter.rpmTrackDistance(distance);
     shooter.setCommandRPM(shooterRPM);
     shooter.setRunShooter();
 
-    SmartDashboard.putNumber("Auto Shoot/Desired Angle", angle);
     SmartDashboard.putNumber("Auto Shoot/Desired RPM", shooterRPM);
 
     if (swerveOnTargetDebouncer.calculate(swerve.getOnTarget())

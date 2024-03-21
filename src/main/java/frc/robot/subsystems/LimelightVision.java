@@ -7,19 +7,22 @@ package frc.robot.subsystems;
 import java.util.Map;
 import java.util.Optional;
 
-
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.CameraConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.utils.LLPipelines;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class LimelightVision extends SubsystemBase {
   /** Creates a new LimelightVision. */
@@ -373,6 +376,11 @@ public class LimelightVision extends SubsystemBase {
     return getTranslationFromTag(cam, tagID).getNorm();
   }
 
+  public double getDistanceFromSpeakerTag(CameraConstants.CameraValues cam) {
+    int tagID = (int) LimelightHelpers.getFiducialID(cam.camname);
+    return getTranslationFromTag(cam, tagID).getNorm();
+  }
+
   public boolean hasTarget(CameraConstants.CameraValues cam) {
     return LimelightHelpers.getTV(cam.camname);
   }
@@ -462,4 +470,13 @@ public class LimelightVision extends SubsystemBase {
     return temp1 / temp;
   }
 
+  public Translation2d getAllianceSpeakerTranslation() {
+    int tagid = 3;
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent() &&
+        alliance.get() == DriverStation.Alliance.Blue)
+      tagid = 7;
+    return getAnyTagPose3d(tagid).toPose2d().getTranslation();
+
+  }
 }

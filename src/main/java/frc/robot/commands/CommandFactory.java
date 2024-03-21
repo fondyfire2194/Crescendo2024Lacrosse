@@ -83,22 +83,25 @@ public class CommandFactory {
                 return new TransferIntakeToSensor(m_transfer, m_intake, m_swerve);
         }
 
+        public Command alignShootCommand() {
+                return Commands.sequence(alignToTag(),
+                                m_transfer.transferToShooterCommand());
+        }
+
         public Command alignToTag() {
                 return new FunctionalCommand(
                                 () -> m_llv.setAlignSpeakerPipeline(),
-                                () -> m_swerve.drive(0, 0,
-                                                m_swerve.m_alignPID.calculate((LimelightHelpers
-                                                                .getTX(CameraConstants.frontLeftCamera.camname)),
-                                                                0),
-                                                false, false, false),
+                                () -> m_swerve.alignToAngle(
+                                                LimelightHelpers.getTX(CameraConstants.frontLeftCamera.camname)),
                                 (interrupted) -> m_llv.setAprilTag_ALL_Pipeline(),
                                 () -> Math.abs(LimelightHelpers.getTX(CameraConstants.frontLeftCamera.camname)) < 1,
                                 m_swerve);
         }
 
-        public Command alignShootCommand() {
-                return Commands.sequence(alignToTag(),
-                                m_transfer.transferToShooterCommand());
+        public Command alignShootCommand(double meters) {
+                return Commands.parallel(alignToTag(),
+                                Commands.run(() -> m_arm.trackDistance(meters)),
+                                Commands.run(() -> m_shooter.rpmTrackDistance(meters)));
         }
 
         public Command shootCommand() {

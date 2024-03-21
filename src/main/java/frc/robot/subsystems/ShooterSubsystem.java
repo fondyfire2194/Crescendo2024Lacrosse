@@ -12,9 +12,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -132,6 +134,8 @@ public class ShooterSubsystem extends SubsystemBase {
     motor.setIdleMode(Constants.ShooterConstants.shooterIdleMode);
     encoder.setVelocityConversionFactor(Constants.ShooterConstants.shooterConversionVelocityFactor);
     encoder.setPositionConversionFactor(Constants.ShooterConstants.shooterConversionPositionFactor);
+    encoder.setAverageDepth(4);
+    encoder.setMeasurementPeriod(32);
     motor.enableVoltageCompensation(Constants.ShooterConstants.voltageComp);
     motor.burnFlash();
     encoder.setPosition(0.0);
@@ -277,6 +281,9 @@ public class ShooterSubsystem extends SubsystemBase {
     // topBottomSpeedRatio = Pref.getPref("ShooterSpeedRatio");
     loopctr++;
 
+    SmartDashboard.putNumber("TOPVolts", topRoller.get() * RobotController.getBatteryVoltage());
+    SmartDashboard.putNumber("BotVolts", bottomRoller.get() * RobotController.getBatteryVoltage());
+
     if (runShooterVel) {
       double bottomrpm = getCommandRPM();
       double toprpm = bottomrpm * topBottomSpeedRatio;
@@ -286,6 +293,10 @@ public class ShooterSubsystem extends SubsystemBase {
     } else {
       stopMotors();
     }
+  }
+
+  public double rpmTrackDistance(double meters) {
+    return Constants.shooterRPMMap.get(meters);
   }
 
   public static double round2dp(double number, int dp) {
@@ -324,13 +335,27 @@ public class ShooterSubsystem extends SubsystemBase {
             bottomRoller.setVoltage(volts.in(Volts));
             topRoller.setVoltage(volts.in(Volts));
           },
+          // log -> {
+          // // Record a frame for the shooter motor.
+          // log.motor("shooter-wheel")
+          // .voltage(
+          // m_appliedVoltage.mut_replace(
+          // m_shooterMotor.get() * RobotController.getBatteryVoltage(), Volts))
+          // .angularPosition(m_angle.mut_replace(m_shooterEncoder.getDistance(),
+          // Rotations))
+          // .angularVelocity(
+          // m_velocity.mut_replace(m_shooterEncoder.getRate(), RotationsPerSecond));
+          // },
           log -> {
             log.motor("Top")
+                .voltage(Volts.of(topRoller.getAppliedOutput() * topRoller.getBusVoltage()))
                 .angularVelocity(Rotations.per(Minute).of(topEncoder.getVelocity()))
                 .angularPosition(Rotations.of(topEncoder.getPosition()));
-            log.motor("Bottom")
-                .angularVelocity(Rotations.per(Minute).of(bottomEncoder.getVelocity()))
-                .angularPosition(Rotations.of(bottomEncoder.getPosition()));
+            // log.motor("Bottom")
+            // .voltage(Volts.of(bottomRoller.getAppliedOutput() *
+            // bottomRoller.getBusVoltage()))
+            // .angularVelocity(Rotations.per(Minute).of(bottomEncoder.getVelocity()))
+            // .angularPosition(Rotations.of(bottomEncoder.getPosition()));
           },
           this));
 

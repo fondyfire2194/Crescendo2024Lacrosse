@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.util.CANSparkMaxUtil;
 import frc.lib.util.CANSparkMaxUtil.Usage;
+import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.CANIDConstants;
 import frc.robot.Pref;
@@ -275,10 +276,24 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
         return armAngleRads;
     }
 
+    public void trackDistance(double meters) {
+        setTolerance(ArmConstants.angleTolerance);
+        double angle = Constants.armAngleMap.get(meters);
+        setGoal(angle);
+    }
+
+    public void resetController() {
+        getController().reset(getAngleRadians());
+    }
+
+    public void setTolerance(double tolerance) {
+        angleTolerance = tolerance;
+    }
+
     public Command setGoalCommand(double angleRads) {
         return Commands.sequence(
-                Commands.runOnce(() -> angleTolerance = ArmConstants.angleTolerance),
-                Commands.runOnce(() -> getController().reset(getAngleRadians()), this),
+                Commands.runOnce(() -> setTolerance(ArmConstants.angleTolerance)),
+                Commands.runOnce(() -> resetController()),
                 Commands.runOnce(() -> setGoal(angleRads), this),
                 Commands.runOnce(() -> enable(), this));
     }

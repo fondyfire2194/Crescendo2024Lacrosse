@@ -13,6 +13,7 @@ import com.revrobotics.REVPhysicsSim;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -45,44 +46,48 @@ public class Robot extends TimedRobot {
 
   private boolean autoHasRun;
 
-  private boolean firstScan = true;;
+  private boolean firstScan = true;
+
+  private Notifier odometryNotifier;
 
   @Override
   public void robotInit() {
-    if (RobotBase.isReal()) {
-      DriverStation.startDataLog(DataLogManager.getLog());
+    // if (RobotBase.isReal()) {
+    DriverStation.startDataLog(DataLogManager.getLog());
 
-      Map<Integer, String> motorNameMap = new HashMap<>();
+    // Map<Integer, String> motorNameMap = new HashMap<>();
 
-      motorNameMap.put(SwerveConstants.Mod0.driveMotorID, "Front Left Drive");
-      motorNameMap.put(SwerveConstants.Mod0.angleMotorID, "Front Left Turn");
+    // motorNameMap.put(SwerveConstants.Mod0.driveMotorID, "Front Left Drive");
+    // motorNameMap.put(SwerveConstants.Mod0.angleMotorID, "Front Left Turn");
 
-      motorNameMap.put(SwerveConstants.Mod1.driveMotorID, "Front Right Drive");
-      motorNameMap.put(SwerveConstants.Mod1.angleMotorID, "Front Right Turn");
+    // motorNameMap.put(SwerveConstants.Mod1.driveMotorID, "Front Right Drive");
+    // motorNameMap.put(SwerveConstants.Mod1.angleMotorID, "Front Right Turn");
 
-      motorNameMap.put(SwerveConstants.Mod2.driveMotorID, "Back Left Drive");
-      motorNameMap.put(SwerveConstants.Mod2.angleMotorID, "Back Left Turn");
+    // motorNameMap.put(SwerveConstants.Mod2.driveMotorID, "Back Left Drive");
+    // motorNameMap.put(SwerveConstants.Mod2.angleMotorID, "Back Left Turn");
 
-      motorNameMap.put(SwerveConstants.Mod3.driveMotorID, "Back Right Drive");
-      motorNameMap.put(SwerveConstants.Mod3.angleMotorID, "Back Right Turn");
+    // motorNameMap.put(SwerveConstants.Mod3.driveMotorID, "Back Right Drive");
+    // motorNameMap.put(SwerveConstants.Mod3.angleMotorID, "Back Right Turn");
 
-      motorNameMap.put(CANIDConstants.armID, "Arm Main");
+    // motorNameMap.put(CANIDConstants.armID, "Arm Main");
 
-      motorNameMap.put(CANIDConstants.topShooterID, "Shooter Top");
-      motorNameMap.put(CANIDConstants.bottomShooterID, "Shooter Bottom");
+    // motorNameMap.put(CANIDConstants.topShooterID, "Shooter Top");
+    // motorNameMap.put(CANIDConstants.bottomShooterID, "Shooter Bottom");
 
-      motorNameMap.put(CANIDConstants.intakeID, "Intake");
-      motorNameMap.put(CANIDConstants.transferID, "Transfer");
+    // motorNameMap.put(CANIDConstants.intakeID, "Intake");
+    // motorNameMap.put(CANIDConstants.transferID, "Transfer");
 
-      motorNameMap.put(CANIDConstants.climberID, "Climber");
+    // motorNameMap.put(CANIDConstants.climberID, "Climber");
 
-      URCL.start(motorNameMap);
-    } else {
-      DriverStation.silenceJoystickConnectionWarning(true);
-    }
+    // URCL.start(motorNameMap);
+    // } else {
+    // DriverStation.silenceJoystickConnectionWarning(true);
+    // }
 
     m_robotContainer = new RobotContainer();
-
+    odometryNotifier = new Notifier(m_robotContainer::updateSwerveOdometry);
+    odometryNotifier.setName("OdometryThread");
+    odometryNotifier.startPeriodic(1.0 / SwerveConstants.odometryUpdateFrequency);
     DriverStation.startDataLog(DataLogManager.getLog());
 
     // CameraServer.startAutomaticCapture();

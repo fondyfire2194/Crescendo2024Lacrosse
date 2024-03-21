@@ -207,5 +207,13 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/IntakeKp",
+    "type": "double",
+    "value": 0.001,
+    "properties": {
+      "persistent": true
+    }
   }
 ]

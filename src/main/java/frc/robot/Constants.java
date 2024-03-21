@@ -198,6 +198,8 @@ public final class Constants {
 
                 public static double alignNoteKd = 0;
 
+                public static double odometryUpdateFrequency =100;
+
         }
 
         public static final class KeepAngle {
@@ -354,6 +356,7 @@ public final class Constants {
 
                 public static double jogSpeed = .25;
                 public static double debounceTime = .1;
+                public static double kAccelCompFactor = 0.100; // in units of seconds
 
         }
 
@@ -378,9 +381,19 @@ public final class Constants {
                 // armAngleMap.put(distance_5, 40.5);
                 // armAngleMap.put(distance_6, 37.5);
         }
+
+        public static final InterpolatingDoubleTreeMap shotTimeMap = new InterpolatingDoubleTreeMap();
+        // arm angle, time
+        static {
+                shotTimeMap.put(Units.inchesToMeters(80.), 0.78);
+                shotTimeMap.put(Units.inchesToMeters(130.), 0.80);
+                shotTimeMap.put(Units.inchesToMeters(190.), 0.81);
+                shotTimeMap.put(Units.inchesToMeters(240.), 0.82);
+                shotTimeMap.put(Units.inchesToMeters(280.), 0.83);
+        }
+
         /** Arm angle look up table key: meters, values: degrees */
         public static final InterpolatingDoubleTreeMap shooterRPMMap = new InterpolatingDoubleTreeMap();
-
         static {
                 shooterRPMMap.put(distance_0, 200.);
                 shooterRPMMap.put(distance_1, 3000.);
@@ -391,9 +404,13 @@ public final class Constants {
                 // shooterRPMMap.put(distance_6, 5000.);
         }
 
-        public static double ampArmAngle = 115;// degrees
-        public static double ampShooterSpeed = 800;// rpm
+        public static double ampArmAngle = 100;// degrees
+        public static double ampShooterSpeed = 700;// rpm
 
+        public static double lobArmAngle = 50;// degrees
+        public static double lobShooterSpeed = 3000;// rpm
+
+        
         public static double subwfrArmAngle = 60;// degrees
         public static double subwfrShooterSpeed = 3000;// rpm
 
@@ -403,8 +420,8 @@ public final class Constants {
         public static double wing1ArmAngle = 35;// degrees
         public static double wing1ShooterSpeed = 3500;// rpm
 
-        public static double wing2ArmAngle = 60;// degrees
-        public static double wing2ShooterSpeed = 3000;// rpm
+        public static double wing2ArmAngle = 40;// degrees
+        public static double wing2ShooterSpeed = 3500;// rpm
 
         public static double wing3ArmAngle = 60;// degrees
         public static double wing3ShooterSpeed = 3000;// rpm

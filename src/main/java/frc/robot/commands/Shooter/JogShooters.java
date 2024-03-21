@@ -6,7 +6,6 @@ package frc.robot.commands.Shooter;
 
 import com.revrobotics.CANSparkBase.ControlType;
 
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.ShooterSubsystem;
