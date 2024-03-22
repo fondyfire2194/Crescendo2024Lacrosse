@@ -185,14 +185,13 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
 
             armEncoder.setPosition(Units.degreesToRadians(15));
 
-            setGoal(Units.degreesToRadians(15));
-            // pid.setIZone(Units.degreesToRadians(.5));
-            // pid.setIntegratorRange(-Units.degreesToRadians(.1),
-            // Units.degreesToRadians(.1));
-            pid.reset();
-            setKp();
-
         }
+        setGoal(Units.degreesToRadians(15));
+        // pid.setIZone(Units.degreesToRadians(.5));
+        // pid.setIntegratorRange(-Units.degreesToRadians(.1),
+        // Units.degreesToRadians(.1));
+        pid.reset();
+        setKp();
     }
 
     private void configMotor(CANSparkMax motor, RelativeEncoder encoder, boolean reverse) {

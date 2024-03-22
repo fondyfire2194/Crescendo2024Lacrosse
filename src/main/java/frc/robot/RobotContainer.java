@@ -43,11 +43,11 @@ public class RobotContainer {
         /* Subsystems */
         final SwerveSubsystem m_swerve = new SwerveSubsystem(false);
 
-        final IntakeSubsystem m_intake = new IntakeSubsystem(true);
+        final IntakeSubsystem m_intake = new IntakeSubsystem(false);
 
-        final TransferSubsystem m_transfer = new TransferSubsystem(true);
+        final TransferSubsystem m_transfer = new TransferSubsystem(false);
 
-        final ArmSubsystem m_arm = new ArmSubsystem(true);
+        final ArmSubsystem m_arm = new ArmSubsystem(false);
 
         final ClimberSubsystem m_climber = new ClimberSubsystem();
 

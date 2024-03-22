@@ -59,12 +59,10 @@ public class TransferIntakeToSensor extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // return sensorDebouncer.calculate(m_transfer.noteAtIntake()) ||
-    // !m_intake.getRunIntake()
-    // || robotStoppedTime != 0 && Timer.getFPGATimestamp() > robotStoppedTime +
-    // nonoteTime;
-
-    return sensorDebouncer.calculate(m_transfer.m_limitSwitch.isPressed());
+    return sensorDebouncer.calculate(m_transfer.noteAtIntake()) ||
+        !m_intake.getRunIntake()
+        || robotStoppedTime != 0 && Timer.getFPGATimestamp() > robotStoppedTime +
+            nonoteTime;
 
   }
 }

@@ -6,11 +6,9 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -50,7 +48,6 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Pref;
-import frc.robot.utils.LLPipelines;
 
 public class SwerveSubsystem extends SubsystemBase {
   // The gyro sensor
@@ -97,7 +94,7 @@ public class SwerveSubsystem extends SubsystemBase {
   double ylim = Units.inchesToMeters(12);
   double deglim = Units.degreesToRadians(5);
 
-  private int odometryUpdateCount;
+  private Pose2d llpose = new Pose2d();
 
   public SwerveSubsystem(boolean showScreens) {
     m_showScreens = showScreens;
@@ -494,6 +491,8 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
+    swervePoseEstimator.update(getYaw(), getPositions());
+
     SmartDashboard.putBoolean("SwerveStopped", isStopped());
 
     field.setRobotPose(getPose());
@@ -502,19 +501,21 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Est Pose Heaading", round2dp(getHeading().getDegrees(), 2));
 
     SmartDashboard.putNumber("GyroYaw", round2dp(getYaw().getDegrees(), 2));
+
     SmartDashboard.putNumberArray("Odometry",
         new double[] { getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees() });
 
+    SmartDashboard.putNumberArray("OdometryLL",
+        new double[] { llpose.getX(), llpose.getY(), llpose.getRotation().getDegrees() });
+
     putStates();
 
-    swervePoseEstimator.update(getYaw(), getPositions());
+    // if (CameraConstants.frontLeftCamera.isActive
+    // && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname)) {
+    // doVisionCorrection(CameraConstants.frontLeftCamera.camname);
+    // }
 
-    if (CameraConstants.frontLeftCamera.isUsed && CameraConstants.frontLeftCamera.isActive
-        && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname)) {
-      doVisionCorrection(CameraConstants.frontLeftCamera.camname);
-    }
-
-    if (CameraConstants.frontRightCamera.isUsed && CameraConstants.frontRightCamera.isActive
+    if (CameraConstants.frontRightCamera.isActive
         && LimelightHelpers.getTV(CameraConstants.frontRightCamera.camname)) {
       doVisionCorrection(CameraConstants.frontRightCamera.camname);
     }
@@ -523,26 +524,45 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private void doVisionCorrection(String camname) {
 
-    double xyStds;
-    double degStds;
+    double xyStds = .3;
+    double degStds = .8;
+    if (!LimelightHelpers.getTV(camname))
+      return;
     double area = LimelightHelpers.getTA(camname);
     int numberTargets = LimelightHelpers.getLatestResults(camname).targetingResults.targets_Fiducials.length;
 
     LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers
         .getBotPoseEstimate_wpiBlue(camname);
 
-    if (limelightMeasurement.pose.getX() == 0.0
-        || limelightMeasurement.pose.getX() > FieldConstants.FIELD_LENGTH
-        || limelightMeasurement.pose.getY() < 0.0
-        || limelightMeasurement.pose.getY() > FieldConstants.FIELD_WIDTH)
-      return;
+    double x = limelightMeasurement.pose.getX();
+    double y = limelightMeasurement.pose.getY();
+    Rotation2d r = limelightMeasurement.pose.getRotation();
+    Rotation2d r180 = r.rotateBy(new Rotation2d(Math.PI));
+    SmartDashboard.putString("R", r.toString());
+    SmartDashboard.putString("R180", r180.toString());
+    
 
-    if (numberTargets < 2)
+    llpose = new Pose2d(x, y, r180);
+
+    //llpose = limelightMeasurement.pose;// .rotateBy(new Rotation2d(Math.PI));
+
+    // estimationPos = new Pose2d(limelightMeasurement.pose.getX(),
+    // limelightMeasurement.pose.getY(), getHeading());
+
+    SmartDashboard.putNumber("LLX", limelightMeasurement.pose.getX());
+    SmartDashboard.putNumber("LLY", limelightMeasurement.pose.getY());
+
+    if (llpose.getX() == 0.0
+        || llpose.getX() > FieldConstants.FIELD_LENGTH
+        || llpose.getY() < 0.0
+        || llpose.getY() > FieldConstants.FIELD_WIDTH)
       return;
 
     // distance from current pose to vision estimated pose
     double poseDifference = swervePoseEstimator.getEstimatedPosition().getTranslation()
-        .getDistance(limelightMeasurement.pose.getTranslation());
+        .getDistance(llpose.getTranslation());
+
+    SmartDashboard.putNumber("LLPDIFF", poseDifference);
 
     // multiple targets detected
     if (numberTargets >= 2) {
@@ -550,25 +570,27 @@ public class SwerveSubsystem extends SubsystemBase {
       degStds = 6;
     }
     // 1 target with large area and close to estimated pose
-    if (area > 0.8 && poseDifference < 0.5) {
+    if (numberTargets >= 2 && area > 0.8 && poseDifference < 0.5) {
       xyStds = 1.0;
       degStds = 12;
     }
     // 1 target farther away and estimated pose is close
-    if (area > 0.1 && poseDifference < 0.3) {
-      xyStds = 2.0;
-      degStds = 30;
+    if (numberTargets >= 2 && area > 0.1 && poseDifference < 0.3) {
+      xyStds = .2;
+      degStds = .3;
     }
     // conditions don't match to add a vision measurement
-    else {
-      return;
-    }
+    // else {
+    // return;
+    // }
     // swervePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.3, .3,
     // 0.8));
+
+    SmartDashboard.putString("POSECAM", limelightMeasurement.pose.toString());
     swervePoseEstimator.setVisionMeasurementStdDevs(
-        VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
+        VecBuilder.fill(xyStds, xyStds, degStds));
     swervePoseEstimator.addVisionMeasurement(
-        limelightMeasurement.pose.rotateBy(new Rotation2d(Math.PI)),
+        llpose,
         limelightMeasurement.timestampSeconds);
   }
 
@@ -623,7 +645,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // gyro.reset();
     resetModuleEncoders();
-    swervePoseEstimator.resetPosition(getYaw(), getPositions(), new Pose2d());
+    // swervePoseEstimator.resetPosition(getYaw(), getPositions(), new Pose2d());
+    swervePoseEstimator.resetPosition(new Rotation2d(Math.PI), getPositions(), new Pose2d());
+
     simOdometryPose = new Pose2d();
     updateKeepAngle();
 
