@@ -14,6 +14,7 @@
       "/Shuffleboard/ArmSubsystem/ArmSubsystem": "Subsystem",
       "/Shuffleboard/Autonomous/AmpStart": "String Chooser",
       "/Shuffleboard/Autonomous/AutoSelection": "String Chooser",
+      "/Shuffleboard/Autonomous/BatteryChooser": "String Chooser",
       "/Shuffleboard/Autonomous/CenterStart": "String Chooser",
       "/Shuffleboard/Autonomous/DelayChooser": "String Chooser",
       "/Shuffleboard/Autonomous/DelayOnStart": "String Chooser",

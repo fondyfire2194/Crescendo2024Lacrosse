@@ -7,8 +7,6 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -67,9 +65,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private Pose2d simOdometryPose = new Pose2d();
 
-  private boolean allowVisionCorrectionfl = false;
-  private boolean allowVisionCorrectionfr = true;
-
   private boolean lookForNote;
 
   private double keepAngle = 0.0;
@@ -102,11 +97,7 @@ public class SwerveSubsystem extends SubsystemBase {
   double ylim = Units.inchesToMeters(12);
   double deglim = Units.degreesToRadians(5);
 
-  private boolean usePPOverride;
-
   private int odometryUpdateCount;
-
-  public static final ReadWriteLock odometryLock = new ReentrantReadWriteLock();
 
   public SwerveSubsystem(boolean showScreens) {
     m_showScreens = showScreens;
@@ -263,24 +254,6 @@ public class SwerveSubsystem extends SubsystemBase {
     setModuleDriveKp();
     setModuleAngleKp();
 
-    // Set the method that will be used to get rotation overrides
-    PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
-
-  }
-
-  public Optional<Rotation2d> getRotationTargetOverride() {
-    // Some condition that should decide if we want to override rotation
-    if (usePPOverride && LimelightHelpers
-        .getCurrentPipelineIndex(CameraConstants.rearCamera.camname) == LLPipelines.pipelines.NOTE_DETECT.ordinal()
-        && LimelightHelpers.getTV(CameraConstants.rearCamera.camname)) {
-      // Return an optional containing the rotation override (this should be a field
-      // relative rotation)
-      return Optional.of(
-          new Rotation2d(Units.degreesToRadians(LimelightHelpers.getTY(CameraConstants.rearCamera.camname))));
-    } else {
-      // return an empty optional when we don't want to override the path's rotation
-      return Optional.empty();
-    }
   }
 
   public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
@@ -342,26 +315,18 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void resetModuleEncoders() {
-    odometryLock.writeLock().lock();
     mSwerveMods[0].resetAngleToAbsolute();
     mSwerveMods[1].resetAngleToAbsolute();
     mSwerveMods[2].resetAngleToAbsolute();
     mSwerveMods[3].resetAngleToAbsolute();
-    odometryLock.writeLock().unlock();
   }
 
   public double getHeadingDegrees() {
-    odometryLock.writeLock().lock();
-    double heading = Math.IEEEremainder((gyro.getAngle()), 360);
-    odometryLock.writeLock().unlock();
-    return heading;
+    return Math.IEEEremainder((gyro.getAngle()), 360);
   }
 
   public Pose2d getPose() {
-    odometryLock.readLock().lock();
-    Pose2d pose = swervePoseEstimator.getEstimatedPosition();
-    odometryLock.readLock().unlock();
-    return pose;
+    return swervePoseEstimator.getEstimatedPosition();
   }
 
   public double getX() {
@@ -440,22 +405,18 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public Rotation2d getHeading() {
-    odometryLock.readLock().lock();
     Rotation2d heading = new Rotation2d();
     if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red)
       heading = getPose().getRotation().plus(new Rotation2d(Math.PI));
     else
       heading = getPose().getRotation();
-    odometryLock.readLock().unlock();
     return heading;
   }
 
   public void resetPoseEstimator(Pose2d pose) {
-    odometryLock.writeLock().lock();
     zeroGyro();
     swervePoseEstimator.resetPosition(getYaw(), getPositions(), pose);
     simOdometryPose = pose;
-    odometryLock.writeLock().unlock();
   }
 
   public Command setPose(Pose2d pose) {
@@ -545,17 +506,6 @@ public class SwerveSubsystem extends SubsystemBase {
         new double[] { getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees() });
 
     putStates();
-  }
-
-  public void updateOdometry() {
-    double timestamp = Timer.getFPGATimestamp();
-    odometryLock.writeLock().lock();
-    odometryUpdateCount++;
-    odometryLock.writeLock().unlock();
-
-    odometryLock.readLock().lock();
-    Rotation2d heading = getHeading();
-    odometryLock.readLock().unlock();
 
     swervePoseEstimator.update(getYaw(), getPositions());
 

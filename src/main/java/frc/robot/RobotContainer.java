@@ -272,10 +272,7 @@ public class RobotContainer {
                 return autoChooser.getSelected();
         }
 
-        public void updateSwerveOdometry() {
-                m_swerve.updateOdometry();
-        }
-
+   
         private void configureCommandScheduler() {
                 SmartDashboard.putData("CommSchd", CommandScheduler.getInstance());
 
