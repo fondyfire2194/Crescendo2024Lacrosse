@@ -534,24 +534,13 @@ public class SwerveSubsystem extends SubsystemBase {
     LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers
         .getBotPoseEstimate_wpiBlue(camname);
 
-    double x = limelightMeasurement.pose.getX();
-    double y = limelightMeasurement.pose.getY();
+    Translation2d t2d = limelightMeasurement.pose.getTranslation();
     Rotation2d r = limelightMeasurement.pose.getRotation();
     Rotation2d r180 = r.rotateBy(new Rotation2d(Math.PI));
-    SmartDashboard.putString("R", r.toString());
-    SmartDashboard.putString("R180", r180.toString());
-    
 
-    llpose = new Pose2d(x, y, r180);
+    llpose = new Pose2d(t2d, r180);
 
-    //llpose = limelightMeasurement.pose;// .rotateBy(new Rotation2d(Math.PI));
-
-    // estimationPos = new Pose2d(limelightMeasurement.pose.getX(),
-    // limelightMeasurement.pose.getY(), getHeading());
-
-    SmartDashboard.putNumber("LLX", limelightMeasurement.pose.getX());
-    SmartDashboard.putNumber("LLY", limelightMeasurement.pose.getY());
-
+   
     if (llpose.getX() == 0.0
         || llpose.getX() > FieldConstants.FIELD_LENGTH
         || llpose.getY() < 0.0
