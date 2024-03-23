@@ -16,28 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.8435603262063416,
-        "y": 1.721492972226854
+        "x": 8.289990426134699,
+        "y": 0.779488482053888
       },
       "prevControl": {
-        "x": 2.2093887196043167,
-        "y": 2.0846422181384154
-      },
-      "nextControl": {
-        "x": 5.740715846622946,
-        "y": 1.2999028565787194
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 8.27830153714782,
-        "y": 0.9872120133345318
-      },
-      "prevControl": {
-        "x": 5.928089231355451,
-        "y": 1.1476619814835602
+        "x": 5.939778120342329,
+        "y": 0.9399384502029166
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,8 +32,8 @@
   "constraintZones": [
     {
       "name": "Pickup Zone",
-      "minWaypointRelativePos": 1.9,
-      "maxWaypointRelativePos": 2.0,
+      "minWaypointRelativePos": 0.95,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 1.0,
         "maxAcceleration": 3.0,

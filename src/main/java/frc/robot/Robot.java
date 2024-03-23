@@ -47,7 +47,7 @@ public class Robot extends TimedRobot {
     }
 
     m_robotContainer = new RobotContainer();
-  
+
     // CameraServer.startAutomaticCapture();
 
     // Shuffleboard.selectTab("Autonomous");
@@ -102,11 +102,11 @@ public class Robot extends TimedRobot {
     m_robotContainer.m_arm.enableArm = true;
 
     LimelightHelpers.setPipelineIndex(CameraConstants.frontLeftCamera.camname,
-        LLPipelines.pipelines.APRILTAGALL.ordinal());
+        LLPipelines.pipelines.APRILTAGALL0.ordinal());
     LimelightHelpers.setPipelineIndex(CameraConstants.frontRightCamera.camname,
-        LLPipelines.pipelines.APRILTAGALL.ordinal());
+        LLPipelines.pipelines.APRILTAGALL0.ordinal());
     LimelightHelpers.setPipelineIndex(CameraConstants.rearCamera.camname,
-        LLPipelines.pipelines.NOTE_DETECT.ordinal());
+        LLPipelines.pipelines.NOTE_DETECT8.ordinal());
 
     m_robotContainer.m_swerve.setIdleMode(true);
 
@@ -154,6 +154,13 @@ public class Robot extends TimedRobot {
     m_robotContainer.m_shooter.stopMotors();
     m_robotContainer.m_intake.stopMotor();
     m_robotContainer.m_transfer.stopMotor();
+
+    LimelightHelpers.setPipelineIndex(CameraConstants.frontLeftCamera.camname,
+        LLPipelines.pipelines.APRILTAGALL0.ordinal());
+    LimelightHelpers.setPipelineIndex(CameraConstants.frontRightCamera.camname,
+        LLPipelines.pipelines.APRILTAGALL0.ordinal());
+    LimelightHelpers.setPipelineIndex(CameraConstants.rearCamera.camname,
+        LLPipelines.pipelines.NOTE_DETECT8.ordinal());
 
   }
 

@@ -295,26 +295,26 @@ public class LimelightVision extends SubsystemBase {
 
   public void setAprilTag_ALL_Pipeline() {
     LimelightHelpers.setPipelineIndex(CameraConstants.frontLeftCamera.camname,
-        LLPipelines.pipelines.APRILTAGALL.ordinal());
+        LLPipelines.pipelines.APRILTAGALL0.ordinal());
     LimelightHelpers.setPipelineIndex(CameraConstants.frontRightCamera.camname,
-        LLPipelines.pipelines.APRILTAGALL.ordinal());
+        LLPipelines.pipelines.APRILTAGALL0.ordinal());
   }
 
   public void setAprilTagStartPipeline() {
     LimelightHelpers.setPipelineIndex(CameraConstants.frontLeftCamera.camname,
-        LLPipelines.pipelines.APRILTAGSTART.ordinal());
+        LLPipelines.pipelines.APRILTAGSTART1.ordinal());
     LimelightHelpers.setPipelineIndex(CameraConstants.frontRightCamera.camname,
-        LLPipelines.pipelines.APRILTAGSTART.ordinal());
+        LLPipelines.pipelines.APRILTAGSTART1.ordinal());
   }
 
   public void setRearNoteDetectorPipeline() {
     LimelightHelpers.setPipelineIndex(CameraConstants.rearCamera.camname,
-        LLPipelines.pipelines.NOTE_DETECT.ordinal());
+        LLPipelines.pipelines.NOTE_DETECT8.ordinal());
   }
 
   public void setAlignSpeakerPipeline() {
     LimelightHelpers.setPipelineIndex(CameraConstants.frontLeftCamera.camname,
-        LLPipelines.pipelines.APRILTAGALIGN.ordinal());
+        LLPipelines.pipelines.APRILTAGALIGN5.ordinal());
   }
 
   public int getNumberTagsSeen(CameraConstants.CameraValues cam) {

@@ -7,16 +7,16 @@ package frc.robot.utils;
 public class LLPipelines {
 
     public enum pipelines {
-        APRILTAGALL(0, pipelinetype.fiducialmarkers),//all tage
-        APRILTAGSTART(1, pipelinetype.fiducialmarkers), // tags 3,4 and 7,8
-        APRILTAGSAMP(2, pipelinetype.fiducialmarkers), // tags 5 and 6
-        APRILTAGSOURCE(3, pipelinetype.fiducialmarkers),//tags 1,2 1nd 9,10
-        APRILTAGSTAGE(4, pipelinetype.fiducialmarkers),//tags 11,12,13 and 14,15,16
-        APRILTAGALIGN(5, pipelinetype.fiducialmarkers),//4 or 7 only
-        APRILTAGSPARE(6, pipelinetype.fiducialmarkers),//
+        APRILTAGALL0(0, pipelinetype.fiducialmarkers),//all tage
+        APRILTAGSTART1(1, pipelinetype.fiducialmarkers), // tags 3,4 and 7,8
+        APRILTAGSAMP2(2, pipelinetype.fiducialmarkers), // tags 5 and 6
+        APRILTAGSOURCE3(3, pipelinetype.fiducialmarkers),//tags 1,2 1nd 9,10
+        APRILTAGALIGNLEFT4(4, pipelinetype.fiducialmarkers),//tags 4 or 7 with point of interset offset
+        APRILTAGALIGN5(5, pipelinetype.fiducialmarkers),//4 or 7 only
+        APRILTAGSLIGNRIGHT6(6, pipelinetype.fiducialmarkers),//4 or 7 with point of interest offset 
         PYTHON_7(7, pipelinetype.python),
-        NOTE_DETECT(8, pipelinetype.detector),
-        NOTE_DETECT1(9, pipelinetype.detector);
+        NOTE_DETECT8(8, pipelinetype.detector),
+        NOTE_DETECT9(9, pipelinetype.detector);
 
         public static final pipelines values[] = values();
 

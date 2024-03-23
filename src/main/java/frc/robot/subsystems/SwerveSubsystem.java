@@ -510,10 +510,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     putStates();
 
-    // if (CameraConstants.frontLeftCamera.isActive
-    // && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname)) {
-    // doVisionCorrection(CameraConstants.frontLeftCamera.camname);
-    // }
+    if (CameraConstants.frontLeftCamera.isActive
+    && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname)) {
+    doVisionCorrection(CameraConstants.frontLeftCamera.camname);
+    }
 
     if (CameraConstants.frontRightCamera.isActive
         && LimelightHelpers.getTV(CameraConstants.frontRightCamera.camname)) {
@@ -525,7 +525,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private void doVisionCorrection(String camname) {
 
     double xyStds = .3;
-    double degStds = .8;
+    double radStds = .8;
     if (!LimelightHelpers.getTV(camname))
       return;
 
@@ -557,17 +557,17 @@ public class SwerveSubsystem extends SubsystemBase {
     // multiple targets detected
     if (numberTargets >= 2) {
       xyStds = 0.5;
-      degStds = 6;
+      radStds = 6;
     }
     // 1 target with large area and close to estimated pose
     if (numberTargets >= 2 && area > 0.8 && poseDifference < 0.5) {
       xyStds = 1.0;
-      degStds = 12;
+      radStds = 12;
     }
     // 1 target farther away and estimated pose is close
     if (numberTargets >= 2 && area > 0.1 && poseDifference < 0.3) {
       xyStds = .2;
-      degStds = .3;
+      radStds = .3;
     }
     // conditions don't match to add a vision measurement
     // else {
@@ -578,7 +578,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     SmartDashboard.putString("POSECAM", limelightMeasurement.pose.toString());
     swervePoseEstimator.setVisionMeasurementStdDevs(
-        VecBuilder.fill(xyStds, xyStds, degStds));
+        VecBuilder.fill(xyStds, xyStds, radStds));
     swervePoseEstimator.addVisionMeasurement(
         llpose,
         limelightMeasurement.timestampSeconds);
@@ -598,7 +598,7 @@ public class SwerveSubsystem extends SubsystemBase {
       double poseX = robotPose.getX();
       Rotation2d poser = robotPose.getRotation();
       double correctedY = poseY + yerror * corrGain;
-      Pose2d correctionPose = new Pose2d(poseX, correctedY, poser);
+      Pose2d correctionPose = new Pose2d(poseX, -correctedY, poser);
       double latency = capLatency + pipelineLatency;
 
       swervePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.3, .3, .8));

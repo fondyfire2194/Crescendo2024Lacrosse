@@ -69,9 +69,9 @@ public final class Constants {
 
                 public static double mk4iL2TurnGearRatio = 1 / ((14.0 / 50.0) * (10.0 / 60.0));// 21.43 1/.046667
 
-                public static double driveGearRatio = mk4iL1DriveGearRatio;
+                public static double driveGearRatio = mk4iL2DriveGearRatio;
 
-                public static double angleGearRatio = mk4iL1TurnGearRatio;
+                public static double angleGearRatio = mk4iL2TurnGearRatio;
 
                 public static final Translation2d flModuleOffset = new Translation2d(wheelBase.magnitude() / 2.0,
                                 trackWidth.magnitude() / 2.0);
@@ -93,8 +93,8 @@ public final class Constants {
                 public static final int driveContinuousCurrentLimit = 30;
 
                 /* Swerve Profiling Values */
-                public static final double kmaxTheoreticalSpeed = 3.7;// mps *1.2 L2
-                public static final double kmaxSpeed = 3.25; // meters per second *1.2 L2 3.9
+                public static final double kmaxTheoreticalSpeed = 4.6; // 3.7;// mps *1.2 L2
+                public static final double kmaxSpeed = 4.0; // meters per second *1.2 L2 3.9
                 public static final double kmaxAngularVelocity = 1.0 * Math.PI;
 
                 /* Angle Motor PID Values */
@@ -327,7 +327,7 @@ public final class Constants {
                                 0,
                                 0,
                                 5, // deg
-                                6,
+                                -6,
                                 true,
                                 false);
 
@@ -458,9 +458,9 @@ public final class Constants {
 
                 public static final double maxUsableRPM = 4800;
 
-                public static final double NET_GEAR_RATIO = 100;// 50:1 then 2:1
+                public static final double NET_GEAR_RATIO = 200;// 100:1 then 2:1
 
-                public static final double DEGREES_PER_ENCODER_REV = 360 / NET_GEAR_RATIO;// 3.6
+                public static final double DEGREES_PER_ENCODER_REV = 360 / NET_GEAR_RATIO;// 1.8
 
                 public static final double RADIANS_PER_ENCODER_REV = Units.degreesToRadians(DEGREES_PER_ENCODER_REV);// .0314
 
@@ -471,9 +471,6 @@ public final class Constants {
                 public static final double MAX_DEGREES_PER_SEC = DEGREES_PER_ENCODER_REV * maxUsableRPM / 60;// 288
 
                 public static final double MAX_RADS_PER_SEC = Units.degreesToRadians(MAX_DEGREES_PER_SEC);// 5 approx
-
-                public static final double armkMaxOutput = .75;// low for test
-                public static final double armkMinOutput = -.75;
 
                 public static final double voltageComp = 12;
                 public static final IdleMode armIdleMode = IdleMode.kBrake;
@@ -538,7 +535,7 @@ public final class Constants {
                 public static double jogSpeed = 1;
                 public static double reverseRPM = -500;
                 public static double reverseTime = 2;
-                public static double noNoteTime=60;
+                public static double noNoteTime = 60;
 
                 public static final double intakeKp = .0001;
                 public static final double intakeKi = 0.0;

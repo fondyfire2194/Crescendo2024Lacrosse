@@ -346,6 +346,8 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("Stop Shooter", m_shooter.stopShooterCommand().asProxy());
 
+               
+
         }
 
         void configureShuffleboardAuto() {

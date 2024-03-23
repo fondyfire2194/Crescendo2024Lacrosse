@@ -3,32 +3,38 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.377283014655716,
-        "y": 2.0523241046482092
+        "x": 3.3170512494871156,
+        "y": 2.7627439870264356
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.391864816639093,
-        "y": 2.010597235387685
+        "x": 6.227799378675683,
+        "y": 1.312303393837557
       },
       "isLocked": false,
       "linkedName": "ShootingPoint"
     },
     {
       "anchor": {
-        "x": 8.302436527052041,
-        "y": 2.765156269612149
+        "x": 8.28012348332389,
+        "y": 2.466735702702175
       },
       "prevControl": {
-        "x": 7.787893731584686,
-        "y": 2.2038368563750317
+        "x": 7.293429202243022,
+        "y": 2.150993532756296
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Center 4"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.55,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
