@@ -6,8 +6,6 @@ package frc.robot.subsystems;
 
 import java.util.Map;
 
-import org.ejml.data.FScalar;
-import org.opencv.core.TickMeter;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -149,7 +147,6 @@ public class IntakeSubsystem extends SubsystemBase {
       if (Timer.getFPGATimestamp() > reverseStartTime + IntakeConstants.reverseTime) {
         runReverse = false;
         reverseStartTime = 0;
-        intakeLimiter.reset(0);
         if (DriverStation.isTeleopEnabled())
           runIntake = false;
       }

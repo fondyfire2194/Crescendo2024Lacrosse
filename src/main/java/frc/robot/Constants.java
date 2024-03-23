@@ -538,6 +538,7 @@ public final class Constants {
                 public static double jogSpeed = 1;
                 public static double reverseRPM = -500;
                 public static double reverseTime = 2;
+                public static double noNoteTime=60;
 
                 public static final double intakeKp = .0001;
                 public static final double intakeKi = 0.0;

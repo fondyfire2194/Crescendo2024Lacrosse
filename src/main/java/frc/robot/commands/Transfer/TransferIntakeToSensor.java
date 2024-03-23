@@ -5,10 +5,9 @@
 package frc.robot.commands.Transfer;
 
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Pref;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
@@ -19,7 +18,6 @@ public class TransferIntakeToSensor extends Command {
   private Debouncer sensorDebouncer;
   private double robotStoppedTime;
   private final SwerveSubsystem m_swerve;
-  private double nonoteTime = 100;
 
   /** Creates a new TransferIntakeToSensor. */
   public TransferIntakeToSensor(TransferSubsystem transfer, IntakeSubsystem intake, SwerveSubsystem swerve) {
@@ -62,6 +60,6 @@ public class TransferIntakeToSensor extends Command {
     return sensorDebouncer.calculate(m_transfer.noteAtIntake()) ||
         !m_intake.getRunIntake()
         || robotStoppedTime != 0 && Timer.getFPGATimestamp() > robotStoppedTime +
-            nonoteTime;
+           IntakeConstants.noNoteTime;
   }
 }
