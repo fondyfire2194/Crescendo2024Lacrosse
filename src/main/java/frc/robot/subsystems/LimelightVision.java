@@ -87,7 +87,7 @@ public class LimelightVision extends SubsystemBase {
         .withSize(1, 3).withProperties(Map.of("Label position", "TOP"));
 
     camLayoutr.addNumber("R Pipeline #", () -> LimelightHelpers.getCurrentPipelineIndex(rname));
-    camLayoutr.addNumber("R Neural #", () -> LimelightHelpers.getNeuralClassID(rname));
+    camLayoutr.addString("R Neural #", () -> LimelightHelpers.getNeuralClassID(rname));
     camLayoutr.addNumber("R Tx", () -> LimelightHelpers.getTX(frname));
     camLayoutr.addBoolean("RHasTarget", () -> LimelightHelpers.getTV(frname))
         .withProperties(Map.of("colorWhenTrue", "green", "colorWhenFalse", "red"));

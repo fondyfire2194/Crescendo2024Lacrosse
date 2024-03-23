@@ -8,6 +8,7 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Pref;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
@@ -50,9 +51,8 @@ public class TransferIntakeToSensor extends Command {
   @Override
   public void end(boolean interrupted) {
     m_transfer.stopMotor();
-    m_intake.notePresent = m_transfer.noteAtIntake();
-    if (DriverStation.isTeleopEnabled())
-      m_intake.stopMotor();
+    m_intake.runReverse = true;
+    m_intake.reverseStartTime = Timer.getFPGATimestamp();
     m_transfer.enableLimitSwitch(false);
   }
 
@@ -63,6 +63,5 @@ public class TransferIntakeToSensor extends Command {
         !m_intake.getRunIntake()
         || robotStoppedTime != 0 && Timer.getFPGATimestamp() > robotStoppedTime +
             nonoteTime;
-
   }
 }

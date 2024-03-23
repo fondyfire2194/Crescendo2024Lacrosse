@@ -528,11 +528,13 @@ public class SwerveSubsystem extends SubsystemBase {
     double degStds = .8;
     if (!LimelightHelpers.getTV(camname))
       return;
-    double area = LimelightHelpers.getTA(camname);
-    int numberTargets = LimelightHelpers.getLatestResults(camname).targetingResults.targets_Fiducials.length;
 
     LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers
         .getBotPoseEstimate_wpiBlue(camname);
+
+    int numberTargets = limelightMeasurement.tagCount;
+
+    double area = limelightMeasurement.avgTagArea;
 
     Translation2d t2d = limelightMeasurement.pose.getTranslation();
     Rotation2d r = limelightMeasurement.pose.getRotation();
@@ -540,7 +542,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
     llpose = new Pose2d(t2d, r180);
 
-   
     if (llpose.getX() == 0.0
         || llpose.getX() > FieldConstants.FIELD_LENGTH
         || llpose.getY() < 0.0
@@ -581,6 +582,35 @@ public class SwerveSubsystem extends SubsystemBase {
     swervePoseEstimator.addVisionMeasurement(
         llpose,
         limelightMeasurement.timestampSeconds);
+  }
+
+  public void doNoteVisionCorrection() {
+    String rname = CameraConstants.rearCamera.camname;
+    double corrGain = .01;
+
+    if (LimelightHelpers.getTV(rname)) {
+
+      double yerror = LimelightHelpers.getTX(rname);
+      double capLatency = LimelightHelpers.getLatency_Capture(rname);
+      double pipelineLatency = LimelightHelpers.getLatency_Pipeline(rname);
+      Pose2d robotPose = getPose();
+      double poseY = robotPose.getY();
+      double poseX = robotPose.getX();
+      Rotation2d poser = robotPose.getRotation();
+      double correctedY = poseY + yerror * corrGain;
+      Pose2d correctionPose = new Pose2d(poseX, correctedY, poser);
+      double latency = capLatency + pipelineLatency;
+
+      swervePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.3, .3, .8));
+      // 0.8));
+
+      SmartDashboard.putString("POSECORR", correctionPose.toString());
+
+      swervePoseEstimator.addVisionMeasurement(
+          correctionPose,
+          latency);
+    }
+
   }
 
   /**
@@ -643,7 +673,16 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void alignToAngle(double angle) {
-    drive(0, 0, m_alignPID.calculate(angle, 0), false, false, false);
+    double angleComp = getAngleComp();
+    drive(0, 0, m_alignPID.calculate(angle, angleComp), false, false, false);
+  }
+
+  public double getAngleComp() {
+    double temp = 0;
+    Pose2d rel = getPose().relativeTo(Constants.getActiveSpeakerPose());
+    double angle = rel.getRotation().getRadians();
+    temp = Math.sin(angle) * .001;
+    return temp;
   }
 
   public Command setPoseToX0Y0() {

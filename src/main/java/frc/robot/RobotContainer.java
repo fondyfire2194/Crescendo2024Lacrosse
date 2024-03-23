@@ -140,7 +140,7 @@ public class RobotContainer {
                                 CameraConstants.rearCamera));
 
                 driver.rightTrigger().onTrue(Commands.sequence(
-                                m_cf.shootCommand(),
+                                m_transfer.transferToShooterCommand(),
                                 m_arm.setGoalCommand(Units.degreesToRadians(15)),
                                 new WaitCommand(2),
                                 m_shooter.stopShooterCommand(),
@@ -272,7 +272,6 @@ public class RobotContainer {
                 return autoChooser.getSelected();
         }
 
-   
         private void configureCommandScheduler() {
                 SmartDashboard.putData("CommSchd", CommandScheduler.getInstance());
 
@@ -315,7 +314,7 @@ public class RobotContainer {
                 // NamedCommands.registerCommand("Shooter Low Speed",
                 // m_shooter.setRPMCommand(1000, false));
 
-                NamedCommands.registerCommand("Shoot", m_cf.shootCommand().asProxy());
+                NamedCommands.registerCommand("Shoot", m_transfer.transferToShooterCommand().asProxy());
 
                 NamedCommands.registerCommand("Align Then Shoot", m_cf.alignShootCommand().asProxy());
 
@@ -378,7 +377,7 @@ public class RobotContainer {
 
                 Shuffleboard.getTab("Autonomous").addNumber("PDEnergy", () -> m_pd.getTotalEnergy())
                                 .withSize(1, 1).withPosition(5, 0);
-                                
+
                 boolean stickYFault = false;
                 Shuffleboard.getTab("Autonomous").addBoolean("Sticky Fault", () -> stickYFault)
                                 .withSize(1, 1).withPosition(0, 2)

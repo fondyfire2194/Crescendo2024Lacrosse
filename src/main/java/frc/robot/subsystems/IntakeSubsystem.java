@@ -6,12 +6,18 @@ package frc.robot.subsystems;
 
 import java.util.Map;
 
+import org.ejml.data.FScalar;
+import org.opencv.core.TickMeter;
+
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -28,12 +34,13 @@ public class IntakeSubsystem extends SubsystemBase {
   RelativeEncoder intakeEncoder;
   public SparkPIDController intakeController;
 
-
   private int loopctr;
   private boolean m_showScreens;
   private boolean runIntake;
   public boolean jogging;
-  public boolean notePresent;
+  private SlewRateLimiter intakeLimiter = new SlewRateLimiter(1500);
+  public double reverseStartTime;
+  public boolean runReverse;
 
   /** Creates a new Intake. */
   public IntakeSubsystem(boolean showScreens) {
@@ -95,6 +102,7 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotor.stopMotor();
     intakeController.setReference(0, ControlType.kVelocity);
     resetRunIntake();
+    runReverse = false;
   }
 
   public Command stopIntakeCommand() {
@@ -102,13 +110,11 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command startIntakeCommand() {
-    return Commands.runOnce(() -> setRunIntake(), this)
-        .alongWith(Commands.runOnce(() -> notePresent = false));
+    return Commands.runOnce(() -> setRunIntake(), this);
   }
 
   public void setRunIntake() {
     runIntake = true;
-    notePresent = false;
   }
 
   public void resetRunIntake() {
@@ -129,17 +135,33 @@ public class IntakeSubsystem extends SubsystemBase {
 
     loopctr++;
 
-    if (runIntake && !notePresent)
-      runAtVelocity(Pref.getPref("IntakeSpeed"));
-    if (!runIntake && !jogging)
+    if (runIntake && !runReverse) {
+      double rpm = intakeLimiter.calculate(Pref.getPref("IntakeSpeed"));
+      runAtVelocity(rpm);
+    }
+    if (!runIntake && !jogging && !runReverse) {
       stopMotor();
+      intakeLimiter.reset(0);
+    }
 
-    if (runIntake && notePresent)
-      runAtVelocity(IntakeConstants.reverseRPM);
+    if (runIntake && runReverse) {
+      runAtVelocity(intakeLimiter.calculate(IntakeConstants.reverseRPM));
+      if (Timer.getFPGATimestamp() > reverseStartTime + IntakeConstants.reverseTime) {
+        runReverse = false;
+        reverseStartTime = 0;
+        intakeLimiter.reset(0);
+        if (DriverStation.isTeleopEnabled())
+          runIntake = false;
+      }
+    }
   }
 
   private void runAtVelocity(double rpm) {
     intakeController.setReference(rpm, ControlType.kVelocity);
+  }
+
+  public void reverseMotor() {
+    runAtVelocity(IntakeConstants.reverseRPM);
   }
 
   public double getAmps() {

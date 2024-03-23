@@ -11,6 +11,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -49,6 +51,9 @@ public class ShooterSubsystem extends SubsystemBase {
   private int loopctr;
   private boolean runShooterVel;
   private double topBottomSpeedRatio = 1;
+
+  private SlewRateLimiter topSpeedLimiter = new SlewRateLimiter(2500);
+  private SlewRateLimiter bottomSpeedLimiter = new SlewRateLimiter(2500);
 
   /** Creates a new Shooter. */
   public ShooterSubsystem(boolean showScreens) {
@@ -147,6 +152,8 @@ public class ShooterSubsystem extends SubsystemBase {
     bottomController.setReference(0, ControlType.kVelocity);
     topRoller.stopMotor();
     bottomRoller.stopMotor();
+    topSpeedLimiter.reset(0);
+    bottomSpeedLimiter.reset(0);
   }
 
   public Command stopShooterCommand() {
@@ -211,7 +218,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public Command increaseRPMCommand(double val) {
     return Commands.runOnce(() -> increaseShooterRPM(val));
-
   }
 
   public void decreaseShooterRPM(double val) {
@@ -288,8 +294,8 @@ public class ShooterSubsystem extends SubsystemBase {
       double bottomrpm = getCommandRPM();
       double toprpm = bottomrpm * topBottomSpeedRatio;
 
-      topController.setReference(toprpm, ControlType.kVelocity, 0);
-      bottomController.setReference(bottomrpm, ControlType.kVelocity, 0);
+      topController.setReference(topSpeedLimiter.calculate(toprpm), ControlType.kVelocity, 0);
+      bottomController.setReference(bottomSpeedLimiter.calculate(bottomrpm), ControlType.kVelocity, 0);
     } else {
       stopMotors();
     }

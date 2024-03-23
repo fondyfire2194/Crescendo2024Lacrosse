@@ -12,13 +12,14 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.lib.config.SwerveModuleConstants;
 
 public final class Constants {
@@ -62,7 +63,11 @@ public final class Constants {
 
                 public static double mk4iL1DriveGearRatio = 1 / ((14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0));// 8.14.122807
 
+                public static double mk4iL2DriveGearRatio = 1 / ((14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0));// 6.75
+
                 public static double mk4iL1TurnGearRatio = 1 / ((14.0 / 50.0) * (10.0 / 60.0));// 21.43 1/.046667
+
+                public static double mk4iL2TurnGearRatio = 1 / ((14.0 / 50.0) * (10.0 / 60.0));// 21.43 1/.046667
 
                 public static double driveGearRatio = mk4iL1DriveGearRatio;
 
@@ -88,8 +93,8 @@ public final class Constants {
                 public static final int driveContinuousCurrentLimit = 30;
 
                 /* Swerve Profiling Values */
-                public static final double kmaxTheoreticalSpeed = 3.7;// mps
-                public static final double kmaxSpeed = 3.25; // meters per second
+                public static final double kmaxTheoreticalSpeed = 3.7;// mps *1.2 L2
+                public static final double kmaxSpeed = 3.25; // meters per second *1.2 L2 3.9
                 public static final double kmaxAngularVelocity = 1.0 * Math.PI;
 
                 /* Angle Motor PID Values */
@@ -198,7 +203,9 @@ public final class Constants {
 
                 public static double alignNoteKd = 0;
 
-                public static double odometryUpdateFrequency =100;
+                public static double odometryUpdateFrequency = 100;
+
+                public static double notePickupSpeed = .1;
 
         }
 
@@ -227,6 +234,15 @@ public final class Constants {
                 public static final Pose2d centerNote3 = new Pose2d(8.28, 4.10, new Rotation2d());
                 public static final Pose2d centerNote4 = new Pose2d(8.28, 2.44, new Rotation2d());
                 public static final Pose2d centerNote5 = new Pose2d(8.28, 0.75, new Rotation2d());
+
+        }
+
+        public static Pose2d getActiveSpeakerPose() {
+                if (DriverStation.getAlliance().isPresent()
+                                && DriverStation.getAlliance().get() == Alliance.Red)
+                        return FieldConstants.speakerRedAlliance;
+                else
+                        return FieldConstants.speakerBlueAlliance;
 
         }
 
@@ -410,7 +426,6 @@ public final class Constants {
         public static double lobArmAngle = 50;// degrees
         public static double lobShooterSpeed = 3000;// rpm
 
-        
         public static double subwfrArmAngle = 60;// degrees
         public static double subwfrShooterSpeed = 3000;// rpm
 
@@ -522,6 +537,7 @@ public final class Constants {
                 public static final int intakeContinuousCurrentLimit = 60;
                 public static double jogSpeed = 1;
                 public static double reverseRPM = -500;
+                public static double reverseTime = 2;
 
                 public static final double intakeKp = .0001;
                 public static final double intakeKi = 0.0;
@@ -531,7 +547,6 @@ public final class Constants {
         }
 
         public static final class ClimberConstants {
-
                 public static final double maxClimberMotorRPM = 5700;
                 public static final double climberConversionVelocityFactor = 1;
                 public static final double climberConversionPositionFactor = 1;
@@ -539,7 +554,6 @@ public final class Constants {
                 public static final IdleMode climberIdleMode = IdleMode.kBrake;
                 public static final int climberContinuousCurrentLimit = 60;
                 public static double jogSpeed = .25;
-
         }
 
 }

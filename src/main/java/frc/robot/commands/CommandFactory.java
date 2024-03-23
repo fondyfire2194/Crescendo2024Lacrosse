@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.CameraConstants;
@@ -102,11 +101,6 @@ public class CommandFactory {
                 return Commands.parallel(alignToTag(),
                                 Commands.run(() -> m_arm.trackDistance(meters)),
                                 Commands.run(() -> m_shooter.rpmTrackDistance(meters)));
-        }
-
-        public Command shootCommand() {
-                return m_transfer.transferToShooterCommand()
-                                .andThen(Commands.runOnce(() -> m_intake.notePresent = false));
         }
 
         public Command clearStickyFaultsCommand() {
