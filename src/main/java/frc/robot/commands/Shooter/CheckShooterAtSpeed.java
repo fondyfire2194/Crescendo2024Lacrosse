@@ -15,7 +15,7 @@ public class CheckShooterAtSpeed extends Command {
 
   public CheckShooterAtSpeed(ShooterSubsystem shooter, double pct) {
     m_shooter = shooter;
-    m_pct=pct;
+    m_pct = pct;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
