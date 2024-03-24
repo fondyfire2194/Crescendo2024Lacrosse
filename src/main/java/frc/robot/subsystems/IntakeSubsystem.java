@@ -90,8 +90,8 @@ public class IntakeSubsystem extends SubsystemBase {
     encoder.setVelocityConversionFactor(Constants.IntakeConstants.intakeConversionVelocityFactor);
     encoder.setPositionConversionFactor(Constants.IntakeConstants.intakeConversionPositionFactor);
     motor.enableVoltageCompensation(Constants.IntakeConstants.voltageComp);
-    intakeMotor.setClosedLoopRampRate(1);
-    intakeMotor.setOpenLoopRampRate(1);
+    // intakeMotor.setClosedLoopRampRate(1);
+    // intakeMotor.setOpenLoopRampRate(1);
     motor.burnFlash();
     encoder.setPosition(0.0);
   }
@@ -133,9 +133,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     loopctr++;
 
-    if (runIntake && !runReverse) {
-      double rpm = intakeLimiter.calculate(Pref.getPref("IntakeSpeed"));
-      runAtVelocity(rpm);
+    if (runIntake) {
+      //double rpm = intakeLimiter.calculate(Pref.getPref("IntakeSpeed"));
+      runAtVelocity(Pref.getPref("IntakeSpeed"));
     }
     if (!runIntake && !jogging && !runReverse) {
       stopMotor();
@@ -168,7 +168,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void setPID() {
     intakeController.setP(Pref.getPref("IntakeKp"));
     intakeController.setFF(IntakeConstants.intakeKFF);
-  }
+      }
 
   public Command clearFaultsCommand() {
     return Commands.runOnce(() -> intakeMotor.clearFaults());

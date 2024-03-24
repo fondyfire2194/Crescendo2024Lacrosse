@@ -511,8 +511,8 @@ public class SwerveSubsystem extends SubsystemBase {
     putStates();
 
     if (CameraConstants.frontLeftCamera.isActive
-    && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname)) {
-    doVisionCorrection(CameraConstants.frontLeftCamera.camname);
+        && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname)) {
+      doVisionCorrection(CameraConstants.frontLeftCamera.camname);
     }
 
     if (CameraConstants.frontRightCamera.isActive
@@ -520,6 +520,13 @@ public class SwerveSubsystem extends SubsystemBase {
       doVisionCorrection(CameraConstants.frontRightCamera.camname);
     }
 
+    SmartDashboard.putNumber("Distance To Target", getDistanceFromSpeaker());
+
+  }
+
+  public double getDistanceFromSpeaker() {
+    return Constants.getActiveSpeakerPose().getTranslation()
+        .getDistance(swervePoseEstimator.getEstimatedPosition().getTranslation());
   }
 
   private void doVisionCorrection(String camname) {
@@ -538,7 +545,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     Translation2d t2d = limelightMeasurement.pose.getTranslation();
     Rotation2d r = limelightMeasurement.pose.getRotation();
-    Rotation2d r180 = r.rotateBy(new Rotation2d(Math.PI));
+    Rotation2d r180 = r.rotateBy(new Rotation2d(0)); //Didn't need to rotate robot. This might be alliance specific?
 
     llpose = new Pose2d(t2d, r180);
 
@@ -552,23 +559,24 @@ public class SwerveSubsystem extends SubsystemBase {
     double poseDifference = swervePoseEstimator.getEstimatedPosition().getTranslation()
         .getDistance(llpose.getTranslation());
 
-    SmartDashboard.putNumber("LLPDIFF", poseDifference);
+    SmartDashboard.putNumber("LLPDIFF" + camname, poseDifference);
 
     // multiple targets detected
-    if (numberTargets >= 2) {
-      xyStds = 0.5;
-      radStds = 6;
-    }
-    // 1 target with large area and close to estimated pose
-    if (numberTargets >= 2 && area > 0.8 && poseDifference < 0.5) {
-      xyStds = 1.0;
-      radStds = 12;
-    }
-    // 1 target farther away and estimated pose is close
-    if (numberTargets >= 2 && area > 0.1 && poseDifference < 0.3) {
-      xyStds = .2;
-      radStds = .3;
-    }
+    // if (numberTargets >= 2) {
+    // xyStds = 0.5;
+    // radStds = 6;
+    // }
+    // // 1 target with large area and close to estimated pose
+    // if (numberTargets >= 2 && area > 0.8 && poseDifference < 0.5) {
+    // xyStds = 1.0;
+    // radStds = 12;
+    // }
+    // // 1 target farther away and estimated pose is close
+    // if (numberTargets >= 2 && area > 0.1 && poseDifference < 0.3) {
+    // xyStds = .2;
+    // radStds = .3;
+    // }
+
     // conditions don't match to add a vision measurement
     // else {
     // return;
@@ -579,9 +587,15 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putString("POSECAM", limelightMeasurement.pose.toString());
     swervePoseEstimator.setVisionMeasurementStdDevs(
         VecBuilder.fill(xyStds, xyStds, radStds));
-    swervePoseEstimator.addVisionMeasurement(
-        llpose,
-        limelightMeasurement.timestampSeconds);
+
+    SmartDashboard.putNumber("LimelightArea" + camname, area);
+    SmartDashboard.putNumber("LimelightDifference" + camname, poseDifference);
+
+    if (poseDifference < 0.5 || area > 0.3) { //This seemed to work a little better for vision. We could probably find a better solution. 
+      swervePoseEstimator.addVisionMeasurement(
+          llpose,
+          limelightMeasurement.timestampSeconds);
+    }
   }
 
   public void doNoteVisionCorrection() {

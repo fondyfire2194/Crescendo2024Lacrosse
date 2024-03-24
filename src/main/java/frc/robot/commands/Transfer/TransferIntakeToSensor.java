@@ -49,7 +49,7 @@ public class TransferIntakeToSensor extends Command {
   @Override
   public void end(boolean interrupted) {
     m_transfer.stopMotor();
-    m_intake.runReverse = true;
+    m_intake.resetRunIntake(); 
     m_intake.reverseStartTime = Timer.getFPGATimestamp();
     m_transfer.enableLimitSwitch(false);
   }
@@ -57,9 +57,6 @@ public class TransferIntakeToSensor extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return sensorDebouncer.calculate(m_transfer.noteAtIntake()) ||
-        !m_intake.getRunIntake()
-        || robotStoppedTime != 0 && Timer.getFPGATimestamp() > robotStoppedTime +
-           IntakeConstants.noNoteTime;
+    return sensorDebouncer.calculate(m_transfer.noteAtIntake());
   }
 }

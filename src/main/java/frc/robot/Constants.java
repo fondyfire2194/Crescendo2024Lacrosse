@@ -314,20 +314,20 @@ public final class Constants {
                 public static CameraValues frontLeftCamera = new CameraValues("limelight-frleft", "10.21.94.5",
                                 Units.inchesToMeters(10.75),
                                 Units.inchesToMeters(6.75),
+                                Units.inchesToMeters(9.0),
                                 0,
-                                0,
-                                5, // deg
-                                6,
+                                27, // deg
+                                7.5,
                                 true,
                                 false);
 
                 public static CameraValues frontRightCamera = new CameraValues("limelight-frright", "10.21.94.6",
                                 Units.inchesToMeters(10.75),
                                 Units.inchesToMeters(-6.75),
+                                Units.inchesToMeters(9.0),
                                 0,
-                                0,
-                                5, // deg
-                                -6,
+                                27, // deg
+                                -7.5,
                                 true,
                                 false);
 
@@ -376,26 +376,43 @@ public final class Constants {
 
         }
 
-        static double distance_0 = Units.feetToMeters(0);
-        static double distance_1 = Units.feetToMeters(8.1);
-        static double distance_2 = Units.feetToMeters(12);
-        static double distance_3 = Units.feetToMeters(16);
-        static double distance_4 = Units.feetToMeters(0);
-        static double distance_5 = Units.feetToMeters(0);
-        static double distance_6 = Units.feetToMeters(0);
-        static double distance_7 = Units.feetToMeters(0);
+        static double distance_0 = Units.feetToMeters(4.25);
+        static double distance_1 = Units.feetToMeters(5.25);
+        static double distance_2 = Units.feetToMeters(6.25);
+        static double distance_3 = Units.feetToMeters(7.25);
+        static double distance_4 = Units.feetToMeters(8.25);
+        static double distance_5 = Units.feetToMeters(9.25);
+        static double distance_6 = Units.feetToMeters(10.25);
+        static double distance_7 = Units.feetToMeters(11.25);
+        static double distance_8 = Units.feetToMeters(12.25);
+        static double distance_9 = Units.feetToMeters(13.25);
+        static double distance_10 = Units.feetToMeters(14.25);
+        static double distance_11 = Units.feetToMeters(15.25);
+        static double distance_12 = Units.feetToMeters(16.25);
+        static double distance_13 = Units.feetToMeters(17.25);
+        static double distance_14 = Units.feetToMeters(18.25);
+        static double distance_15 = Units.feetToMeters(19.25);
 
         /** Arm angle look up table key: meters, values: degrees */
         public static final InterpolatingDoubleTreeMap armAngleMap = new InterpolatingDoubleTreeMap();
 
         static {
-                armAngleMap.put(distance_0, 25.0);
-                armAngleMap.put(distance_1, 35.0);
-                armAngleMap.put(distance_2, 28.0);
-                armAngleMap.put(distance_3, 23.5);
-                // armAngleMap.put(distance_4, 44.0);
-                // armAngleMap.put(distance_5, 40.5);
-                // armAngleMap.put(distance_6, 37.5);
+                armAngleMap.put(distance_0, 60.0);
+                armAngleMap.put(distance_1, 51.0);
+                armAngleMap.put(distance_2, 46.0);
+                armAngleMap.put(distance_3, 42.0);
+                armAngleMap.put(distance_4, 40.0);
+                armAngleMap.put(distance_5, 36.0); //38
+                armAngleMap.put(distance_6, 34.0);
+                 armAngleMap.put(distance_7, 32.0);
+                armAngleMap.put(distance_8, 30.0);
+                armAngleMap.put(distance_9, 28.0);
+                armAngleMap.put(distance_10, 27.0); //27
+                armAngleMap.put(distance_11, 26.0);
+                armAngleMap.put(distance_12, 25.0);
+                armAngleMap.put(distance_13, 24.0);
+                armAngleMap.put(distance_14, 23.5);
+                armAngleMap.put(distance_15, 22.0);
         }
 
         public static final InterpolatingDoubleTreeMap shotTimeMap = new InterpolatingDoubleTreeMap();
@@ -411,13 +428,22 @@ public final class Constants {
         /** Arm angle look up table key: meters, values: degrees */
         public static final InterpolatingDoubleTreeMap shooterRPMMap = new InterpolatingDoubleTreeMap();
         static {
-                shooterRPMMap.put(distance_0, 200.);
+                shooterRPMMap.put(distance_0, 3000.);
                 shooterRPMMap.put(distance_1, 3000.);
-                shooterRPMMap.put(distance_2, 3000.0);
-                shooterRPMMap.put(distance_3, 4200.0);
-                // shooterRPMMap.put(distance_4, 4000.0);
-                // shooterRPMMap.put(distance_5, 4500.);
-                // shooterRPMMap.put(distance_6, 5000.);
+                shooterRPMMap.put(distance_2, 3000.);
+                shooterRPMMap.put(distance_3, 3500.);
+                shooterRPMMap.put(distance_4, 3500.);
+                shooterRPMMap.put(distance_5, 3250.);
+                shooterRPMMap.put(distance_6, 3500.);
+                shooterRPMMap.put(distance_7, 3500.);
+                shooterRPMMap.put(distance_8, 3500.);
+                shooterRPMMap.put(distance_9, 3500.);
+                shooterRPMMap.put(distance_10, 3750.);
+                shooterRPMMap.put(distance_11, 4000.);
+                shooterRPMMap.put(distance_12, 4000.);
+                shooterRPMMap.put(distance_13, 4250.);
+                shooterRPMMap.put(distance_14, 4500.);
+                shooterRPMMap.put(distance_15, 4600.);
         }
 
         public static double ampArmAngle = 100;// degrees
@@ -512,7 +538,7 @@ public final class Constants {
                 public static final double voltageComp = 12;
                 public static final IdleMode transferIdleMode = IdleMode.kBrake;
                 public static final int transferContinuousCurrentLimit = 20;
-                public static double clearShooterTime = 5;
+                public static double clearShooterTime = 1;
                 public static double noNoteStopTime = 20;
                 public static double jogSpeed = 1;
 

@@ -108,8 +108,8 @@ public class TransferSubsystem extends SubsystemBase {
     // encoder.setVelocityConversionFactor(TransferConstants.transferConversionVelocityFactor);
     // encoder.setPositionConversionFactor(TransferConstants.transferConversionPositionFactor);
     motor.enableVoltageCompensation(TransferConstants.voltageComp);
-    motor.setOpenLoopRampRate(1);
-    motor.setClosedLoopRampRate(1);
+    // motor.setOpenLoopRampRate(1);
+    // motor.setClosedLoopRampRate(1);
     motor.burnFlash();
     encoder.setPosition(0.0);
 

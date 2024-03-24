@@ -44,6 +44,7 @@ public class JogArm extends Command {
 
     if (yval > 0 && allowUp || yval < 0 && allowDown) {
       m_arm.appliedVolts = yval * RobotController.getBatteryVoltage();
+      SmartDashboard.putNumber("ArmVoltsJog", m_arm.appliedVolts);
       m_arm.armMotor.setVoltage(m_arm.appliedVolts);
     } else {
       m_arm.armMotor.setVoltage(0);

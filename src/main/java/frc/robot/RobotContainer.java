@@ -27,9 +27,17 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.CameraConstants;
 import frc.robot.commands.CommandFactory;
+import frc.robot.commands.Arm.CheckArmAtTarget;
+import frc.robot.commands.Arm.JogArm;
 import frc.robot.commands.Drive.AlignTag;
+import frc.robot.commands.Drive.AlignTargetOdometry;
 import frc.robot.commands.Drive.AlignToNote;
 import frc.robot.commands.Drive.TeleopSwerve;
+import frc.robot.commands.Intake.JogIntake;
+import frc.robot.commands.Shooter.CheckShooterAtSpeed;
+import frc.robot.commands.Shooter.JogShooters;
+import frc.robot.commands.Shooter.ShootFromDistance;
+import frc.robot.commands.Transfer.JogTransfer;
 import frc.robot.commands.Transfer.TransferIntakeToSensor;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -41,13 +49,13 @@ import frc.robot.subsystems.TransferSubsystem;
 
 public class RobotContainer {
         /* Subsystems */
-        final SwerveSubsystem m_swerve = new SwerveSubsystem(false);
+        final SwerveSubsystem m_swerve = new SwerveSubsystem(true);
 
         final IntakeSubsystem m_intake = new IntakeSubsystem(false);
 
         final TransferSubsystem m_transfer = new TransferSubsystem(false);
 
-        final ArmSubsystem m_arm = new ArmSubsystem(false);
+        final ArmSubsystem m_arm = new ArmSubsystem(true);
 
         final ClimberSubsystem m_climber = new ClimberSubsystem();
 
@@ -118,12 +126,11 @@ public class RobotContainer {
                 fieldCentric = driver.a();
                 keepAngle = () -> false;
 
-                driver.leftTrigger().whileTrue(new AlignTag(
-                                m_swerve, m_llv,
+                driver.leftTrigger().whileTrue(new AlignTargetOdometry(
+                                m_swerve, 
                                 () -> -driver.getLeftY(),
                                 () -> driver.getLeftX(),
-                                () -> driver.getRightX(),
-                                CameraConstants.frontLeftCamera)
+                                () -> driver.getRightX())
                                 .alongWith(m_cf.rumbleCommand(driver)));
 
                 driver.rightBumper().onTrue(Commands.parallel(
@@ -141,8 +148,8 @@ public class RobotContainer {
 
                 driver.rightTrigger().onTrue(Commands.sequence(
                                 m_transfer.transferToShooterCommand(),
-                                m_arm.setGoalCommand(Units.degreesToRadians(15)),
-                                new WaitCommand(2),
+                                // new WaitCommand(3),
+
                                 m_shooter.stopShooterCommand(),
                                 m_arm.setGoalCommand(ArmConstants.pickupAngle),
                                 m_intake.stopIntakeCommand()));
@@ -151,7 +158,16 @@ public class RobotContainer {
 
                 driver.x().onTrue(m_shooter.startShooterCommand(3500));
 
-                // driver.y().onTrue
+                driver.y().onTrue(Commands.sequence(
+                                new ShootFromDistance(m_shooter, m_swerve, m_arm),
+                                new CheckShooterAtSpeed(m_shooter, .2),
+                                new CheckArmAtTarget(m_arm),
+                                m_transfer.transferToShooterCommand(),
+                                // new WaitCommand(3),
+
+                                m_shooter.stopShooterCommand(),
+                                m_arm.setGoalCommand(ArmConstants.pickupAngle),
+                                m_intake.stopIntakeCommand()));
 
                 driver.povUp().onTrue(m_shooter.increaseRPMCommand(100));
 
@@ -180,7 +196,8 @@ public class RobotContainer {
                 codriver.rightTrigger().whileTrue(m_climber.lowerClimberArmsCommand(0.6))
                                 .onFalse(m_climber.stopClimberCommand());
 
-                // use this control for the amp codriver.rightBumper().
+                codriver.rightBumper().onTrue(m_cf.positionArmRunShooterSpecialCase(Constants.lobArmAngle,
+                                Constants.lobShooterSpeed));
 
                 codriver.a().onTrue(m_cf.positionArmRunShooterSpecialCase(Constants.subwfrArmAngle,
                                 Constants.subwfrShooterSpeed));
@@ -201,7 +218,7 @@ public class RobotContainer {
                 codriver.povLeft().whileTrue(Commands.runOnce(() -> m_transfer.transferMotor.setVoltage(-.5)))
                                 .onFalse(Commands.runOnce(() -> m_transfer.transferMotor.setVoltage(0)));
 
-                codriver.povRight().onTrue(m_cf.positionArmRunShooterByDistance(4).asProxy());
+                // codriver.povRight().onTrue(m_cf.positionArmRunShooterByDistance(4).asProxy());
 
                 // codriver.start().
 
@@ -214,25 +231,25 @@ public class RobotContainer {
                 // KEEP IN BUTTON ORDER
                 // jogs are in case note gets stuck
 
-                // setup.leftTrigger().whileTrue(new JogIntake(m_intake, setup));
+                setup.leftTrigger().whileTrue(new JogIntake(m_intake, setup));
 
-                // setup.leftBumper().whileTrue(new JogArm(m_arm, setup));
+                setup.leftBumper().whileTrue(new JogArm(m_arm, setup));
 
-                // setup.rightTrigger().whileTrue(new JogTransfer(m_transfer, setup));
+                setup.rightTrigger().whileTrue(new JogTransfer(m_transfer, setup));
 
-                // setup.rightBumper().whileTrue(new JogShooters(m_shooter, setup));
+                setup.rightBumper().whileTrue(new JogShooters(m_shooter, setup));
 
-                setup.leftBumper().whileTrue(m_shooter.quasistaticForward())
-                                .onFalse(m_shooter.stopShooterCommand());
+                // setup.leftBumper().whileTrue(m_shooter.quasistaticForward())
+                //                 .onFalse(m_shooter.stopShooterCommand());
 
-                setup.leftTrigger().whileTrue(m_shooter.quasistaticBackward())
-                                .onFalse(m_shooter.stopShooterCommand());
+                // setup.leftTrigger().whileTrue(m_shooter.quasistaticBackward())
+                //                 .onFalse(m_shooter.stopShooterCommand());
 
-                setup.rightBumper().whileTrue(m_shooter.dynamicForward())
-                                .onFalse(m_shooter.stopShooterCommand());
+                // setup.rightBumper().whileTrue(m_shooter.dynamicForward())
+                //                 .onFalse(m_shooter.stopShooterCommand());
 
-                setup.rightTrigger().whileTrue(m_shooter.dynamicBackward())
-                                .onFalse(m_shooter.stopShooterCommand());
+                // setup.rightTrigger().whileTrue(m_shooter.dynamicBackward())
+                //                 .onFalse(m_shooter.stopShooterCommand());
 
                 setup.a().onTrue(m_arm.setGoalCommand(Units.degreesToRadians(25)));
 

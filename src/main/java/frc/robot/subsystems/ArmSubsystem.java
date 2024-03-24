@@ -255,7 +255,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
         feedforward = Pref.getPref("armFFKs") *
                 Math.signum(getController().getSetpoint().velocity)
                 + Pref.getPref("armFFKg") * Math.cos(getController().getSetpoint().position)
-                // + Pref.getPref("armFFKv") * getController().getSetpoint().velocity
+                 + Pref.getPref("armFFKv") * getController().getSetpoint().velocity //this was commented out for some reason?
                 + activeKv * getController().getSetpoint().velocity
                 + Pref.getPref("armFFKa") * acceleration;
         // Add the feedforward to the PID output to get the motor output
