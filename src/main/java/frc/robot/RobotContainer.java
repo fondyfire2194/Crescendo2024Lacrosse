@@ -140,12 +140,6 @@ public class RobotContainer {
                                 m_arm.setGoalCommand(ArmConstants.pickupAngle))
                                 .withTimeout(10));
 
-                driver.y().whileTrue(new AlignToNote(m_swerve, m_transfer, m_llv,
-                                () -> -driver.getLeftY(),
-                                () -> driver.getLeftX(),
-                                () -> driver.getRightX(),
-                                CameraConstants.rearCamera));
-
                 driver.rightTrigger().onTrue(Commands.sequence(
                                 m_transfer.transferToShooterCommand(),
                                 // new WaitCommand(3),
@@ -179,7 +173,13 @@ public class RobotContainer {
 
                 driver.start().onTrue(Commands.runOnce(() -> m_swerve.zeroGyro()));
 
-                // driver.back()
+             
+                driver.back().whileTrue(new AlignToNote(m_swerve, m_transfer, m_llv,
+                                () -> -driver.getLeftY(),
+                                () -> driver.getLeftX(),
+                                () -> driver.getRightX(),
+                                CameraConstants.rearCamera));
+
 
         }
 

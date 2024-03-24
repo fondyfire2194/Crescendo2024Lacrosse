@@ -805,23 +805,23 @@ public class SwerveSubsystem extends SubsystemBase {
             mSwerveMods[2].setCharacterizationVolts(volts.in(Volts));
             mSwerveMods[3].setCharacterizationVolts(volts.in(Volts));
           },
-          t -> {
-            t.motor("Front Left")
+          log-> {
+            log.motor("Front Left")
                 .linearVelocity(MetersPerSecond.of(mSwerveMods[0].getDriveVelocity()))
                 .linearPosition(Meters.of(mSwerveMods[0].getPosition().distanceMeters))
                 .voltage(Volts.of(mSwerveMods[0].getVoltage()));
 
-            t.motor("Front Right")
+            log.motor("Front Right")
                 .linearVelocity(MetersPerSecond.of(mSwerveMods[1].getDriveVelocity()))
                 .linearPosition(Meters.of(mSwerveMods[1].getPosition().distanceMeters))
                 .voltage(Volts.of(mSwerveMods[1].getVoltage()));
 
-            t.motor("Back Left")
+            log.motor("Back Left")
                 .linearVelocity(MetersPerSecond.of(mSwerveMods[2].getDriveVelocity()))
                 .linearPosition(Meters.of(mSwerveMods[2].getPosition().distanceMeters))
                 .voltage(Volts.of(mSwerveMods[2].getVoltage()));
 
-            t.motor("Back Right")
+            log.motor("Back Right")
                 .linearVelocity(MetersPerSecond.of(mSwerveMods[3].getDriveVelocity()))
                 .linearPosition(Meters.of(mSwerveMods[3].getPosition().distanceMeters))
                 .voltage(Volts.of(mSwerveMods[3].getVoltage()));
