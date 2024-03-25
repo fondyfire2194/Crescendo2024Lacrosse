@@ -46,6 +46,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.CameraConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.utils.AllianceUtil;
 import frc.robot.LimelightHelpers;
 import frc.robot.Pref;
 
@@ -95,6 +96,10 @@ public class SwerveSubsystem extends SubsystemBase {
   double deglim = Units.degreesToRadians(5);
 
   private Pose2d llpose = new Pose2d();
+  private Pose2d llposefl = new Pose2d();
+  private Pose2d llposefr = new Pose2d();
+  private double latencyfl = 0;
+  private double latencyfr = 0;
 
   public SwerveSubsystem(boolean showScreens) {
     m_showScreens = showScreens;
@@ -502,12 +507,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("GyroYaw", round2dp(getYaw().getDegrees(), 2));
 
-    SmartDashboard.putNumberArray("Odometry",
-        new double[] { getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees() });
-
-    SmartDashboard.putNumberArray("OdometryLL",
-        new double[] { llpose.getX(), llpose.getY(), llpose.getRotation().getDegrees() });
-
     putStates();
 
     if (CameraConstants.frontLeftCamera.isActive
@@ -521,6 +520,13 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     SmartDashboard.putNumber("Distance To Target", getDistanceFromSpeaker());
+    SmartDashboard.putNumberArray("Odometry",
+        new double[] { getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees() });
+
+    SmartDashboard.putNumberArray("OdometryFL",
+        new double[] { llposefl.getX(), llposefl.getY(), llposefl.getRotation().getDegrees() });
+    SmartDashboard.putNumberArray("OdometryFR",
+        new double[] { llposefr.getX(), llposefr.getY(), llposefr.getRotation().getDegrees() });
 
   }
 
@@ -530,12 +536,10 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   private void doVisionCorrection(String camname) {
-
     double xyStds = .3;
     double radStds = .8;
     if (!LimelightHelpers.getTV(camname))
       return;
-
     LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers
         .getBotPoseEstimate_wpiBlue(camname);
 
@@ -543,12 +547,16 @@ public class SwerveSubsystem extends SubsystemBase {
 
     double area = limelightMeasurement.avgTagArea;
 
-    Translation2d t2d = limelightMeasurement.pose.getTranslation();
-    Rotation2d r = limelightMeasurement.pose.getRotation();
-    Rotation2d r180 = r.rotateBy(new Rotation2d(0)); //Didn't need to rotate robot. This might be alliance specific?
+    llpose = limelightMeasurement.pose;
 
-    llpose = new Pose2d(t2d, r180);
+    if (!AllianceUtil.isRedAlliance()) {
 
+      Translation2d t2d = limelightMeasurement.pose.getTranslation();
+      Rotation2d r = limelightMeasurement.pose.getRotation();
+      Rotation2d r180 = r.rotateBy(new Rotation2d(0)); // Didn't need to rotate robot. This might be alliance specific?
+
+      llpose = new Pose2d(t2d, r180);
+    }
     if (llpose.getX() == 0.0
         || llpose.getX() > FieldConstants.FIELD_LENGTH
         || llpose.getY() < 0.0
@@ -561,29 +569,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("LLPDIFF" + camname, poseDifference);
 
-    // multiple targets detected
-    // if (numberTargets >= 2) {
-    // xyStds = 0.5;
-    // radStds = 6;
-    // }
-    // // 1 target with large area and close to estimated pose
-    // if (numberTargets >= 2 && area > 0.8 && poseDifference < 0.5) {
-    // xyStds = 1.0;
-    // radStds = 12;
-    // }
-    // // 1 target farther away and estimated pose is close
-    // if (numberTargets >= 2 && area > 0.1 && poseDifference < 0.3) {
-    // xyStds = .2;
-    // radStds = .3;
-    // }
-
-    // conditions don't match to add a vision measurement
-    // else {
-    // return;
-    // }
-    // swervePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.3, .3,
-    // 0.8));
-
     SmartDashboard.putString("POSECAM", limelightMeasurement.pose.toString());
     swervePoseEstimator.setVisionMeasurementStdDevs(
         VecBuilder.fill(xyStds, xyStds, radStds));
@@ -591,10 +576,20 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LimelightArea" + camname, area);
     SmartDashboard.putNumber("LimelightDifference" + camname, poseDifference);
 
-    if (poseDifference < 0.5 || area > 0.3) { //This seemed to work a little better for vision. We could probably find a better solution. 
+    if (poseDifference < 0.5 || area > 0.3) { // This seemed to work a little better for vision. We could probably find
+                                              // a better solution.
       swervePoseEstimator.addVisionMeasurement(
           llpose,
           limelightMeasurement.timestampSeconds);
+    }
+
+    if (camname == CameraConstants.frontLeftCamera.camname) {
+      llposefl = llpose;
+      latencyfl = limelightMeasurement.timestampSeconds;
+    }
+    if (camname == CameraConstants.frontRightCamera.camname) {
+      llposefr = llpose;
+      latencyfr = limelightMeasurement.timestampSeconds;
     }
   }
 
@@ -616,7 +611,6 @@ public class SwerveSubsystem extends SubsystemBase {
       double latency = capLatency + pipelineLatency;
 
       swervePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.3, .3, .8));
-      // 0.8));
 
       SmartDashboard.putString("POSECORR", correctionPose.toString());
 
@@ -624,7 +618,6 @@ public class SwerveSubsystem extends SubsystemBase {
           correctionPose,
           latency);
     }
-
   }
 
   /**
@@ -805,7 +798,7 @@ public class SwerveSubsystem extends SubsystemBase {
             mSwerveMods[2].setCharacterizationVolts(volts.in(Volts));
             mSwerveMods[3].setCharacterizationVolts(volts.in(Volts));
           },
-          log-> {
+          log -> {
             log.motor("Front Left")
                 .linearVelocity(MetersPerSecond.of(mSwerveMods[0].getDriveVelocity()))
                 .linearPosition(Meters.of(mSwerveMods[0].getPosition().distanceMeters))

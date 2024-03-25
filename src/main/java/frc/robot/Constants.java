@@ -97,6 +97,8 @@ public final class Constants {
                 public static final double kmaxSpeed = 4.0; // meters per second *1.2 L2 3.9
                 public static final double kmaxAngularVelocity = 1.0 * Math.PI;
 
+                public static final double maxTranslationalSpeed = Units.feetToMeters(11.5);
+
                 /* Angle Motor PID Values */
                 public static final double angleKP = 0.01;
                 public static final double angleKI = 0.0;
