@@ -7,6 +7,8 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.List;
 
+import org.w3c.dom.UserDataHandler;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
@@ -496,7 +498,6 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
-
     swervePoseEstimator.update(getYaw(), getPositions());
 
     SmartDashboard.putBoolean("SwerveStopped", isStopped());
@@ -510,12 +511,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     putStates();
 
-    if (CameraConstants.frontLeftCamera.isActive
+    if (CameraConstants.frontLeftCamera.isActive && (cameraSelection.intValue() == 1 || cameraSelection.intValue() == 3)
         && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname)) {
       doVisionCorrection(CameraConstants.frontLeftCamera.camname);
     }
 
-    if (CameraConstants.frontRightCamera.isActive
+    if (CameraConstants.frontRightCamera.isActive &&  (cameraSelection.intValue() == 2 || cameraSelection.intValue() == 3)
         && LimelightHelpers.getTV(CameraConstants.frontRightCamera.camname)) {
       doVisionCorrection(CameraConstants.frontRightCamera.camname);
     }
@@ -821,6 +822,8 @@ public class SwerveSubsystem extends SubsystemBase {
                 .voltage(Volts.of(mSwerveMods[3].getVoltage()));
           },
           this));
+
+  public Integer cameraSelection;
 
   public Command quasistaticForward() {
     return Commands.sequence(

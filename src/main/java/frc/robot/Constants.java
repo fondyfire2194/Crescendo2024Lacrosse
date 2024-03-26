@@ -457,8 +457,8 @@ public final class Constants {
         public static double subwfrArmAngle = 60;// degrees
         public static double subwfrShooterSpeed = 3000;// rpm
 
-        public static double farShotSourceAngle = 22.5;
-        public static double farShotSourceSpeed = 5500;
+        public static double shotSourceAngle = 34;
+        public static double shotSourceSpeed = 3500;
 
         public static double wing1ArmAngle = 35;// degrees
         public static double wing1ShooterSpeed = 3500;// rpm
@@ -477,6 +477,10 @@ public final class Constants {
 
         public static double allianceLineArmAngle = 24;
         public static double allianceLineShooterSpeed = 4500;
+
+        public static double ampStartArmAngle = 27;
+        public static double ampStartShooterSpeed = 4000;
+ 
 
         public static final class ArmConstants {
 

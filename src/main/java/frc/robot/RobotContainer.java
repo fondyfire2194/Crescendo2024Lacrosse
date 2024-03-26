@@ -29,6 +29,7 @@ import frc.robot.commands.CommandFactory;
 import frc.robot.commands.Arm.CheckArmAtTarget;
 import frc.robot.commands.Drive.AlignTargetOdometry;
 import frc.robot.commands.Drive.AlignToNote;
+import frc.robot.commands.Drive.AutoPickupNote;
 import frc.robot.commands.Drive.TeleopSwerve;
 import frc.robot.commands.Shooter.CheckShooterAtSpeed;
 import frc.robot.commands.Shooter.ShootFromDistance;
@@ -62,6 +63,8 @@ public class RobotContainer {
         public final SendableChooser<Double> m_startDelayChooser = new SendableChooser<Double>();
 
         public final SendableChooser<String> m_batteryChooser = new SendableChooser<String>();
+
+        public final SendableChooser<Integer> m_cameraChooser = new SendableChooser<Integer>();
 
         private final CommandXboxController driver = new CommandXboxController(0);
 
@@ -340,14 +343,18 @@ public class RobotContainer {
                                                 Constants.wing3ShooterSpeed).asProxy());
 
                 NamedCommands.registerCommand("Arm Shooter Amp Shoot",
-                                m_cf.positionArmRunShooterSpecialCase(27,
-                                                4000).asProxy()); // add constants later felt lazy sorry John
+                                m_cf.positionArmRunShooterSpecialCase(Constants.ampStartArmAngle,
+                                                Constants.ampStartShooterSpeed).asProxy()); // add constants later felt
+                                                                                            // lazy sorry John
 
                 NamedCommands.registerCommand("Arm Shooter Source",
-                                m_cf.positionArmRunShooterSpecialCase(Constants.farShotSourceAngle,
-                                                Constants.farShotSourceSpeed).asProxy());
+                                m_cf.positionArmRunShooterSpecialCase(Constants.shotSourceAngle,
+                                                Constants.shotSourceSpeed).asProxy());
 
                 NamedCommands.registerCommand("Stop Shooter", m_shooter.stopShooterCommand().asProxy());
+
+                NamedCommands.registerCommand("LocatePickupNote",
+                                new AutoPickupNote(m_swerve, m_transfer, m_llv, CameraConstants.rearCamera).asProxy());
 
         }
 
@@ -367,6 +374,11 @@ public class RobotContainer {
                 m_batteryChooser.addOption("E", "E");
                 m_batteryChooser.addOption("F", "F");
 
+                m_cameraChooser.setDefaultOption("NO Cameras", 0);
+                m_cameraChooser.addOption("LeftCamera", 1);
+                m_cameraChooser.addOption("RightCamera", 2);
+                m_cameraChooser.addOption("BothCameras", 3);
+
                 autoChooser = AutoBuilder.buildAutoChooser();
 
                 Shuffleboard.getTab("Autonomous").add("AutoSelection", autoChooser)
@@ -375,11 +387,14 @@ public class RobotContainer {
                 Shuffleboard.getTab("Autonomous").add("DelayChooser", m_startDelayChooser)
                                 .withSize(1, 1).withPosition(3, 0);
 
+                Shuffleboard.getTab("Autonomous").add("FrontCameraChooser", m_cameraChooser)
+                                .withSize(2, 1).withPosition(4, 0);
+
                 Shuffleboard.getTab("Autonomous").add("BatteryChooser", m_batteryChooser)
-                                .withSize(1, 1).withPosition(4, 0);
+                                .withSize(1, 1).withPosition(6, 0);
 
                 Shuffleboard.getTab("Autonomous").addNumber("PDEnergy", () -> m_pd.getTotalEnergy())
-                                .withSize(1, 1).withPosition(5, 0);
+                                .withSize(1, 1).withPosition(7, 0);
 
                 boolean stickYFault = false;
                 Shuffleboard.getTab("Autonomous").addBoolean("Sticky Fault", () -> stickYFault)

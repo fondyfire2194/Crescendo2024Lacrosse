@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.034579094278995,
-        "y": 6.227429177407744
+        "x": 5.049776490423166,
+        "y": 6.358984244359359
       },
       "isLocked": false,
       "linkedName": "Amp side shooting point"
@@ -20,8 +20,8 @@
         "y": 5.8788399459823175
       },
       "prevControl": {
-        "x": 7.392761222643203,
-        "y": 6.030863953734038
+        "x": 7.4973413284915,
+        "y": 6.300430061630451
       },
       "nextControl": null,
       "isLocked": false,

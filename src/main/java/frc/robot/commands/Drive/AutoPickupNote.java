@@ -4,12 +4,8 @@
 
 package frc.robot.commands.Drive;
 
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.simulation.PDPSim;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
@@ -32,6 +28,8 @@ public class AutoPickupNote extends Command {
 
   private Pose2d startPose = new Pose2d();
 
+  private Timer elapsedTime;
+
   public AutoPickupNote(
       SwerveSubsystem swerve,
       TransferSubsystem transfer,
@@ -52,6 +50,7 @@ public class AutoPickupNote extends Command {
 
     m_llv.setRearNoteDetectorPipeline();
     startPose = m_swerve.getPose();
+    elapsedTime.reset();
 
   }
 
@@ -64,8 +63,6 @@ public class AutoPickupNote extends Command {
     if (LimelightHelpers.getTV(m_camval.camname)) {
 
       double angleError = LimelightHelpers.getTX(m_camval.camname);
-
-      double distanceApprox = LimelightHelpers.getTY(m_camval.camname);
 
       rotationVal = m_swerve.m_alignNotePID.calculate(angleError, 0);
 
@@ -88,6 +85,6 @@ public class AutoPickupNote extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_transfer.noteAtIntake();
+    return elapsedTime.hasElapsed(3) || m_transfer.noteAtIntake();
   }
 }

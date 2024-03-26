@@ -113,6 +113,8 @@ public class Robot extends TimedRobot {
 
     m_startDelay = m_robotContainer.m_startDelayChooser.getSelected();
 
+    m_robotContainer.m_swerve.cameraSelection = m_robotContainer.m_cameraChooser.getSelected();
+
     startTime = Timer.getFPGATimestamp();
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
