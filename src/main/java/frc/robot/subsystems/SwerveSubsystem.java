@@ -496,6 +496,7 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
+
     swervePoseEstimator.update(getYaw(), getPositions());
 
     SmartDashboard.putBoolean("SwerveStopped", isStopped());

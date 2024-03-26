@@ -74,16 +74,9 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              }
-            ]
+            "name": "Shoot"
           }
         },
         {
@@ -106,12 +99,6 @@
                 "type": "named",
                 "data": {
                   "name": "Transfer To Sensor"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Start Intake"
                 }
               }
             ]
@@ -137,19 +124,25 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
           "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
+                  "name": "Stop Intake"
                 }
               },
               {
-                "type": "wait",
+                "type": "named",
                 "data": {
-                  "waitTime": 4.0
+                  "name": "Stop Shooter"
                 }
               },
               {
@@ -161,19 +154,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Stop Intake"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "Arm To Intake"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stop Shooter"
                 }
               }
             ]

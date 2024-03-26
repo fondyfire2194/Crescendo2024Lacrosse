@@ -8,7 +8,9 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.SparkPIDController.ArbFFUnits;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -23,6 +25,7 @@ import frc.lib.util.CANSparkMaxUtil;
 import frc.lib.util.CANSparkMaxUtil.Usage;
 import frc.robot.Constants;
 import frc.robot.Constants.GlobalConstants;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.Pref;
 
 public class SwerveModule extends SubsystemBase {
@@ -41,6 +44,8 @@ public class SwerveModule extends SubsystemBase {
   private final SparkPIDController driveController;
   private final SparkPIDController angleController;
 
+  private SimpleMotorFeedforward driveFeedforward;
+
   private SwerveModuleState currentDesiredState = new SwerveModuleState();
   private double angleDegrees;
   private double m_simDrivePosition;
@@ -49,6 +54,7 @@ public class SwerveModule extends SubsystemBase {
   private int loopctr;
   private double characterizationVolts;
   private boolean characterizing;
+  private SwerveModuleState previousState = new SwerveModuleState();
 
   public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants) {
     this.moduleNumber = moduleNumber;
@@ -80,6 +86,9 @@ public class SwerveModule extends SubsystemBase {
     angleMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 15);
 
     lastAngle = getState().angle;
+
+    driveFeedforward = new SimpleMotorFeedforward(
+        SwerveConstants.driveKS, SwerveConstants.driveKV, SwerveConstants.driveKA);
 
   }
 
@@ -184,8 +193,18 @@ public class SwerveModule extends SubsystemBase {
     if (isOpenLoop) {
       double percentOutput = desiredState.speedMetersPerSecond / Constants.SwerveConstants.kmaxSpeed;
       driveMotor.setVoltage(percentOutput * 12);
-    } else {
-      driveController.setReference(desiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
+    }
+    boolean feedforward = false;
+    if (!isOpenLoop) {
+      if (!feedforward) {
+        driveController.setReference(desiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
+      } else {
+        double feedForward = driveFeedforward.calculate(
+            desiredState.speedMetersPerSecond,
+            (desiredState.speedMetersPerSecond - previousState.speedMetersPerSecond) / 0.020);
+        driveController.setReference(
+            desiredState.speedMetersPerSecond, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
+      }
     }
     if (RobotBase.isSimulation())
       m_simDrivePosition += desiredState.speedMetersPerSecond * GlobalConstants.ROBOT_LOOP_PERIOD;
@@ -247,6 +266,10 @@ public class SwerveModule extends SubsystemBase {
 
     SmartDashboard.putNumber(
         String.valueOf(moduleNumber) + "cancoder", getCancoderDeg());
+
+    SmartDashboard.putBoolean(String.valueOf(moduleNumber) + " Characterizing", characterizing);
+    SmartDashboard.putNumber(String.valueOf(moduleNumber) + " Characterization Volts", characterizationVolts);
+    SmartDashboard.putNumber(String.valueOf(moduleNumber) + " DrivePosiiton", driveEncoder.getPosition());
 
     if (characterizing) {
       driveMotor.setVoltage(characterizationVolts);

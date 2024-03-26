@@ -112,9 +112,9 @@ public final class Constants {
                 public static final double driveKFF = .5 / kmaxTheoreticalSpeed;
 
                 /* Drive Motor Characterization Values */
-                public static final double driveKS = 0.667;
-                public static final double driveKV = 3.04;
-                public static final double driveKA = 0.27;
+                public static final double driveKS = 0.54397;
+                public static final double driveKV = 2.5636;
+                public static final double driveKA = 0;
 
                 /* Drive Motor Conversion Factors */
                 public static final double driveConversionPositionFactor = (wheelDiameter.magnitude() * Math.PI)
@@ -315,20 +315,20 @@ public final class Constants {
 
                 public static CameraValues frontLeftCamera = new CameraValues("limelight-frleft", "10.21.94.5",
                                 Units.inchesToMeters(10.75),
-                                Units.inchesToMeters(6.75),
+                                Units.inchesToMeters(-7.25),
                                 Units.inchesToMeters(9.0),
                                 0,
-                                27, // deg
+                                29, // deg
                                 7.5,
-                                true,
+                                false,
                                 false);
 
                 public static CameraValues frontRightCamera = new CameraValues("limelight-frright", "10.21.94.6",
                                 Units.inchesToMeters(10.75),
-                                Units.inchesToMeters(-6.75),
+                                Units.inchesToMeters(7.25),
                                 Units.inchesToMeters(9.0),
                                 0,
-                                27, // deg
+                                29, // deg
                                 -7.5,
                                 true,
                                 false);
@@ -403,7 +403,7 @@ public final class Constants {
                 armAngleMap.put(distance_1, 51.0);
                 armAngleMap.put(distance_2, 46.0);
                 armAngleMap.put(distance_3, 42.0);
-                armAngleMap.put(distance_4, 40.0);
+                armAngleMap.put(distance_4, 39.0);
                 armAngleMap.put(distance_5, 36.0); //38
                 armAngleMap.put(distance_6, 34.0);
                  armAngleMap.put(distance_7, 32.0);
@@ -433,8 +433,8 @@ public final class Constants {
                 shooterRPMMap.put(distance_0, 3000.);
                 shooterRPMMap.put(distance_1, 3000.);
                 shooterRPMMap.put(distance_2, 3000.);
-                shooterRPMMap.put(distance_3, 3500.);
-                shooterRPMMap.put(distance_4, 3500.);
+                shooterRPMMap.put(distance_3, 3000.);
+                shooterRPMMap.put(distance_4, 3000.);
                 shooterRPMMap.put(distance_5, 3250.);
                 shooterRPMMap.put(distance_6, 3500.);
                 shooterRPMMap.put(distance_7, 3500.);

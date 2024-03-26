@@ -67,7 +67,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Align Then Shoot"
+                  "name": "Shoot"
                 }
               }
             ]
@@ -113,12 +113,6 @@
                 "data": {
                   "name": "Arm Shooter Amp Shoot"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Align Then Shoot"
-                }
               }
             ]
           }
@@ -127,6 +121,12 @@
           "type": "sequential",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
               {
                 "type": "path",
                 "data": {
@@ -163,12 +163,6 @@
                 "data": {
                   "name": "Arm Shooter Amp Shoot"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Align Then Shoot"
-                }
               }
             ]
           }
@@ -177,6 +171,12 @@
           "type": "sequential",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
               {
                 "type": "named",
                 "data": {

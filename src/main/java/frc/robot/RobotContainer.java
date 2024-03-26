@@ -127,7 +127,6 @@ public class RobotContainer {
                                 () -> driver.getRightX())
                                 .alongWith(m_cf.rumbleCommand(driver)));
 
-
                 driver.rightBumper().onTrue(Commands.parallel(
                                 m_intake.startIntakeCommand(),
                                 new TransferIntakeToSensor(m_transfer, m_intake, m_swerve),
