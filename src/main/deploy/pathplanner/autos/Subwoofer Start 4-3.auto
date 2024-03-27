@@ -130,15 +130,9 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Transfer Stop"
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -155,6 +149,12 @@
                 "type": "named",
                 "data": {
                   "name": "Stop Shooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Transfer Stop"
                 }
               }
             ]

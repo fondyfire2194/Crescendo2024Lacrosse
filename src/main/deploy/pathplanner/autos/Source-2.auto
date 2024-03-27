@@ -100,12 +100,6 @@
                 "data": {
                   "name": "Transfer To Sensor"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Start Intake"
-                }
               }
             ]
           }
@@ -136,7 +130,7 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {

@@ -133,7 +133,7 @@ public class RobotContainer {
 
                 driver.rightBumper().onTrue(Commands.parallel(
                                 m_intake.startIntakeCommand(),
-                                new TransferIntakeToSensor(m_transfer, m_intake, m_swerve),
+                                new TransferIntakeToSensor(m_transfer),
                                 m_cf.rumbleCommand(driver),
                                 m_arm.setGoalCommand(ArmConstants.pickupAngle))
                                 .withTimeout(10));
@@ -214,7 +214,7 @@ public class RobotContainer {
 
                 codriver.povRight().onTrue(new ParallelCommandGroup(
                                 m_intake.startIntakeCommand(),
-                                new TransferIntakeToSensor(m_transfer, m_intake, m_swerve),
+                                new TransferIntakeToSensor(m_transfer),
                                 m_cf.autopickup()));
 
                 // codriver.start().

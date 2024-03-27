@@ -4,11 +4,7 @@
 
 package frc.robot.commands;
 
-import java.util.Optional;
-
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,7 +16,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.CameraConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.commands.Arm.CheckArmAtTarget;
-import frc.robot.commands.Drive.AutoPickupNote;
 import frc.robot.commands.Shooter.CheckShooterAtSpeed;
 import frc.robot.commands.Transfer.TransferIntakeToSensor;
 import frc.robot.subsystems.ArmSubsystem;
@@ -92,7 +87,7 @@ public class CommandFactory {
         }
 
         public Command runToSensorCommand() {
-                return new TransferIntakeToSensor(m_transfer, m_intake, m_swerve);
+                return new TransferIntakeToSensor(m_transfer);
         }
 
         public Command alignShootCommand() {

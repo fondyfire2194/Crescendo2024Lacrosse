@@ -37,8 +37,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private boolean runIntake;
   public boolean jogging;
   private SlewRateLimiter intakeLimiter = new SlewRateLimiter(1500);
-  public double reverseStartTime;
-  public boolean runReverse;
+ 
 
   /** Creates a new Intake. */
   public IntakeSubsystem(boolean showScreens) {
@@ -100,7 +99,6 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotor.stopMotor();
     intakeController.setReference(0, ControlType.kVelocity);
     resetRunIntake();
-    runReverse = false;
   }
 
   public Command stopIntakeCommand() {
@@ -137,19 +135,9 @@ public class IntakeSubsystem extends SubsystemBase {
       //double rpm = intakeLimiter.calculate(Pref.getPref("IntakeSpeed"));
       runAtVelocity(Pref.getPref("IntakeSpeed"));
     }
-    if (!runIntake && !jogging && !runReverse) {
+    if (!runIntake && !jogging) {
       stopMotor();
       intakeLimiter.reset(0);
-    }
-
-    if (runIntake && runReverse) {
-      runAtVelocity(intakeLimiter.calculate(IntakeConstants.reverseRPM));
-      if (Timer.getFPGATimestamp() > reverseStartTime + IntakeConstants.reverseTime) {
-        runReverse = false;
-        reverseStartTime = 0;
-        if (DriverStation.isTeleopEnabled())
-          runIntake = false;
-      }
     }
   }
 

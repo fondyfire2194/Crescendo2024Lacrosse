@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.65,
-      "y": 4.37
+      "x": 0.787031987758696,
+      "y": 6.768863523461712
     },
-    "rotation": 120.0
+    "rotation": -119.0
   },
   "command": {
     "type": "sequential",
@@ -30,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Source To Center 5"
+                  "pathName": "Amp to Center 2"
                 }
               },
               {
@@ -61,13 +61,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center 5 To Source Shoot"
+                  "pathName": "Center 2 To Amp Shoot"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Arm Shooter Source"
+                  "name": "Arm Shooter Amp Shoot"
                 }
               }
             ]
@@ -86,7 +86,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Source Shoot To Center 4"
+                  "pathName": "Amp Shoot To Center 1"
                 }
               },
               {
@@ -111,13 +111,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center 4 To Source Shoot"
+                  "pathName": "Center 1 To Amp Shoot"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Arm Shooter Source"
+                  "name": "Arm Shooter Amp Shoot"
                 }
               }
             ]
@@ -136,6 +136,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "Stop Shooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "Stop Intake"
                 }
               },
@@ -143,12 +149,6 @@
                 "type": "named",
                 "data": {
                   "name": "Arm To Intake"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stop Shooter"
                 }
               },
               {
@@ -163,6 +163,6 @@
       ]
     }
   },
-  "folder": "Source Start",
+  "folder": "Amp Start",
   "choreoAuto": false
 }

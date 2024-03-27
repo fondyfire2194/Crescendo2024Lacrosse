@@ -174,7 +174,7 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -192,13 +192,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Transfer Stop"
+                  "name": "Arm To Intake"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Arm To Intake"
+                  "name": "Transfer Stop"
                 }
               }
             ]
