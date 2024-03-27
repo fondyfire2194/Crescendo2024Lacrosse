@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.CameraConstants;
@@ -211,7 +212,10 @@ public class RobotContainer {
                 codriver.povLeft().whileTrue(Commands.runOnce(() -> m_transfer.transferMotor.setVoltage(-.5)))
                                 .onFalse(Commands.runOnce(() -> m_transfer.transferMotor.setVoltage(0)));
 
-                // codriver.povRight().onTrue(m_cf.positionArmRunShooterByDistance(4).asProxy());
+                codriver.povRight().onTrue(new ParallelCommandGroup(
+                                m_intake.startIntakeCommand(),
+                                new TransferIntakeToSensor(m_transfer, m_intake, m_swerve),
+                                m_cf.autopickup()));
 
                 // codriver.start().
 
@@ -344,8 +348,7 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("Arm Shooter Amp Shoot",
                                 m_cf.positionArmRunShooterSpecialCase(Constants.ampStartArmAngle,
-                                                Constants.ampStartShooterSpeed).asProxy()); // add constants later felt
-                                                                                            // lazy sorry John
+                                                Constants.ampStartShooterSpeed).asProxy()); 
 
                 NamedCommands.registerCommand("Arm Shooter Source",
                                 m_cf.positionArmRunShooterSpecialCase(Constants.shotSourceAngle,
@@ -353,8 +356,7 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("Stop Shooter", m_shooter.stopShooterCommand().asProxy());
 
-                NamedCommands.registerCommand("LocatePickupNote",
-                                new AutoPickupNote(m_swerve, m_transfer, m_llv, CameraConstants.rearCamera).asProxy());
+                NamedCommands.registerCommand("LocatePickupNote", m_cf.autopickup());
 
         }
 

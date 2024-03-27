@@ -85,6 +85,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private final Timer m_keepAngleTimer = new Timer();
 
+  double poseDifference = 0;
+
   SwerveModuleState[] xLockStates = new SwerveModuleState[4];
 
   public boolean m_showScreens;
@@ -102,6 +104,14 @@ public class SwerveSubsystem extends SubsystemBase {
   private Pose2d llposefr = new Pose2d();
   private double latencyfl = 0;
   private double latencyfr = 0;
+
+  double area = 0;
+  int numberTargets = 0;
+  private double timestampSeconds;
+
+  private double tagDistance;
+
+  private double camPosDifference;
 
   public SwerveSubsystem(boolean showScreens) {
     m_showScreens = showScreens;
@@ -498,38 +508,67 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
+    loopctr++;
+
     swervePoseEstimator.update(getYaw(), getPositions());
 
-    SmartDashboard.putBoolean("SwerveStopped", isStopped());
+    if (loopctr > 25) {
 
-    field.setRobotPose(getPose());
-    SmartDashboard.putNumber("X Meters", round2dp(getX(), 2));
-    SmartDashboard.putNumber("Y Meters", round2dp(getY(), 2));
-    SmartDashboard.putNumber("Est Pose Heaading", round2dp(getHeading().getDegrees(), 2));
+      SmartDashboard.putBoolean("SwerveStopped", isStopped());
 
-    SmartDashboard.putNumber("GyroYaw", round2dp(getYaw().getDegrees(), 2));
+      field.setRobotPose(getPose());
+      SmartDashboard.putNumber("X Meters", round2dp(getX(), 2));
+      SmartDashboard.putNumber("Y Meters", round2dp(getY(), 2));
+      SmartDashboard.putNumber("Est Pose Heaading", round2dp(getHeading().getDegrees(), 2));
+      SmartDashboard.putNumber("GyroYaw", round2dp(getYaw().getDegrees(), 2));
 
-    putStates();
+      SmartDashboard.putNumberArray("Odometry",
+          new double[] { getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees() });
 
-    if (CameraConstants.frontLeftCamera.isActive && (cameraSelection.intValue() == 1 || cameraSelection.intValue() == 3)
-        && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname)) {
-      doVisionCorrection(CameraConstants.frontLeftCamera.camname);
+      SmartDashboard.putNumberArray("OdometryFL",
+          new double[] { llposefl.getX(), llposefl.getY(), llposefl.getRotation().getDegrees() });
+
+      SmartDashboard.putNumberArray("OdometryFR",
+          new double[] { llposefr.getX(), llposefr.getY(), llposefr.getRotation().getDegrees() });
+
+      putStates();
+
+      loopctr = 0;
+
     }
 
-    if (CameraConstants.frontRightCamera.isActive &&  (cameraSelection.intValue() == 2 || cameraSelection.intValue() == 3)
-        && LimelightHelpers.getTV(CameraConstants.frontRightCamera.camname)) {
-      doVisionCorrection(CameraConstants.frontRightCamera.camname);
+    boolean leftCamConditions = cameraSelection.intValue() == 1 || cameraSelection.intValue() == 3
+        || DriverStation.isTeleopEnabled() || DriverStation.isDisabled();
+
+    boolean leftHasTarget = CameraConstants.frontLeftCamera.isActive
+        && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname);
+
+    if (leftHasTarget)
+      doVisionValues(CameraConstants.frontLeftCamera.camname);
+
+    if (leftHasTarget && leftCamConditions) {
+      llposefl = llpose;
+      latencyfl = timestampSeconds;
+      doVisionCorrection();
     }
 
-    SmartDashboard.putNumber("Distance To Target", getDistanceFromSpeaker());
-    SmartDashboard.putNumberArray("Odometry",
-        new double[] { getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees() });
+    boolean rightCamConditions = cameraSelection.intValue() == 2 || cameraSelection.intValue() == 3
+        || DriverStation.isTeleopEnabled() || DriverStation.isDisabled();
 
-    SmartDashboard.putNumberArray("OdometryFL",
-        new double[] { llposefl.getX(), llposefl.getY(), llposefl.getRotation().getDegrees() });
-    SmartDashboard.putNumberArray("OdometryFR",
-        new double[] { llposefr.getX(), llposefr.getY(), llposefr.getRotation().getDegrees() });
+    boolean rightHasTarget = CameraConstants.frontRightCamera.isActive
+        && LimelightHelpers.getTV(CameraConstants.frontRightCamera.camname);
 
+    if (rightHasTarget)
+      doVisionValues(CameraConstants.frontRightCamera.camname);
+
+    camPosDifference = llposefl.getTranslation()
+        .getDistance(llposefr.getTranslation());
+
+    if (rightCamConditions) {
+      llposefr = llpose;
+      latencyfr = timestampSeconds;
+      doVisionCorrection();
+    }
   }
 
   public double getDistanceFromSpeaker() {
@@ -537,26 +576,27 @@ public class SwerveSubsystem extends SubsystemBase {
         .getDistance(swervePoseEstimator.getEstimatedPosition().getTranslation());
   }
 
-  private void doVisionCorrection(String camname) {
-    double xyStds = .3;
-    double radStds = .8;
+  private void doVisionValues(String camname) {
+
     if (!LimelightHelpers.getTV(camname))
       return;
     LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers
         .getBotPoseEstimate_wpiBlue(camname);
 
-    int numberTargets = limelightMeasurement.tagCount;
+    numberTargets = limelightMeasurement.tagCount;
 
-    double area = limelightMeasurement.avgTagArea;
+    area = limelightMeasurement.avgTagArea;
 
     llpose = limelightMeasurement.pose;
 
-    if (!AllianceUtil.isRedAlliance()) {
+    timestampSeconds = limelightMeasurement.timestampSeconds;
 
+    tagDistance = limelightMeasurement.avgTagDist;
+
+    if (!AllianceUtil.isRedAlliance()) {
       Translation2d t2d = limelightMeasurement.pose.getTranslation();
       Rotation2d r = limelightMeasurement.pose.getRotation();
       Rotation2d r180 = r.rotateBy(new Rotation2d(0)); // Didn't need to rotate robot. This might be alliance specific?
-
       llpose = new Pose2d(t2d, r180);
     }
     if (llpose.getX() == 0.0
@@ -566,32 +606,28 @@ public class SwerveSubsystem extends SubsystemBase {
       return;
 
     // distance from current pose to vision estimated pose
-    double poseDifference = swervePoseEstimator.getEstimatedPosition().getTranslation()
+    poseDifference = swervePoseEstimator.getEstimatedPosition().getTranslation()
         .getDistance(llpose.getTranslation());
 
-    SmartDashboard.putNumber("LLPDIFF" + camname, poseDifference);
+    SmartDashboard.putNumber(camname + " LLNumTargets", numberTargets);
+    SmartDashboard.putNumber(camname + " LLPDIFF", poseDifference);
+    SmartDashboard.putString(camname + " POSECAM", limelightMeasurement.pose.toString());
+    SmartDashboard.putNumber(camname + " LLArea", area);
+    SmartDashboard.putNumber(camname + " LLTagDist", tagDistance);
+    SmartDashboard.putNumber(camname + "LLDiffTOest", poseDifference);
+    SmartDashboard.putNumber("LLDiffLR", camPosDifference);
 
-    SmartDashboard.putString("POSECAM", limelightMeasurement.pose.toString());
+  }
+
+  public void doVisionCorrection() {
+    double xyStds = .3;
+    double radStds = .8;
     swervePoseEstimator.setVisionMeasurementStdDevs(
         VecBuilder.fill(xyStds, xyStds, radStds));
-
-    SmartDashboard.putNumber("LimelightArea" + camname, area);
-    SmartDashboard.putNumber("LimelightDifference" + camname, poseDifference);
-
-    if (poseDifference < 0.5 || area > 0.3) { // This seemed to work a little better for vision. We could probably find
-                                              // a better solution.
+    if (numberTargets > 1 || tagDistance < 4 || poseDifference < 0.5 || area > 0.3) {
       swervePoseEstimator.addVisionMeasurement(
           llpose,
-          limelightMeasurement.timestampSeconds);
-    }
-
-    if (camname == CameraConstants.frontLeftCamera.camname) {
-      llposefl = llpose;
-      latencyfl = limelightMeasurement.timestampSeconds;
-    }
-    if (camname == CameraConstants.frontRightCamera.camname) {
-      llposefr = llpose;
-      latencyfr = limelightMeasurement.timestampSeconds;
+          timestampSeconds);
     }
   }
 
@@ -823,7 +859,7 @@ public class SwerveSubsystem extends SubsystemBase {
           },
           this));
 
-  public Integer cameraSelection;
+  public Integer cameraSelection = 0;
 
   public Command quasistaticForward() {
     return Commands.sequence(

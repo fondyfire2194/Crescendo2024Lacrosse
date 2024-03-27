@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.revrobotics.REVPhysicsSim;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -72,6 +73,7 @@ public class Robot extends TimedRobot {
     autoHasRun = false;
     m_robotContainer.m_arm.disable();
     m_robotContainer.m_arm.enableArm = false;
+  //  m_robotContainer.m_arm.armMotor.setIdleMode(IdleMode.kCoast);
   }
 
   @Override
@@ -98,7 +100,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-
+    m_robotContainer.m_arm.armMotor.setIdleMode(IdleMode.kBrake);
     m_robotContainer.m_arm.enable();
     m_robotContainer.m_arm.enableArm = true;
 
@@ -110,6 +112,8 @@ public class Robot extends TimedRobot {
         LLPipelines.pipelines.NOTE_DETECT8.ordinal());
 
     m_robotContainer.m_swerve.setIdleMode(true);
+
+    m_robotContainer.m_swerve.cameraSelection = m_robotContainer.m_cameraChooser.getSelected();
 
     m_startDelay = m_robotContainer.m_startDelayChooser.getSelected();
 
@@ -149,8 +153,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-
-    new ArmShooterByDistance().schedule();
+    m_robotContainer.m_arm.armMotor.setIdleMode(IdleMode.kBrake);
+    //new ArmShooterByDistance().schedule();
 
     m_robotContainer.m_swerve.setIdleMode(true);
     m_robotContainer.m_arm.enable();

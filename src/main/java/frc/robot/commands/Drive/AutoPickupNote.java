@@ -6,6 +6,7 @@ package frc.robot.commands.Drive;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
@@ -27,8 +28,8 @@ public class AutoPickupNote extends Command {
   private double rotationVal;
 
   private Pose2d startPose = new Pose2d();
-
-  private Timer elapsedTime;
+  double angleError = 0;
+  private Timer elapsedTime = new Timer();
 
   public AutoPickupNote(
       SwerveSubsystem swerve,
@@ -62,14 +63,15 @@ public class AutoPickupNote extends Command {
 
     if (LimelightHelpers.getTV(m_camval.camname)) {
 
-      double angleError = LimelightHelpers.getTX(m_camval.camname);
-
-      rotationVal = m_swerve.m_alignNotePID.calculate(angleError, 0);
-
+      angleError = LimelightHelpers.getTX(m_camval.camname);
     }
+    SmartDashboard.putNumber("NOTETX", angleError);
+
+    rotationVal = m_swerve.m_alignNotePID.calculate(angleError, 0);
+
     /* Drive */
     m_swerve.drive(
-        SwerveConstants.notePickupSpeed,
+        -SwerveConstants.notePickupSpeed*Constants.SwerveConstants.kmaxSpeed,
         0,
         rotationVal *= Constants.SwerveConstants.kmaxAngularVelocity,
         false,

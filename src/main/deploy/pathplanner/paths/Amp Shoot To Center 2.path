@@ -20,8 +20,8 @@
         "y": 5.8788399459823175
       },
       "prevControl": {
-        "x": 7.4973413284915,
-        "y": 6.300430061630451
+        "x": 7.274835434121652,
+        "y": 6.347273407813577
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,25 +29,13 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [
-    {
-      "name": "Pickup Zone",
-      "minWaypointRelativePos": 0.85,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 360.0,
-        "maxAngularAcceleration": 540.0
-      }
-    }
-  ],
+  "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 540.0
+    "maxAngularAcceleration": 180.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -55,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp Start",
+  "folder": null,
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.522438865451513,
-        "y": 6.148422735982074
+        "x": 5.565053298437552,
+        "y": 6.45267093672561
       },
       "isLocked": false,
       "linkedName": "Amp side shooting point"
@@ -20,12 +20,12 @@
         "y": 6.312140898176232
       },
       "prevControl": {
-        "x": 6.178222287873535,
-        "y": 6.664970909160374
+        "x": 6.0767676413748495,
+        "y": 6.453561552994882
       },
       "nextControl": {
-        "x": 7.106678233425367,
-        "y": 5.959310887192091
+        "x": 7.391943799579468,
+        "y": 6.124767513443729
       },
       "isLocked": false,
       "linkedName": null
@@ -49,9 +49,9 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 540.0
+    "maxAngularAcceleration": 180.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -59,7 +59,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp Start",
+  "folder": null,
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

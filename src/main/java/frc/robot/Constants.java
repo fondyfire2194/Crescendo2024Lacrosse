@@ -320,7 +320,7 @@ public final class Constants {
                                 0,
                                 29, // deg
                                 7.5,
-                                false,
+                                true,
                                 false);
 
                 public static CameraValues frontRightCamera = new CameraValues("limelight-frright", "10.21.94.6",

@@ -38,14 +38,45 @@
                 "data": {
                   "pathName": "Source To Near Center 4"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "LocatePickupNote"
+                }
               }
             ]
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "LocatePickupNote"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Shooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm To Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Transfer Stop"
+                }
+              }
+            ]
           }
         }
       ]

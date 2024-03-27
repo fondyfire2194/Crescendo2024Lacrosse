@@ -10,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -19,6 +20,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.CameraConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.commands.Arm.CheckArmAtTarget;
+import frc.robot.commands.Drive.AutoPickupNote;
 import frc.robot.commands.Shooter.CheckShooterAtSpeed;
 import frc.robot.commands.Transfer.TransferIntakeToSensor;
 import frc.robot.subsystems.ArmSubsystem;
@@ -56,6 +58,13 @@ public class CommandFactory {
                 m_transfer = transfer;
                 m_climber = climber;
                 m_llv = llv;
+        }
+
+        public Command autopickup() {
+                return Commands.runOnce(() -> SmartDashboard.putNumber("ooo", 922));
+                // return new AutoPickupNote(m_swerve, m_transfer, m_llv,
+                // CameraConstants.rearCamera).asProxy();
+
         }
 
         public Command positionArmRunShooterByDistance(double distance) {
@@ -131,5 +140,4 @@ public class CommandFactory {
                 }).finallyDo(() -> controller.getHID().setRumble(RumbleType.kBothRumble, 0.0));
         }
 
-       
 }

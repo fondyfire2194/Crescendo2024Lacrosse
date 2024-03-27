@@ -100,6 +100,12 @@
                 "data": {
                   "name": "Transfer To Sensor"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Start Intake"
+                }
               }
             ]
           }
@@ -136,12 +142,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Transfer Stop"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "Stop Intake"
                 }
               },
@@ -155,6 +155,12 @@
                 "type": "named",
                 "data": {
                   "name": "Stop Shooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Transfer Stop"
                 }
               }
             ]
