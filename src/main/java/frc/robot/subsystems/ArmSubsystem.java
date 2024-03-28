@@ -350,7 +350,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
     }
 
     public double getAngleDegrees() {
-        return Units.radiansToDegrees(armEncoder.getPosition());
+        return getCanCoderDeg();
     }
 
     public boolean atSetpoint() {
