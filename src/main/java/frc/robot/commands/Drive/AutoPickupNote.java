@@ -9,9 +9,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.CameraConstants.CameraValues;
 import frc.robot.LimelightHelpers;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightVision;
 
 import frc.robot.subsystems.SwerveSubsystem;
@@ -22,6 +24,7 @@ public class AutoPickupNote extends Command {
 
   private final SwerveSubsystem m_swerve;
   private final TransferSubsystem m_transfer;
+  private final IntakeSubsystem m_intake;
   private final CameraValues m_camval;
   private final LimelightVision m_llv;
 
@@ -34,6 +37,7 @@ public class AutoPickupNote extends Command {
   public AutoPickupNote(
       SwerveSubsystem swerve,
       TransferSubsystem transfer,
+      IntakeSubsystem intake,
       LimelightVision llv,
       CameraValues camval)
 
@@ -41,6 +45,7 @@ public class AutoPickupNote extends Command {
     m_swerve = swerve;
     m_llv = llv;
     m_transfer = transfer;
+    m_intake = intake;
     m_camval = camval;
     addRequirements(m_swerve);
   }
@@ -69,9 +74,11 @@ public class AutoPickupNote extends Command {
 
     rotationVal = m_swerve.m_alignNotePID.calculate(angleError, 0);
 
+    m_transfer.runToSensor();
+
     /* Drive */
     m_swerve.drive(
-        -SwerveConstants.notePickupSpeed*Constants.SwerveConstants.kmaxSpeed,
+        -SwerveConstants.notePickupSpeed * 10, // Constants.SwerveConstants.kmaxSpeed *3,
         0,
         rotationVal *= Constants.SwerveConstants.kmaxAngularVelocity,
         false,
@@ -82,6 +89,9 @@ public class AutoPickupNote extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_swerve.drive(0, 0, 0, false, true, false);
+    m_transfer.stopMotor();
+    m_intake.stopMotor();
   }
 
   // Returns true when the command should end.

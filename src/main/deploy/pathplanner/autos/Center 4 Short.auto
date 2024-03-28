@@ -28,24 +28,30 @@
                 }
               },
               {
-                "type": "named",
-                "data": {
-                  "name": "Transfer To Sensor"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "Source To Near Center 4"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "LocatePickupNote"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "LocatePickupNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Transfer To Sensor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Transfer To Sensor"
           }
         },
         {

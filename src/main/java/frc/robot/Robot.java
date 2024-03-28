@@ -73,7 +73,8 @@ public class Robot extends TimedRobot {
     autoHasRun = false;
     m_robotContainer.m_arm.disable();
     m_robotContainer.m_arm.enableArm = false;
-  //  m_robotContainer.m_arm.armMotor.setIdleMode(IdleMode.kCoast);
+    if (m_robotContainer.m_arm.getCanCoderDeg() < 20)
+      m_robotContainer.m_arm.armMotor.setIdleMode(IdleMode.kCoast);
   }
 
   @Override
@@ -154,7 +155,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     m_robotContainer.m_arm.armMotor.setIdleMode(IdleMode.kBrake);
-    //new ArmShooterByDistance().schedule();
+    // new ArmShooterByDistance().schedule();
 
     m_robotContainer.m_swerve.setIdleMode(true);
     m_robotContainer.m_arm.enable();

@@ -508,28 +508,38 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
+    // SmartDashboard.putString("BPFR",
+    // LimelightHelpers.getBotPose3d_wpiBlue(CameraConstants.frontRightCamera.camname).toPose2d()
+    // .toString());
+
     loopctr++;
 
     swervePoseEstimator.update(getYaw(), getPositions());
 
+    putStates();
+
     if (loopctr > 25) {
 
-      SmartDashboard.putBoolean("SwerveStopped", isStopped());
+      // SmartDashboard.putBoolean("SwerveStopped", isStopped());
 
-      field.setRobotPose(getPose());
-      SmartDashboard.putNumber("X Meters", round2dp(getX(), 2));
-      SmartDashboard.putNumber("Y Meters", round2dp(getY(), 2));
-      SmartDashboard.putNumber("Est Pose Heaading", round2dp(getHeading().getDegrees(), 2));
-      SmartDashboard.putNumber("GyroYaw", round2dp(getYaw().getDegrees(), 2));
+      // field.setRobotPose(getPose());
+      // SmartDashboard.putNumber("X Meters", round2dp(getX(), 2));
+      // SmartDashboard.putNumber("Y Meters", round2dp(getY(), 2));
+      // SmartDashboard.putNumber("Est Pose Heaading",
+      // round2dp(getHeading().getDegrees(), 2));
+      // SmartDashboard.putNumber("GyroYaw", round2dp(getYaw().getDegrees(), 2));
 
-      SmartDashboard.putNumberArray("Odometry",
-          new double[] { getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees() });
+      // SmartDashboard.putNumberArray("Odometry",
+      // new double[] { getPose().getX(), getPose().getY(),
+      // getPose().getRotation().getDegrees() });
 
-      SmartDashboard.putNumberArray("OdometryFL",
-          new double[] { llposefl.getX(), llposefl.getY(), llposefl.getRotation().getDegrees() });
+      // SmartDashboard.putNumberArray("OdometryFL",
+      // new double[] { llposefl.getX(), llposefl.getY(),
+      // llposefl.getRotation().getDegrees() });
 
-      SmartDashboard.putNumberArray("OdometryFR",
-          new double[] { llposefr.getX(), llposefr.getY(), llposefr.getRotation().getDegrees() });
+      // SmartDashboard.putNumberArray("OdometryFR",
+      // new double[] { llposefr.getX(), llposefr.getY(),
+      // llposefr.getRotation().getDegrees() });
 
       putStates();
 
@@ -561,8 +571,8 @@ public class SwerveSubsystem extends SubsystemBase {
     if (rightHasTarget)
       doVisionValues(CameraConstants.frontRightCamera.camname);
 
-    camPosDifference = llposefl.getTranslation()
-        .getDistance(llposefr.getTranslation());
+    camPosDifference = llposefr.getTranslation()
+        .getDistance(llposefl.getTranslation());
 
     if (rightCamConditions) {
       llposefr = llpose;
@@ -620,11 +630,13 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void doVisionCorrection() {
+   
     double xyStds = .3;
     double radStds = .8;
     swervePoseEstimator.setVisionMeasurementStdDevs(
         VecBuilder.fill(xyStds, xyStds, radStds));
-    if (numberTargets > 1 || tagDistance < 4 || poseDifference < 0.5 || area > 0.3) {
+    if (numberTargets > 1 || tagDistance < 8 || poseDifference < 0.5 || area > 0.3) {
+      SmartDashboard.putNumber("VOR", timestampSeconds);
       swervePoseEstimator.addVisionMeasurement(
           llpose,
           timestampSeconds);
@@ -659,7 +671,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Keep angle function is performed to combat drivetrain drift without the need
+   * Keep angle function is performfz to combat drivetrain drift without the need
    * of constant "micro-adjustments" from the driver.
    * A PIDController is used to attempt to maintain the robot heading to the
    * keepAngle value. This value is updated when the robot

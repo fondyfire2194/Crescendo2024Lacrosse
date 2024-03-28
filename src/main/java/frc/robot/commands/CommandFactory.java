@@ -16,6 +16,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.CameraConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.commands.Arm.CheckArmAtTarget;
+import frc.robot.commands.Drive.AutoPickupNote;
 import frc.robot.commands.Shooter.CheckShooterAtSpeed;
 import frc.robot.commands.Transfer.TransferIntakeToSensor;
 import frc.robot.subsystems.ArmSubsystem;
@@ -56,9 +57,9 @@ public class CommandFactory {
         }
 
         public Command autopickup() {
-                return Commands.runOnce(() -> SmartDashboard.putNumber("ooo", 922));
-                // return new AutoPickupNote(m_swerve, m_transfer, m_llv,
-                // CameraConstants.rearCamera).asProxy();
+                // return Commands.runOnce(() -> SmartDashboard.putNumber("ooo", 922));
+                return new AutoPickupNote(m_swerve, m_transfer, m_intake, m_llv,
+                                CameraConstants.rearCamera).asProxy();
 
         }
 
@@ -87,7 +88,7 @@ public class CommandFactory {
         }
 
         public Command runToSensorCommand() {
-                return new TransferIntakeToSensor(m_transfer);
+                return new TransferIntakeToSensor(m_transfer,m_intake);
         }
 
         public Command alignShootCommand() {
