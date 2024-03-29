@@ -57,7 +57,6 @@ public class CommandFactory {
         }
 
         public Command autopickup() {
-                // return Commands.runOnce(() -> SmartDashboard.putNumber("ooo", 922));
                 return new AutoPickupNote(m_swerve, m_transfer, m_intake, m_llv,
                                 CameraConstants.rearCamera).asProxy();
 

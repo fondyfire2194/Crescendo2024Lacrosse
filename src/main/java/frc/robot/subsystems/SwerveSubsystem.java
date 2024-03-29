@@ -5,15 +5,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.List;
-
-import org.w3c.dom.UserDataHandler;
-
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.Matrix;
@@ -31,6 +24,11 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -48,11 +46,14 @@ import frc.robot.Constants;
 import frc.robot.Constants.CameraConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.utils.AllianceUtil;
 import frc.robot.LimelightHelpers;
 import frc.robot.Pref;
+import frc.robot.utils.AllianceUtil;
+import monologue.Annotations.Log;
+import monologue.LogLevel;
+import monologue.Logged;
 
-public class SwerveSubsystem extends SubsystemBase {
+public class SwerveSubsystem extends SubsystemBase implements Logged {
   // The gyro sensor
 
   private final AHRS gyro;
@@ -85,8 +86,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private final Timer m_keepAngleTimer = new Timer();
 
+  double poseDifferencefl = 0;
+  double poseDifferencefr = 0;
   double poseDifference = 0;
-
   SwerveModuleState[] xLockStates = new SwerveModuleState[4];
 
   public boolean m_showScreens;
@@ -106,15 +108,20 @@ public class SwerveSubsystem extends SubsystemBase {
   private double latencyfr = 0;
 
   double area = 0;
+  double areafl = 0;
+  double areafr = 0;
+
   int numberTargets = 0;
   private double timestampSeconds;
 
   private double tagDistance;
-
-  private double camPosDifference;
+  private double tagDistancefl;
+  private double tagDistancefr;
 
   public SwerveSubsystem(boolean showScreens) {
     m_showScreens = showScreens;
+    SmartDashboard.putNumber("DCF", Constants.SwerveConstants.driveConversionPositionFactor);
+
     xLockStates[0] = new SwerveModuleState(0, Rotation2d.fromDegrees(45));
     xLockStates[1] = new SwerveModuleState(0, Rotation2d.fromDegrees(-45));
     xLockStates[2] = new SwerveModuleState(0, Rotation2d.fromDegrees(-45));
@@ -182,6 +189,8 @@ public class SwerveSubsystem extends SubsystemBase {
     PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("path").setPoses(poses));
 
     zeroGyro();
+    SmartDashboard.putBoolean("GYRO",gyro.isConnected());
+
     resetPoseEstimator(new Pose2d());
 
     if (m_showScreens) {
@@ -217,50 +226,44 @@ public class SwerveSubsystem extends SubsystemBase {
       Shuffleboard.getTab("Drivetrain").add("ResetPose", this.setPoseToX0Y0())
           .withSize(1, 1).withPosition(2, 0);
 
-      Shuffleboard.getTab("Drivetrain").add("PathfindPickup",
+      Shuffleboard.getTab("Drivetrain").addDoubleArray("Odometry",
+          () -> new double[] { getPose().getX(), getPose().getY(),
+              getPose().getRotation().getDegrees() })
+          .withPosition(0, 2)
+          .withSize(2, 1);
 
-          AutoBuilder.pathfindToPose(
-              new Pose2d(2.0, 1.5, Rotation2d.fromDegrees(0)),
-              new PathConstraints(
-                  3.0, 3.0,
-                  Units.degreesToRadians(360), Units.degreesToRadians(540)),
-              0,
-              2.0))
-          .withSize(1, 1).withPosition(0, 1);
+      Shuffleboard.getTab("Drivetrain").addDoubleArray("OdometryFL",
+          () -> new double[] { llposefl.getX(), llposefl.getY(),
+              llposefl.getRotation().getDegrees() })
+          .withPosition(0, 3)
+          .withSize(2, 1);
+      Shuffleboard.getTab("Drivetrain").addDoubleArray("OdometryFR",
+          () -> new double[] { llposefr.getX(), llposefr.getY(),
+              llposefr.getRotation().getDegrees() })
+          .withPosition(0, 4)
+          .withSize(2, 1);
 
-      Shuffleboard.getTab("Drivetrain").add("PathfindScore",
+      Shuffleboard.getTab("Drivetrain").addNumber("VXMPS", () -> getSpeeds().vxMetersPerSecond)
+          .withPosition(3, 2)
+          .withSize(1, 1);
 
-          AutoBuilder.pathfindToPose(
-              new Pose2d(1.15, 1.0, Rotation2d.fromDegrees(180)),
-              new PathConstraints(
-                  3.0, 3.0,
-                  Units.degreesToRadians(360), Units.degreesToRadians(540)),
-              0,
-              0))
-          .withSize(1, 1).withPosition(1, 1);
+      Shuffleboard.getTab("Drivetrain").addNumber("VYMPS", () -> getSpeeds().vyMetersPerSecond)
+          .withPosition(4, 2)
+          .withSize(1, 1);
 
-      Shuffleboard.getTab("Drivetrain").add("On-the-fly path", Commands.runOnce(() -> {
+      Shuffleboard.getTab("Drivetrain").addNumber("VOMPS", () -> getSpeeds().omegaRadiansPerSecond)
+          .withPosition(5, 2)
+          .withSize(1, 1);
 
-        Pose2d currentPose = this.getPose();
-
-        // The rotation component in these poses represents the direction of travel
-        Pose2d startPos = new Pose2d(currentPose.getTranslation(), new Rotation2d());
-        Pose2d endPos = new Pose2d(currentPose.getTranslation()
-            .plus(new Translation2d(2.0, 0.0)), new Rotation2d());
-
-        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(startPos, endPos);
-        PathPlannerPath path = new PathPlannerPath(
-            bezierPoints,
-            new PathConstraints(
-                3, 3,
-                Units.degreesToRadians(360), Units.degreesToRadians(540)),
-            new GoalEndState(0.0, currentPose.getRotation()));
-
-        path.preventFlipping = true;
-
-        AutoBuilder.followPath(path).schedule();
-      }))
-          .withSize(1, 1).withPosition(2, 1);
+      Shuffleboard.getTab("Drivetrain").addNumber("PoseX Meters", () -> getX())
+          .withPosition(6, 2)
+          .withSize(1, 1);
+      Shuffleboard.getTab("Drivetrain").addNumber("PoseY Meters", () -> getY())
+          .withPosition(7, 2)
+          .withSize(1, 1);
+      Shuffleboard.getTab("Drivetrain").addNumber("PoseDeg", () -> getHeading().getDegrees())
+          .withPosition(8, 2)
+          .withSize(1, 1);
 
     }
 
@@ -339,6 +342,7 @@ public class SwerveSubsystem extends SubsystemBase {
     return Math.IEEEremainder((gyro.getAngle()), 360);
   }
 
+  @Log.NT(key = "Poseestimate")
   public Pose2d getPose() {
     return swervePoseEstimator.getEstimatedPosition();
   }
@@ -508,104 +512,147 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
-    // SmartDashboard.putString("BPFR",
-    // LimelightHelpers.getBotPose3d_wpiBlue(CameraConstants.frontRightCamera.camname).toPose2d()
-    // .toString());
-
     loopctr++;
+
+    getPose();
 
     swervePoseEstimator.update(getYaw(), getPositions());
 
+    getPose();
+
     putStates();
 
-    if (loopctr > 25) {
-
-      // SmartDashboard.putBoolean("SwerveStopped", isStopped());
-
-      // field.setRobotPose(getPose());
-      // SmartDashboard.putNumber("X Meters", round2dp(getX(), 2));
-      // SmartDashboard.putNumber("Y Meters", round2dp(getY(), 2));
-      // SmartDashboard.putNumber("Est Pose Heaading",
-      // round2dp(getHeading().getDegrees(), 2));
-      // SmartDashboard.putNumber("GyroYaw", round2dp(getYaw().getDegrees(), 2));
-
-      // SmartDashboard.putNumberArray("Odometry",
-      // new double[] { getPose().getX(), getPose().getY(),
-      // getPose().getRotation().getDegrees() });
-
-      // SmartDashboard.putNumberArray("OdometryFL",
-      // new double[] { llposefl.getX(), llposefl.getY(),
-      // llposefl.getRotation().getDegrees() });
-
-      // SmartDashboard.putNumberArray("OdometryFR",
-      // new double[] { llposefr.getX(), llposefr.getY(),
-      // llposefr.getRotation().getDegrees() });
-
-      putStates();
-
-      loopctr = 0;
-
-    }
-
-    boolean leftCamConditions = cameraSelection.intValue() == 1 || cameraSelection.intValue() == 3
-        || DriverStation.isTeleopEnabled() || DriverStation.isDisabled();
+    putStates();
 
     boolean leftHasTarget = CameraConstants.frontLeftCamera.isActive
         && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname);
 
     if (leftHasTarget)
-      doVisionValues(CameraConstants.frontLeftCamera.camname);
-
-    if (leftHasTarget && leftCamConditions) {
-      llposefl = llpose;
-      latencyfl = timestampSeconds;
-      doVisionCorrection();
-    }
-
-    boolean rightCamConditions = cameraSelection.intValue() == 2 || cameraSelection.intValue() == 3
-        || DriverStation.isTeleopEnabled() || DriverStation.isDisabled();
+      doVisionValuesFL();
 
     boolean rightHasTarget = CameraConstants.frontRightCamera.isActive
         && LimelightHelpers.getTV(CameraConstants.frontRightCamera.camname);
 
     if (rightHasTarget)
-      doVisionValues(CameraConstants.frontRightCamera.camname);
-
-    camPosDifference = llposefr.getTranslation()
-        .getDistance(llposefl.getTranslation());
-
-    if (rightCamConditions) {
-      llposefr = llpose;
-      latencyfr = timestampSeconds;
-      doVisionCorrection();
-    }
+      doVisionValuesFR();
   }
 
+  @Log.NT(key = "SpeakerDistance")
   public double getDistanceFromSpeaker() {
     return Constants.getActiveSpeakerPose().getTranslation()
-        .getDistance(swervePoseEstimator.getEstimatedPosition().getTranslation());
+        .getDistance(getPose().getTranslation());
   }
 
-  private void doVisionValues(String camname) {
+  @Log.NT(key = "FL_Pose")
+  private Pose2d getLLPoseFL() {
+    return LimelightHelpers
+        .getBotPoseEstimate_wpiBlue(CameraConstants.frontLeftCamera.camname).pose;
+  }
 
-    if (!LimelightHelpers.getTV(camname))
-      return;
-    LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers
-        .getBotPoseEstimate_wpiBlue(camname);
+  @Log.NT(key = "FL_NumTargets")
+  private int getNumberTargetsFL() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(CameraConstants.frontLeftCamera.camname).tagCount;
+  }
 
-    numberTargets = limelightMeasurement.tagCount;
+  @Log.NT(key = "FL_Area")
+  private double getAreaFL() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(CameraConstants.frontLeftCamera.camname).avgTagArea;
+  }
 
-    area = limelightMeasurement.avgTagArea;
+  @Log.NT(key = "FL_Dist")
+  private double getDistanceFL() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(CameraConstants.frontLeftCamera.camname).avgTagDist;
+  }
 
-    llpose = limelightMeasurement.pose;
+  @Log.NT(key = "FL_Timestamp")
+  private double getTimestampFL() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(CameraConstants.frontLeftCamera.camname).timestampSeconds;
+  }
 
-    timestampSeconds = limelightMeasurement.timestampSeconds;
+  @Log.NT(key = "FL_PoseDifference")
+  private double getPoseDifferenceFL() {
+    return getPose().getTranslation()
+        .getDistance(getLLPoseFL().getTranslation());
+  }
 
-    tagDistance = limelightMeasurement.avgTagDist;
-
+  private void doVisionValuesFL() {
+    numberTargets = getNumberTargetsFL();
+    area = getAreaFL();
+    llpose = getLLPoseFL();
+    timestampSeconds = getTimestampFL();
+    tagDistance = getDistanceFL();
     if (!AllianceUtil.isRedAlliance()) {
-      Translation2d t2d = limelightMeasurement.pose.getTranslation();
-      Rotation2d r = limelightMeasurement.pose.getRotation();
+      Translation2d t2d = llpose.getTranslation();
+      Rotation2d r = llpose.getRotation();
+      Rotation2d r180 = r.rotateBy(new Rotation2d(0)); // Didn't need to rotate robot. This might be alliance specific?
+      llpose = new Pose2d(t2d, r180);
+    }
+    // if (llpose.getX() == 0.0
+    // || llpose.getX() > FieldConstants.FIELD_LENGTH
+    // || llpose.getY() < 0.0
+    // || llpose.getY() > FieldConstants.FIELD_WIDTH)
+    // return;
+
+    // distance from current pose to vision estimated pose
+    poseDifference = getPoseDifferenceFL();
+
+    if (cameraSelection.intValue() == 1 || cameraSelection.intValue() == 3
+        || DriverStation.isTeleopEnabled() || DriverStation.isDisabled()) {
+      double xyStds = .3;
+      double radStds = .8;
+      swervePoseEstimator.setVisionMeasurementStdDevs(
+          VecBuilder.fill(xyStds, xyStds, radStds));
+      if ((numberTargets > 1 && poseDifference < 2) || tagDistance < 8 || poseDifference < 0.5 || area > 0.3) {
+        SmartDashboard.putNumber("VOR", timestampSeconds);
+        swervePoseEstimator.addVisionMeasurement(
+            llpose,
+            timestampSeconds);
+      }
+    }
+
+  }
+
+  @Log.NT(key = "FR_Pose")
+  private Pose2d getLLPoseFR() {
+    return LimelightHelpers
+        .getBotPoseEstimate_wpiBlue(CameraConstants.frontRightCamera.camname).pose;
+  }
+
+  @Log.NT(key = "FR_NumTargets")
+  private int getNumberTargetsFR() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(CameraConstants.frontRightCamera.camname).tagCount;
+  }
+
+  @Log.NT(key = "FR_Area")
+  private double getAreaFR() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(CameraConstants.frontRightCamera.camname).avgTagArea;
+  }
+
+  @Log.NT(key = "FR_Dist")
+  private double getDistanceFR() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(CameraConstants.frontRightCamera.camname).avgTagDist;
+  }
+
+  @Log.NT(key = "FR_Timestamp")
+  private double getTimestampFR() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(CameraConstants.frontLeftCamera.camname).timestampSeconds;
+  }
+
+  @Log.NT(key = "FR_PoseDifference")
+  private double getPoseDifferenceFR() {
+    return swervePoseEstimator.getEstimatedPosition().getTranslation()
+        .getDistance(getLLPoseFR().getTranslation());
+  }
+
+  private void doVisionValuesFR() {
+    numberTargets = getNumberTargetsFR();
+    area = getAreaFR();
+    llpose = getLLPoseFR();
+    timestampSeconds = getTimestampFR();
+    tagDistance = getDistanceFR();
+    if (!AllianceUtil.isRedAlliance()) {
+      Translation2d t2d = llpose.getTranslation();
+      Rotation2d r = llpose.getRotation();
       Rotation2d r180 = r.rotateBy(new Rotation2d(0)); // Didn't need to rotate robot. This might be alliance specific?
       llpose = new Pose2d(t2d, r180);
     }
@@ -616,30 +663,20 @@ public class SwerveSubsystem extends SubsystemBase {
       return;
 
     // distance from current pose to vision estimated pose
-    poseDifference = swervePoseEstimator.getEstimatedPosition().getTranslation()
-        .getDistance(llpose.getTranslation());
+    poseDifference = getPoseDifferenceFR();
 
-    SmartDashboard.putNumber(camname + " LLNumTargets", numberTargets);
-    SmartDashboard.putNumber(camname + " LLPDIFF", poseDifference);
-    SmartDashboard.putString(camname + " POSECAM", limelightMeasurement.pose.toString());
-    SmartDashboard.putNumber(camname + " LLArea", area);
-    SmartDashboard.putNumber(camname + " LLTagDist", tagDistance);
-    SmartDashboard.putNumber(camname + "LLDiffTOest", poseDifference);
-    SmartDashboard.putNumber("LLDiffLR", camPosDifference);
-
-  }
-
-  public void doVisionCorrection() {
-   
-    double xyStds = .3;
-    double radStds = .8;
-    swervePoseEstimator.setVisionMeasurementStdDevs(
-        VecBuilder.fill(xyStds, xyStds, radStds));
-    if (numberTargets > 1 || tagDistance < 8 || poseDifference < 0.5 || area > 0.3) {
-      SmartDashboard.putNumber("VOR", timestampSeconds);
-      swervePoseEstimator.addVisionMeasurement(
-          llpose,
-          timestampSeconds);
+    if (cameraSelection.intValue() == 2 || cameraSelection.intValue() == 3
+        || DriverStation.isTeleopEnabled() || DriverStation.isDisabled()) {
+      double xyStds = .3;
+      double radStds = .8;
+      swervePoseEstimator.setVisionMeasurementStdDevs(
+          VecBuilder.fill(xyStds, xyStds, radStds));
+      if ((numberTargets > 1 && poseDifference < 2) || tagDistance < 8 || poseDifference < 0.5 || area > 0.3) {
+        SmartDashboard.putNumber("VOR", timestampSeconds);
+        swervePoseEstimator.addVisionMeasurement(
+            llpose,
+            timestampSeconds);
+      }
     }
   }
 
@@ -775,9 +812,6 @@ public class SwerveSubsystem extends SubsystemBase {
         };
 
     ChassisSpeeds speeds = Constants.SwerveConstants.swerveKinematics.toChassisSpeeds(measuredStates);
-    SmartDashboard.putNumber("VX", speeds.vxMetersPerSecond);
-    SmartDashboard.putNumber("VTH", speeds.vyMetersPerSecond);
-    SmartDashboard.putNumber("VOM", speeds.omegaRadiansPerSecond);
 
     simOdometryPose = simOdometryPose.exp(
         new Twist2d(
@@ -951,6 +985,15 @@ public class SwerveSubsystem extends SubsystemBase {
               mSwerveMods[2].stopCharacterizing();
               mSwerveMods[3].stopCharacterizing();
             });
+  }
+
+  public double[] getWheelRadiusCharacterizationPosition() {
+    return new double[] {
+        mSwerveMods[0].getPositionRadians(),
+        mSwerveMods[0].getPositionRadians(),
+        mSwerveMods[0].getPositionRadians(),
+        mSwerveMods[0].getPositionRadians()
+    };
   }
 
 }

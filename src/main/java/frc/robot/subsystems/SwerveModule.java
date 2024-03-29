@@ -261,6 +261,10 @@ public class SwerveModule extends SubsystemBase {
     }
   }
 
+  public double getPositionRadians() {
+    return getDrivePosition() / SwerveConstants.wheelRadius;
+  }
+
   @Override
   public void periodic() {
 

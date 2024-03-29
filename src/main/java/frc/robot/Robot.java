@@ -4,12 +4,11 @@
 
 package frc.robot;
 
-import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.REVPhysicsSim;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -18,11 +17,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.CameraConstants;
-import frc.robot.Constants.SwerveConstants;
-import frc.robot.commands.ArmShooterByDistance;
 import frc.robot.utils.LLPipelines;
+import monologue.Monologue;
+import monologue.Annotations.Log;
+import monologue.Logged;
 
-public class Robot extends TimedRobot {
+public class Robot extends TimedRobot implements Logged {
 
   private Command m_autonomousCommand;
 
@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
 
   private double m_startDelay;
 
-  private double startTime;
+  @Log.NT.Once  private double startTime;
 
   private boolean autoHasRun;
 
@@ -53,7 +53,10 @@ public class Robot extends TimedRobot {
     // CameraServer.startAutomaticCapture();
 
     // Shuffleboard.selectTab("Autonomous");
+    Monologue.setupMonologue(m_robotContainer, "/Monologue", false, true);
 
+   
+   // Monologue.setupMonologue(this, "/Monologue", false, true);
   }
 
   @Override
@@ -63,8 +66,13 @@ public class Robot extends TimedRobot {
 
     m_robotContainer.m_arm.periodicRobot();
 
-    SmartDashboard.putNumber("Volts", RobotController.getBatteryVoltage());
-
+    // setFileOnly is used to shut off NetworkTables broadcasting for most logging
+    // calls.
+    // Basing this condition on the connected state of the FMS is a suggestion only.
+    // Monologue.setFileOnly(DriverStation.isDSAttached());
+    // This method needs to be called periodically, or no logging annotations will
+    // process properly.
+    Monologue.updateAll();
   }
 
   @Override
@@ -91,6 +99,9 @@ public class Robot extends TimedRobot {
         + brakeOffTime) {
       m_robotContainer.m_swerve.setIdleMode(false);
     }
+
+    m_robotContainer.m_swerve.cameraSelection = m_robotContainer.m_cameraChooser.getSelected();
+
   }
 
   @Override

@@ -16,7 +16,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -449,8 +448,11 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
     }
 
     public double getCanCoderRad() {
-        return armCancoder.getAbsolutePosition().getValueAsDouble()
-                * Math.PI + ArmConstants.cancoderOffsetRadians;
+        double temp = (armCancoder.getAbsolutePosition().getValueAsDouble()
+                * Math.PI) + ArmConstants.cancoderOffsetRadians;
+        if (temp > Math.PI)
+            temp = temp - Math.PI;
+            return temp;
     }
 
     public double getCanCoderRadPerSec() {

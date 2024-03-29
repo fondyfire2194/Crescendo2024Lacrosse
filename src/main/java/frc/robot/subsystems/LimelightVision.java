@@ -183,6 +183,18 @@ public class LimelightVision extends SubsystemBase {
           .withPosition(columnIndex + 2, 1)
           .withSize(1, 1);
 
+      Shuffleboard.getTab("VisionSubsystem")
+          .addString("BluePose FR",
+              () -> LimelightHelpers.getBotPose3d_wpiBlue(CameraConstants.frontRightCamera.camname).toPose2d()
+                  .toString())
+          .withPosition(columnIndex, 2)
+          .withSize(4, 1);
+
+      Shuffleboard.getTab("VisionSubsystem")
+          .addString("TagPose FR", () -> getTagPose(CameraConstants.frontRightCamera).toPose2d().toString())
+          .withPosition(columnIndex, 3)
+          .withSize(4, 1);
+
     }
     // rear camera
 

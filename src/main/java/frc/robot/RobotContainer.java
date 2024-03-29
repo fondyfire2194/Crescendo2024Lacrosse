@@ -32,6 +32,7 @@ import frc.robot.commands.Drive.AlignTargetOdometry;
 import frc.robot.commands.Drive.AlignToNote;
 import frc.robot.commands.Drive.AutoPickupNote;
 import frc.robot.commands.Drive.TeleopSwerve;
+import frc.robot.commands.Drive.WheelRadiusCharacterization;
 import frc.robot.commands.Shooter.CheckShooterAtSpeed;
 import frc.robot.commands.Shooter.ShootFromDistance;
 import frc.robot.commands.Transfer.TransferIntakeToSensor;
@@ -42,10 +43,11 @@ import frc.robot.subsystems.LimelightVision;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
+import monologue.Logged;
 
-public class RobotContainer {
+public class RobotContainer implements Logged{
         /* Subsystems */
-        final SwerveSubsystem m_swerve = new SwerveSubsystem(true);
+        final SwerveSubsystem m_swerve = new SwerveSubsystem(false);
 
         final IntakeSubsystem m_intake = new IntakeSubsystem(false);
 
@@ -59,7 +61,7 @@ public class RobotContainer {
 
         SendableChooser<Command> autoChooser;
 
-        public final LimelightVision m_llv = new LimelightVision(true);
+        public final LimelightVision m_llv = new LimelightVision(false);
 
         public final SendableChooser<Double> m_startDelayChooser = new SendableChooser<Double>();
 
@@ -73,7 +75,7 @@ public class RobotContainer {
 
         private final CommandXboxController setup = new CommandXboxController(2);
 
-        final ShooterSubsystem m_shooter = new ShooterSubsystem(true);
+        final ShooterSubsystem m_shooter = new ShooterSubsystem(false);
 
         public final CommandFactory m_cf = new CommandFactory(m_swerve, m_shooter, m_arm, m_intake, m_transfer,
                         m_climber, m_llv);
@@ -124,12 +126,15 @@ public class RobotContainer {
                 fieldCentric = driver.a();
                 keepAngle = () -> false;
 
-                driver.leftTrigger().whileTrue(new AlignTargetOdometry(
-                                m_swerve,
-                                () -> -driver.getLeftY(),
-                                () -> driver.getLeftX(),
-                                () -> driver.getRightX())
-                                .alongWith(m_cf.rumbleCommand(driver)));
+                // driver.leftTrigger().whileTrue(new AlignTargetOdometry(
+                //                 m_swerve,
+                //                 () -> -driver.getLeftY(),
+                //                 () -> driver.getLeftX(),
+                //                 () -> driver.getRightX())
+                //                 .alongWith(m_cf.rumbleCommand(driver)));
+
+                driver.leftTrigger().whileTrue(new WheelRadiusCharacterization(m_swerve));
+                
 
                 driver.rightBumper().onTrue(Commands.parallel(
                                 m_intake.startIntakeCommand(),
