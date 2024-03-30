@@ -126,14 +126,18 @@ public class RobotContainer implements Logged{
                 fieldCentric = driver.a();
                 keepAngle = () -> false;
 
-                // driver.leftTrigger().whileTrue(new AlignTargetOdometry(
-                //                 m_swerve,
-                //                 () -> -driver.getLeftY(),
-                //                 () -> driver.getLeftX(),
-                //                 () -> driver.getRightX())
-                //                 .alongWith(m_cf.rumbleCommand(driver)));
+                driver.leftTrigger().whileTrue(new ParallelCommandGroup(new AlignTargetOdometry(
+                                m_swerve,
+                                () -> -driver.getLeftY(),
+                                () -> driver.getLeftX(),
+                                () -> driver.getRightX())
+                                .alongWith(m_cf.rumbleCommand(driver)), 
+                                new ShootFromDistance(m_shooter, m_swerve, m_arm)));
+                // driver.leftTrigger().whileTrue(
+                //                 new ShootFromDistance(m_shooter, m_swerve, m_arm));
+                                
 
-                driver.leftTrigger().whileTrue(new WheelRadiusCharacterization(m_swerve));
+                //driver.leftTrigger().whileTrue(new WheelRadiusCharacterization(m_swerve));
                 
 
                 driver.rightBumper().onTrue(Commands.parallel(
@@ -156,7 +160,7 @@ public class RobotContainer implements Logged{
                 driver.x().onTrue(m_shooter.startShooterCommand(3500));
 
                 driver.y().onTrue(Commands.sequence(
-                                new ShootFromDistance(m_shooter, m_swerve, m_arm),
+                                new ShootFromDistance(m_shooter, m_swerve, m_arm).withTimeout(0.1),
                                 new CheckShooterAtSpeed(m_shooter, .2),
                                 new CheckArmAtTarget(m_arm),
                                 m_transfer.transferToShooterCommand(),
@@ -311,6 +315,8 @@ public class RobotContainer implements Logged{
 
         private void registerNamedCommands() {
                 NamedCommands.registerCommand("Halt Intake", m_intake.stopIntakeCommand().asProxy());
+
+                NamedCommands.registerCommand("Prestart Shooter Wheels", m_shooter.startShooterCommand(4000).asProxy());
 
                 NamedCommands.registerCommand("Stop Intake", m_intake.stopIntakeCommand().asProxy());
 

@@ -36,12 +36,30 @@ public class ShootFromDistance extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    distance = m_swerve.getDistanceFromSpeaker(); //-0.1 makes the shooter more accurate
     m_arm.setTolerance(ArmConstants.angleTolerance);
     m_arm.resetController();
+    m_arm.enable();
+    // distance = m_swerve.getDistanceFromSpeaker(); 
+    // m_arm.setTolerance(ArmConstants.angleTolerance);
+    // m_arm.resetController();
+    // m_arm.setGoal(Units.degreesToRadians(Constants.armAngleMap.get(distance)));
+    // SmartDashboard.putNumber("DistanceAngle", Constants.armAngleMap.get(distance));
+    // m_arm.enable();
+    
+    // m_shooter.commandRPM = Constants.shooterRPMMap.get(distance);
+    // m_shooter.setRunShooter();
+    // SmartDashboard.putNumber("DistanceRPM", m_shooter.commandRPM);
+    // SmartDashboard.putNumber("Distance", distance);
+
+  }
+  @Override
+  public void execute() {
+    distance = m_swerve.getDistanceFromSpeaker(); 
+    //m_arm.setTolerance(ArmConstants.angleTolerance);
+    //m_arm.resetController();
     m_arm.setGoal(Units.degreesToRadians(Constants.armAngleMap.get(distance)));
     SmartDashboard.putNumber("DistanceAngle", Constants.armAngleMap.get(distance));
-    m_arm.enable();
+    //m_arm.enable();
     
     m_shooter.commandRPM = Constants.shooterRPMMap.get(distance);
     m_shooter.setRunShooter();
@@ -53,6 +71,6 @@ public class ShootFromDistance extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.77591801820375,
-        "y": 7.0
+        "x": 2.883426131963826,
+        "y": 6.993721086833655
       },
       "prevControl": {
-        "x": 1.77591801820375,
-        "y": 7.0
+        "x": 1.8834261319638261,
+        "y": 6.993721086833655
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,10 +43,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "SubWfr",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

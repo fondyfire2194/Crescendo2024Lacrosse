@@ -55,7 +55,7 @@ public final class Constants {
                 /* Drivetrain Constants */
                 public static final Measure<Distance> trackWidth = Meters.of(Meters.convertFrom(22.125, Inches));
                 public static final Measure<Distance> wheelBase = Meters.of(Meters.convertFrom(27.25, Inches));
-                public static final Measure<Distance> wheelDiameter = Meters.of(Meters.convertFrom(4.0, Inches));
+                public static final Measure<Distance> wheelDiameter = Meters.of(Meters.convertFrom(3.95, Inches));
                 public static final Measure<Distance> wheelCircumference = Meters
                                 .of(wheelDiameter.magnitude() * Math.PI);
 
@@ -187,8 +187,8 @@ public final class Constants {
                 }
 
                 public static final HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig(
-                                new PIDConstants(5.0, 0, 0), // Translation constants
-                                new PIDConstants(5.0, 0, 0), // Rotation constants
+                                new PIDConstants(2.0, 0, 0), // Translation constants
+                                new PIDConstants(1.7, 0, 0), // Rotation constants
                                 kmaxSpeed,
                                 flModuleOffset.getNorm(), // Drive base radius (distance from center to furthest module)
                                 new ReplanningConfig());
@@ -460,10 +460,10 @@ public final class Constants {
         public static double subwfrArmAngle = 60;// degrees
         public static double subwfrShooterSpeed = 3000;// rpm
 
-        public static double shotSourceAngle = 34;
-        public static double shotSourceSpeed = 3500;
+        public static double shotSourceAngle = 21.5; //26
+        public static double shotSourceSpeed = 4700; //4000
 
-        public static double wing1ArmAngle = 35;// degrees
+        public static double wing1ArmAngle = 34;// degrees
         public static double wing1ShooterSpeed = 3500;// rpm
 
         public static double wing2ArmAngle = 40;// degrees
@@ -547,7 +547,7 @@ public final class Constants {
                 public static final double voltageComp = 12;
                 public static final IdleMode transferIdleMode = IdleMode.kBrake;
                 public static final int transferContinuousCurrentLimit = 20;
-                public static double clearShooterTime = 1;
+                public static double clearShooterTime = 0.6;
                 public static double noNoteStopTime = 20;
                 public static double jogSpeed = 1;
 

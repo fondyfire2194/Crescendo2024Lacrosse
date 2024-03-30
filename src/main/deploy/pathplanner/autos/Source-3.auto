@@ -50,6 +50,12 @@
                 "data": {
                   "name": "LocatePickupNote"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Prestart Shooter Wheels"
+                }
               }
             ]
           }

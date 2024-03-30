@@ -73,8 +73,9 @@ public class CommandFactory {
         public Command positionArmRunShooterSpecialCase(double armAngleDeg, double shooterSpeed) {
                 return new ParallelCommandGroup(
                                 m_arm.setGoalCommand(Units.degreesToRadians(armAngleDeg)),
-                                new CheckArmAtTarget(m_arm),
                                 m_shooter.startShooterCommand(shooterSpeed),
+                                new CheckArmAtTarget(m_arm),
+                                //m_shooter.startShooterCommand(shooterSpeed),
                                 new CheckShooterAtSpeed(m_shooter, .2));
         }
 
