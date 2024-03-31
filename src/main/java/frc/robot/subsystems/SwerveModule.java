@@ -10,6 +10,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -20,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.config.SwerveModuleConstants;
-import frc.lib.math.OnboardModuleState;
+//import frc.lib.math.OnboardModuleState;
 import frc.lib.util.CANSparkMaxUtil;
 import frc.lib.util.CANSparkMaxUtil.Usage;
 import frc.robot.Constants;
@@ -96,7 +97,9 @@ public class SwerveModule extends SubsystemBase {
     // Custom optimize command, since default WPILib optimize assumes continuous
     // controller which
     // REV and CTRE are not
-    desiredState = OnboardModuleState.optimize(desiredState, getState().angle);
+    // desiredState = OnboardModuleState.optimize(desiredState, getState().angle);
+    desiredState = SwerveModuleState.optimize(desiredState, getAngle());
+
     currentDesiredState = desiredState;
     setAngle(desiredState);
     setSpeed(desiredState, isOpenLoop);
@@ -225,9 +228,10 @@ public class SwerveModule extends SubsystemBase {
 
   private Rotation2d getAngle() {
     if (RobotBase.isReal())
-      return Rotation2d.fromDegrees(integratedAngleEncoder.getPosition());
+      return Rotation2d.fromDegrees(
+          MathUtil.inputModulus(integratedAngleEncoder.getPosition(), -180, 180));
     else
-      return Rotation2d.fromDegrees(m_simRotatePosition);
+      return Rotation2d.fromDegrees(MathUtil.inputModulus(m_simRotatePosition, -180, 180));
   }
 
   public SwerveModulePosition getPosition() {
@@ -271,8 +275,10 @@ public class SwerveModule extends SubsystemBase {
     SmartDashboard.putNumber(
         String.valueOf(moduleNumber) + "cancoder", getCancoderDeg());
 
-    // SmartDashboard.putBoolean(String.valueOf(moduleNumber) + " Characterizing", characterizing);
-    // SmartDashboard.putNumber(String.valueOf(moduleNumber) + " Characterization Volts", characterizationVolts);
+    // SmartDashboard.putBoolean(String.valueOf(moduleNumber) + " Characterizing",
+    // characterizing);
+    // SmartDashboard.putNumber(String.valueOf(moduleNumber) + " Characterization
+    // Volts", characterizationVolts);
     SmartDashboard.putNumber(String.valueOf(moduleNumber) + " DrivePosiiton", driveEncoder.getPosition());
 
     if (characterizing) {
