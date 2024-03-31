@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.178672097709306,
-        "y": 2.422824805081659
+        "x": 8.353515124880147,
+        "y": 2.4727799557019003
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.847431735431422,
-        "y": 1.731778554835
+        "x": 6.022274762602263,
+        "y": 1.7817337054552413
       },
       "isLocked": false,
       "linkedName": "Center 4"
@@ -39,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 143.5,
+    "rotation": 145.0,
     "rotateFast": false
   },
   "reversed": false,

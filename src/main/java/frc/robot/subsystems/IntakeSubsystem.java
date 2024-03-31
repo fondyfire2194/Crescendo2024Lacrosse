@@ -137,7 +137,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
     if (!runIntake && !jogging) {
       stopMotor();
-      intakeLimiter.reset(0);
+      //intakeLimiter.reset(0);
     }
   }
 

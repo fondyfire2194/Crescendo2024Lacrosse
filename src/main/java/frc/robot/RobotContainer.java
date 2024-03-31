@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.CameraConstants;
 import frc.robot.commands.CommandFactory;
+import frc.robot.commands.JogClimber;
 import frc.robot.commands.Arm.CheckArmAtTarget;
 import frc.robot.commands.Drive.AlignTargetOdometry;
 import frc.robot.commands.Drive.AlignToNote;
@@ -47,7 +48,7 @@ import monologue.Logged;
 
 public class RobotContainer implements Logged{
         /* Subsystems */
-        final SwerveSubsystem m_swerve = new SwerveSubsystem(false);
+        final SwerveSubsystem m_swerve = new SwerveSubsystem(true);
 
         final IntakeSubsystem m_intake = new IntakeSubsystem(false);
 
@@ -243,19 +244,23 @@ public class RobotContainer implements Logged{
 
                 // setup.rightTrigger().whileTrue(new JogTransfer(m_transfer, setup));
 
-                // setup.rightBumper().whileTrue(new JogShooters(m_shooter, setup));
+                 setup.rightBumper().whileTrue(new JogClimber(m_climber, setup));
 
-                setup.leftBumper().whileTrue(m_swerve.quasistaticForward());
+                setup.a().onTrue(m_climber.lockClimberCommand());
 
-                setup.leftTrigger().whileTrue(m_swerve.quasistaticBackward());
+                setup.b().onTrue(m_climber.unlockClimberCommand());
 
-                setup.rightBumper().whileTrue(m_swerve.dynamicForward());
+                //setup.leftBumper().whileTrue(m_swerve.quasistaticForward());
 
-                setup.rightTrigger().whileTrue(m_swerve.dynamicBackward());
+                //setup.leftTrigger().whileTrue(m_swerve.quasistaticBackward());
 
-                setup.a().onTrue(m_arm.setGoalCommand(Units.degreesToRadians(25)));
+                //setup.rightBumper().whileTrue(m_swerve.dynamicForward());
 
-                setup.b().onTrue(m_arm.setGoalCommand(Units.degreesToRadians(40)));
+                //setup.rightTrigger().whileTrue(m_swerve.dynamicBackward());
+
+                // setup.a().onTrue(m_arm.setGoalCommand(Units.degreesToRadians(25)));
+
+                // setup.b().onTrue(m_arm.setGoalCommand(Units.degreesToRadians(40)));
 
                 setup.x().onTrue(m_arm.setGoalCommand(Units.degreesToRadians(50)));
 

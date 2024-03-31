@@ -185,7 +185,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
             armEncoder.setPosition(Units.degreesToRadians(15));
 
         }
-        setGoal(Units.degreesToRadians(15));
+        setGoal(Units.degreesToRadians(18)); //15
         // pid.setIZone(Units.degreesToRadians(.5));
         // pid.setIntegratorRange(-Units.degreesToRadians(.1),
         // Units.degreesToRadians(.1));

@@ -80,6 +80,12 @@ public class Pref {
     prefDict.put("armKd", .00001);
     prefDict.put("armKIZone", .00001);
 
+    // climber
+
+    prefDict.put("LockNumber", 1.);
+    prefDict.put("UnlockNumber", 0.);
+
+
   }
 
   public static void ensureRioPrefs() {

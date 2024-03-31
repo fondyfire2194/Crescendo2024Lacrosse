@@ -81,7 +81,7 @@ public class Robot extends TimedRobot implements Logged {
     autoHasRun = false;
     m_robotContainer.m_arm.disable();
     m_robotContainer.m_arm.enableArm = false;
-    if (m_robotContainer.m_arm.getCanCoderDeg() < 20)
+    if (m_robotContainer.m_arm.getCanCoderDeg() < 26)
       m_robotContainer.m_arm.armMotor.setIdleMode(IdleMode.kCoast);
   }
 

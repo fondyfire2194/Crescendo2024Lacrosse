@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.750599956809212,
-        "y": 2.102119142606206
+        "x": 5.572678407020099,
+        "y": 1.6901492626514667
       },
       "isLocked": false,
       "linkedName": "ShootingPoint"
@@ -20,8 +20,8 @@
         "y": 0.779488482053888
       },
       "prevControl": {
-        "x": 8.62392539732809,
-        "y": 0.7487068227374096
+        "x": 6.729972729722334,
+        "y": 0.7992824099238476
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
   "reversed": false,
   "folder": "Source",
   "previewStartingState": {
-    "rotation": 143.5,
+    "rotation": 145.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

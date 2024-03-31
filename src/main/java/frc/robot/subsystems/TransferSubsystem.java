@@ -145,9 +145,13 @@ public class TransferSubsystem extends SubsystemBase {
     return Units.metersToInches(m_detectNoteSensor.getRange() / 1000);
   }
 
-  public boolean noteAtIntake() {
-    return getSensorDistanceInches() > 0
-        && getSensorDistanceInches() < Pref.getPref("SensorDistance");
+  // public boolean noteAtIntake() {
+  //   return getSensorDistanceInches() > 0
+  //       && getSensorDistanceInches() < Pref.getPref("SensorDistance");
+  // }
+
+  public boolean noteAtIntake() { //we can get rid of the TimeOfFlight
+    return m_limitSwitch.isPressed();
   }
 
   @Override

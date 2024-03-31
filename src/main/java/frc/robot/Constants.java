@@ -34,7 +34,8 @@ public final class Constants {
                 public static final int transferID = 19;
                 public static final int armID = 20;
                 public static final int armCancoderID = 21;
-                public static final int climberID = 22;
+                public static final int climberIDLeft = 22;
+                public static final int climbreIDRight = 23; 
                 public static final int rearLeftSensor = 24;
                 public static final int rearRightSensor = 25;
                 public static final int transferDistanceSensorID = 26;
@@ -113,9 +114,9 @@ public final class Constants {
                 public static final double driveKFF = .5 / kmaxTheoreticalSpeed;
 
                 /* Drive Motor Characterization Values */
-                public static final double driveKS = 0.54397;
-                public static final double driveKV = 2.5636;
-                public static final double driveKA = 0;
+                public static final double driveKS = 0.54397; 
+                public static final double driveKV = 2.5636; //2.59
+                public static final double driveKA = 0; ///0.46
 
                 /* Drive Motor Conversion Factors */
                 public static final double driveConversionPositionFactor = (wheelDiameter.magnitude() * Math.PI)
@@ -183,12 +184,12 @@ public final class Constants {
                         public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0);// 239
                         public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                                         angleMotorID,
-                                        cancoderID, angleOffset, true);
+                                        cancoderID, angleOffset, true); 
                 }
 
                 public static final HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig(
                                 new PIDConstants(2.0, 0, 0), // Translation constants
-                                new PIDConstants(1.7, 0, 0), // Rotation constants
+                                new PIDConstants(1.3, 0, 0), // Rotation constants
                                 kmaxSpeed,
                                 flModuleOffset.getNorm(), // Drive base radius (distance from center to furthest module)
                                 new ReplanningConfig());
@@ -460,7 +461,7 @@ public final class Constants {
         public static double subwfrArmAngle = 60;// degrees
         public static double subwfrShooterSpeed = 3000;// rpm
 
-        public static double shotSourceAngle = 21.5; //26
+        public static double shotSourceAngle = 22.0; //26
         public static double shotSourceSpeed = 4700; //4000
 
         public static double wing1ArmAngle = 34;// degrees
@@ -487,7 +488,7 @@ public final class Constants {
 
         public static final class ArmConstants {
 
-                public static final double cancoderOffsetRadians = Units.degreesToRadians(15);
+                public static final double cancoderOffsetRadians = Units.degreesToRadians(18); //This measurement works
 
                 public static final double maxarmMotorRPM = 5700;
 
