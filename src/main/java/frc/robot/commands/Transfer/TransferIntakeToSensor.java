@@ -6,6 +6,7 @@ package frc.robot.commands.Transfer;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
@@ -14,19 +15,22 @@ public class TransferIntakeToSensor extends Command {
   private final TransferSubsystem m_transfer;
   private final IntakeSubsystem m_intake;
   private Debouncer sensorDebouncer;
- 
+  private Timer endTimer = new Timer();
+
   /** Creates a new TransferIntakeToSensor. */
   public TransferIntakeToSensor(TransferSubsystem transfer, IntakeSubsystem intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_transfer = transfer;
-    m_intake=intake;
-  
+    m_intake = intake;
+
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     sensorDebouncer = new Debouncer(.1);
+    endTimer.reset();
+    endTimer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -40,8 +44,8 @@ public class TransferIntakeToSensor extends Command {
   @Override
   public void end(boolean interrupted) {
     m_transfer.stopMotor();
-    if(DriverStation.isTeleopEnabled())
-    m_intake.stopMotor();
+    if (DriverStation.isTeleopEnabled())
+      m_intake.stopMotor();
     m_transfer.enableLimitSwitch(false);
   }
 

@@ -238,10 +238,10 @@ public class LimelightVision extends SubsystemBase {
     if (CameraConstants.rearCamera.isUsed)
       setRearNoteDetectorPipeline();
 
-    if (CameraConstants.frontLeftCamera.isUsed)
-      setCamToRobotOffset(CameraConstants.frontLeftCamera);
-    if (CameraConstants.frontRightCamera.isUsed)
-      setCamToRobotOffset(CameraConstants.frontRightCamera);
+    // if (CameraConstants.frontLeftCamera.isUsed)
+    //   setCamToRobotOffset(CameraConstants.frontLeftCamera);
+    // if (CameraConstants.frontRightCamera.isUsed)
+    //   setCamToRobotOffset(CameraConstants.frontRightCamera);
 
   }
 

@@ -107,6 +107,27 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
   private double latencyfl = 0;
   private double latencyfr = 0;
 
+  @Log.NT(key = "yerror")
+  double yerror = 0;
+  @Log.NT(key = "caplatency")
+  double capLatency = 0;
+  @Log.NT(key = "pipelatency")
+  double pipelineLatency = 0;
+  @Log.NT(key = "latency")
+  double latency = 0;
+  @Log.NT(key = "cappose")
+  Pose2d robotPose = new Pose2d();
+  @Log.NT(key = "capposey")
+  double poseY;
+  @Log.NT(key = "capposex")
+  double poseX;
+  @Log.NT(key = "poseerrr2d")
+  Rotation2d poser = new Rotation2d();
+  @Log.NT(key = "corry")
+  double correctedY;
+  @Log.NT(key = "correctionpose")
+  Pose2d correctionPose = new Pose2d();
+
   double area = 0;
   double areafl = 0;
   double areafr = 0;
@@ -117,6 +138,11 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
   private double tagDistance;
   private double tagDistancefl;
   private double tagDistancefr;
+
+  private boolean firstTime = true;
+
+  @Log.NT(key = "noteseentime")
+  private double noteSeenTime;
 
   public SwerveSubsystem(boolean showScreens) {
     m_showScreens = showScreens;
@@ -189,7 +215,7 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
     PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("path").setPoses(poses));
 
     zeroGyro();
-    SmartDashboard.putBoolean("GYRO",gyro.isConnected());
+    SmartDashboard.putBoolean("GYRO", gyro.isConnected());
 
     resetPoseEstimator(new Pose2d());
 
@@ -270,7 +296,7 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
     setModuleDriveFF();
     setModuleDriveKp();
     setModuleAngleKp();
-
+    firstTime = true;
   }
 
   public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
@@ -522,7 +548,9 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
 
     putStates();
 
-    putStates();
+    doNoteVisionCorrection();
+
+    if(firstTime&&isStopped())firstTime=false;
 
     boolean leftHasTarget = CameraConstants.frontLeftCamera.isActive
         && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname);
@@ -603,10 +631,12 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
       swervePoseEstimator.setVisionMeasurementStdDevs(
           VecBuilder.fill(xyStds, xyStds, radStds));
       if ((numberTargets > 1 && poseDifference < 2) || tagDistance < 8 || poseDifference < 0.5 || area > 0.3) {
-        SmartDashboard.putNumber("VOR", timestampSeconds);
-        swervePoseEstimator.addVisionMeasurement(
-            llpose,
-            timestampSeconds);
+        if (poseDifference < 0.3 && area > 0.13) {
+          SmartDashboard.putNumber("VOR", timestampSeconds);
+          swervePoseEstimator.addVisionMeasurement(
+              llpose,
+              timestampSeconds);
+        }
       }
     }
 
@@ -673,37 +703,42 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
           VecBuilder.fill(xyStds, xyStds, radStds));
       if ((numberTargets > 1 && poseDifference < 2) || tagDistance < 8 || poseDifference < 0.5 || area > 0.3) {
         SmartDashboard.putNumber("VOR", timestampSeconds);
-        swervePoseEstimator.addVisionMeasurement(
-            llpose,
-            timestampSeconds);
+        if (poseDifference < 0.3 && area > 0.13) {
+          swervePoseEstimator.addVisionMeasurement(
+              llpose,
+              timestampSeconds);
+        }
       }
     }
   }
 
   public void doNoteVisionCorrection() {
     String rname = CameraConstants.rearCamera.camname;
-    double corrGain = .01;
+    double corrGain = .001;
 
     if (LimelightHelpers.getTV(rname)) {
+     
+      yerror = LimelightHelpers.getTX(rname);
+      capLatency = LimelightHelpers.getLatency_Capture(rname);
+      pipelineLatency = LimelightHelpers.getLatency_Pipeline(rname);
+      robotPose = getPose();
+      poseY = robotPose.getY();
+      poseX = robotPose.getX();
+      poser = robotPose.getRotation();
+      correctedY = poseY - yerror * corrGain;
+      correctionPose = new Pose2d(poseX, correctedY, poser);
+      latency = capLatency + pipelineLatency;
 
-      double yerror = LimelightHelpers.getTX(rname);
-      double capLatency = LimelightHelpers.getLatency_Capture(rname);
-      double pipelineLatency = LimelightHelpers.getLatency_Pipeline(rname);
-      Pose2d robotPose = getPose();
-      double poseY = robotPose.getY();
-      double poseX = robotPose.getX();
-      Rotation2d poser = robotPose.getRotation();
-      double correctedY = poseY + yerror * corrGain;
-      Pose2d correctionPose = new Pose2d(poseX, -correctedY, poser);
-      double latency = capLatency + pipelineLatency;
+      if (firstTime) {
+        noteSeenTime = Timer.getFPGATimestamp();
+        swervePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.3, .3, .8));
 
-      swervePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.3, .3, .8));
+        swervePoseEstimator.addVisionMeasurement(
+            correctionPose,
+            latency);
 
-      SmartDashboard.putString("POSECORR", correctionPose.toString());
-
-      swervePoseEstimator.addVisionMeasurement(
-          correctionPose,
-          latency);
+        firstTime = false;
+      }
     }
   }
 

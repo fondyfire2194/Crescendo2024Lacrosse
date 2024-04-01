@@ -61,6 +61,8 @@ public class TeleopSwerve extends Command {
     SmartDashboard.putNumber("TransVal", translationVal);
     SmartDashboard.putNumber("StrafeVal", strafeVal);
     SmartDashboard.putNumber("RotVal", rotationVal);
+  
+    
 
   }
 }

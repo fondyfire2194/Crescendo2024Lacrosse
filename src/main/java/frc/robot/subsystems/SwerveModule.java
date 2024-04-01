@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -28,6 +29,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.GlobalConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Pref;
+import frc.robot.RobotContainer;
 
 public class SwerveModule extends SubsystemBase {
   public int moduleNumber;
@@ -195,18 +197,28 @@ public class SwerveModule extends SubsystemBase {
 
     if (isOpenLoop) {
       double percentOutput = desiredState.speedMetersPerSecond / Constants.SwerveConstants.kmaxSpeed;
-      driveMotor.setVoltage(percentOutput * 12);
+      driveMotor.setVoltage(percentOutput * RobotController.getBatteryVoltage());
+      SmartDashboard.putNumber(String.valueOf(moduleNumber) + " driveVolts",
+          percentOutput * RobotController.getBatteryVoltage());
+      SmartDashboard.putNumber(String.valueOf(moduleNumber) + " driveKv",
+          percentOutput * RobotController.getBatteryVoltage() / getDriveVelocity());
     }
     boolean feedforward = false;
     if (!isOpenLoop) {
       if (!feedforward) {
         driveController.setReference(desiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
       } else {
+
         double feedForward = driveFeedforward.calculate(
             desiredState.speedMetersPerSecond,
             (desiredState.speedMetersPerSecond - previousState.speedMetersPerSecond) / 0.020);
+
+        if (Math.abs(desiredState.speedMetersPerSecond) < .01) {
+          feedForward = 0;
+        }
         driveController.setReference(
-            desiredState.speedMetersPerSecond, ControlType.kVelocity, 0, feedForward, ArbFFUnits.kVoltage);
+            desiredState.speedMetersPerSecond, ControlType.kVelocity, 1, feedForward, ArbFFUnits.kVoltage);
+        previousState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
       }
     }
     if (RobotBase.isSimulation())

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.60221165235483,
-        "y": 6.768863523461712
+        "x": 2.754635509271021,
+        "y": 6.896993024755281
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.543157289355582,
-        "y": 6.670580558778783
+        "x": 2.6955811462717727,
+        "y": 6.798710060072352
       },
       "isLocked": false,
       "linkedName": "Wing 1"
@@ -20,8 +20,8 @@
         "y": 7.41
       },
       "prevControl": {
-        "x": 6.359326165243397,
-        "y": 6.738229851463494
+        "x": 7.086223403216037,
+        "y": 7.36073933686329
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
   "reversed": false,
   "folder": "Amp Start",
   "previewStartingState": {
-    "rotation": -139.08561677997488,
+    "rotation": -144.29,
     "velocity": 0
   },
   "useDefaultConstraints": true
