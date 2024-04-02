@@ -48,7 +48,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public boolean m_showScreens;
 
-  private int loopctr;
   private boolean runShooterVel;
   private double topBottomSpeedRatio = 1;
 
@@ -142,6 +141,7 @@ public class ShooterSubsystem extends SubsystemBase {
     encoder.setAverageDepth(4);
     encoder.setMeasurementPeriod(32);
     motor.enableVoltageCompensation(Constants.ShooterConstants.voltageComp);
+    
     motor.burnFlash();
     encoder.setPosition(0.0);
   }
@@ -285,10 +285,9 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // topBottomSpeedRatio = Pref.getPref("ShooterSpeedRatio");
-    loopctr++;
 
-    SmartDashboard.putNumber("TOPVolts", topRoller.get() * RobotController.getBatteryVoltage());
-    SmartDashboard.putNumber("BotVolts", bottomRoller.get() * RobotController.getBatteryVoltage());
+    // SmartDashboard.putNumber("TOPVolts", topRoller.get() * RobotController.getBatteryVoltage());
+    // SmartDashboard.putNumber("BotVolts", bottomRoller.get() * RobotController.getBatteryVoltage());
 
     if (runShooterVel) {
       double bottomrpm = getCommandRPM();

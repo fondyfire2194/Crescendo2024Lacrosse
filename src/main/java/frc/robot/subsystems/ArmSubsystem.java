@@ -219,21 +219,21 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
 
         pidout = pid.calculate(armAngleRads, getController().getSetpoint().position);
 
-        SmartDashboard.putNumber("CTR", ctr++);
-        SmartDashboard.putNumber("PID", pidout);
-        SmartDashboard.putNumber("ff", feedforward);
-        SmartDashboard.putNumber("poserr", pid.getPositionError());
-        SmartDashboard.putNumber("velerr", getController().getVelocityError());
+        // SmartDashboard.putNumber("CTR", ctr++);
+        // SmartDashboard.putNumber("PID", pidout);
+        // SmartDashboard.putNumber("ff", feedforward);
+        // SmartDashboard.putNumber("poserr", pid.getPositionError());
+        // SmartDashboard.putNumber("velerr", getController().getVelocityError());
 
         double tempv = getController().getSetpoint().velocity;
         double tempp = getController().getSetpoint().position;
 
-        SmartDashboard.putNumber("TrapVel", tempv);
-        SmartDashboard.putNumber("TrapPos", tempp);
-        SmartDashboard.putNumber("MOTROAO", armMotor.getAppliedOutput());
+        // SmartDashboard.putNumber("TrapVel", tempv);
+        // SmartDashboard.putNumber("TrapPos", tempp);
+        // SmartDashboard.putNumber("MOTROAO", armMotor.getAppliedOutput());
 
-        SmartDashboard.putNumber("ARMANFR", armAngleRads);
-        SmartDashboard.putNumber("ARMANDG", Units.radiansToDegrees(armAngleRads));
+        // SmartDashboard.putNumber("ARMANFR", armAngleRads);
+        // SmartDashboard.putNumber("ARMANDG", Units.radiansToDegrees(armAngleRads));
 
         acceleration = (getController().getSetpoint().velocity - lastSpeed)
                 / (Timer.getFPGATimestamp() - lastTime);
@@ -243,13 +243,13 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
         // getController().getSetpoint().velocity,
         // acceleration);
 
-        SmartDashboard.putNumber("KGVAL", Pref.getPref("armFFKg")
-                * Math.cos(getController().getSetpoint().position));
-        SmartDashboard.putNumber("KVVAL", Pref.getPref("armFFKv")
-                * getController().getSetpoint().velocity);
-        SmartDashboard.putNumber("KSVAL", Pref.getPref("armFFKs") *
-                Math.signum(getController().getSetpoint().velocity));
-        SmartDashboard.putNumber("KAVAL", Pref.getPref("armFFKa") * acceleration);
+        // SmartDashboard.putNumber("KGVAL", Pref.getPref("armFFKg")
+        //         * Math.cos(getController().getSetpoint().position));
+        // SmartDashboard.putNumber("KVVAL", Pref.getPref("armFFKv")
+        //         * getController().getSetpoint().velocity);
+        // SmartDashboard.putNumber("KSVAL", Pref.getPref("armFFKs") *
+        //         Math.signum(getController().getSetpoint().velocity));
+        // SmartDashboard.putNumber("KAVAL", Pref.getPref("armFFKa") * acceleration);
 
         feedforward = Pref.getPref("armFFKs") *
                 Math.signum(getController().getSetpoint().velocity)

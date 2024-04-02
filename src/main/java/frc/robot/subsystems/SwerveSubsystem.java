@@ -631,12 +631,12 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
       swervePoseEstimator.setVisionMeasurementStdDevs(
           VecBuilder.fill(xyStds, xyStds, radStds));
       if ((numberTargets > 1 && poseDifference < 2) || tagDistance < 8 || poseDifference < 0.5 || area > 0.3) {
-        if (poseDifference < 0.3 && area > 0.13) {
+        
           SmartDashboard.putNumber("VOR", timestampSeconds);
           swervePoseEstimator.addVisionMeasurement(
               llpose,
               timestampSeconds);
-        }
+        
       }
     }
 
@@ -703,11 +703,11 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
           VecBuilder.fill(xyStds, xyStds, radStds));
       if ((numberTargets > 1 && poseDifference < 2) || tagDistance < 8 || poseDifference < 0.5 || area > 0.3) {
         SmartDashboard.putNumber("VOR", timestampSeconds);
-        if (poseDifference < 0.3 && area > 0.13) {
+        
           swervePoseEstimator.addVisionMeasurement(
               llpose,
               timestampSeconds);
-        }
+        
       }
     }
   }

@@ -9,7 +9,6 @@ import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -35,6 +34,7 @@ import frc.robot.commands.Drive.AutoPickupNote;
 import frc.robot.commands.Drive.TeleopSwerve;
 import frc.robot.commands.Drive.WheelRadiusCharacterization;
 import frc.robot.commands.Shooter.CheckShooterAtSpeed;
+import frc.robot.commands.Shooter.LobShoot;
 import frc.robot.commands.Shooter.ShootFromDistance;
 import frc.robot.commands.Transfer.TransferIntakeToSensor;
 import frc.robot.subsystems.ArmSubsystem;
@@ -46,15 +46,15 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import monologue.Logged;
 
-public class RobotContainer implements Logged{
+public class RobotContainer implements Logged {
         /* Subsystems */
-        final SwerveSubsystem m_swerve = new SwerveSubsystem(true);
+        final SwerveSubsystem m_swerve = new SwerveSubsystem(false);
 
         final IntakeSubsystem m_intake = new IntakeSubsystem(false);
 
         final TransferSubsystem m_transfer = new TransferSubsystem(false);
 
-        final ArmSubsystem m_arm = new ArmSubsystem(true);
+        final ArmSubsystem m_arm = new ArmSubsystem(false);
 
         final ClimberSubsystem m_climber = new ClimberSubsystem();
 
@@ -131,15 +131,9 @@ public class RobotContainer implements Logged{
                                 m_swerve,
                                 () -> -driver.getLeftY(),
                                 () -> driver.getLeftX(),
-                                () -> driver.getRightX())
-                                .alongWith(m_cf.rumbleCommand(driver)), 
+                                () -> driver.getRightX()),
+                                //.alongWith(m_cf.rumbleCommand(driver)),
                                 new ShootFromDistance(m_shooter, m_swerve, m_arm)));
-                // driver.leftTrigger().whileTrue(
-                //                 new ShootFromDistance(m_shooter, m_swerve, m_arm));
-                                
-
-                //driver.leftTrigger().whileTrue(new WheelRadiusCharacterization(m_swerve));
-                
 
                 driver.rightBumper().onTrue(Commands.parallel(
                                 m_intake.startIntakeCommand(),
@@ -148,10 +142,18 @@ public class RobotContainer implements Logged{
                                 m_arm.setGoalCommand(ArmConstants.pickupAngle))
                                 .withTimeout(10));
 
+           driver.leftBumper().whileTrue(new ParallelCommandGroup(new AlignTargetOdometry(
+                                m_swerve,
+                                () -> -driver.getLeftY(),
+                                () -> driver.getLeftX(),
+                                () -> driver.getRightX()),
+                                //.alongWith(m_cf.rumbleCommand(driver)),
+                                new LobShoot(m_shooter, m_swerve)))
+                                .onTrue(m_arm.setGoalCommand(Units.degreesToRadians(Constants.lobArmAngle)));
+
                 driver.rightTrigger().onTrue(Commands.sequence(
                                 m_transfer.transferToShooterCommand(),
                                 // new WaitCommand(3),
-
                                 m_shooter.stopShooterCommand(),
                                 m_arm.setGoalCommand(ArmConstants.pickupAngle),
                                 m_intake.stopIntakeCommand()));
@@ -224,7 +226,7 @@ public class RobotContainer implements Logged{
 
                 codriver.povRight().onTrue(new ParallelCommandGroup(
                                 m_intake.startIntakeCommand(),
-                                new TransferIntakeToSensor(m_transfer,m_intake),
+                                new TransferIntakeToSensor(m_transfer, m_intake),
                                 m_cf.autopickup()));
 
                 // codriver.start().
@@ -244,19 +246,19 @@ public class RobotContainer implements Logged{
 
                 // setup.rightTrigger().whileTrue(new JogTransfer(m_transfer, setup));
 
-                 setup.rightBumper().whileTrue(new JogClimber(m_climber, setup));
+                setup.rightBumper().whileTrue(new JogClimber(m_climber, setup));
 
                 setup.a().onTrue(m_climber.lockClimberCommand());
 
                 setup.b().onTrue(m_climber.unlockClimberCommand());
 
-                //setup.leftBumper().whileTrue(m_swerve.quasistaticForward());
+                // setup.leftBumper().whileTrue(m_swerve.quasistaticForward());
 
-                //setup.leftTrigger().whileTrue(m_swerve.quasistaticBackward());
+                // setup.leftTrigger().whileTrue(m_swerve.quasistaticBackward());
 
-                //setup.rightBumper().whileTrue(m_swerve.dynamicForward());
+                // setup.rightBumper().whileTrue(m_swerve.dynamicForward());
 
-                //setup.rightTrigger().whileTrue(m_swerve.dynamicBackward());
+                // setup.rightTrigger().whileTrue(m_swerve.dynamicBackward());
 
                 // setup.a().onTrue(m_arm.setGoalCommand(Units.degreesToRadians(25)));
 
@@ -364,7 +366,7 @@ public class RobotContainer implements Logged{
 
                 NamedCommands.registerCommand("Arm Shooter Amp Shoot",
                                 m_cf.positionArmRunShooterSpecialCase(Constants.ampStartArmAngle,
-                                                Constants.ampStartShooterSpeed).asProxy()); 
+                                                Constants.ampStartShooterSpeed).asProxy());
 
                 NamedCommands.registerCommand("Arm Shooter Source",
                                 m_cf.positionArmRunShooterSpecialCase(Constants.shotSourceAngle,
@@ -480,8 +482,6 @@ public class RobotContainer implements Logged{
                                 .withSize(1, 1).withPosition(6, 1);
 
                 intfrLayout.addNumber("Transfer RPM", () -> round2dp(m_transfer.getRPM(), 0))
-                                .withSize(1, 1).withPosition(6, 1);
-                intfrLayout.addNumber("Sensor Inches", () -> round2dp(m_transfer.getSensorDistanceInches(), 0))
                                 .withSize(1, 1).withPosition(6, 1);
 
                 intfrLayout.addBoolean("NoteSensed", () -> m_transfer.noteAtIntake())

@@ -35,9 +35,6 @@ public class ClimberSubsystem extends SubsystemBase implements Logged{
   RelativeEncoder climberEncoderRight;
   public boolean showClimber = true;
 
-  private int loopctr;
-
-
   public ClimberSubsystem() {
     climberMotorLeft = new CANSparkMax(CANIDConstants.climberIDLeft, MotorType.kBrushless);
     climberMotorRight = new CANSparkMax(CANIDConstants.climbreIDRight, MotorType.kBrushless);
@@ -60,7 +57,7 @@ public class ClimberSubsystem extends SubsystemBase implements Logged{
     encoder.setVelocityConversionFactor(Constants.ClimberConstants.climberConversionVelocityFactor);
     encoder.setPositionConversionFactor(Constants.ClimberConstants.climberConversionPositionFactor);
     motor.enableVoltageCompensation(Constants.ClimberConstants.voltageComp);
-    motor.setOpenLoopRampRate(3);
+    //motor.setOpenLoopRampRate(3);
     motor.burnFlash();
     encoder.setPosition(0.0);
   }
@@ -69,8 +66,9 @@ public class ClimberSubsystem extends SubsystemBase implements Logged{
   public void periodic() {
     // This method will be called once per scheduler run
 
-    SmartDashboard.putNumber("Climber RPM Left", getRPMLeft());
-    SmartDashboard.putNumber("Climber RPM Right", getRPMRight());
+    // SmartDashboard.putNumber("Climber RPM Left", getRPMLeft());
+    // SmartDashboard.putNumber("Climber RPM Right", getRPMRight());
+    //SmartDashboard.putNumber("ClimberLeft", loopctr)
 
     // SmartDashboard.putNumber("Amps", climberMotor.getOutputCurrent());
     // SmartDashboard.putNumber("Position", climberEncoder.getPosition());
@@ -89,6 +87,9 @@ public class ClimberSubsystem extends SubsystemBase implements Logged{
   }
 
   public void runClimberMotor(double speed) {
+    if (getPositionLeft() > 130) {
+      speed = speed*0.5;
+    }
     climberMotorLeft.setVoltage(speed * RobotController.getBatteryVoltage());
     climberMotorRight.setVoltage(speed * RobotController.getBatteryVoltage());
   }
@@ -99,7 +100,11 @@ public class ClimberSubsystem extends SubsystemBase implements Logged{
     // } else {
     //   runClimberMotor(speed * .5);
     // }
-    runClimberMotor(speed);
+    if (getPositionLeft() < 10) {
+      runClimberMotor(speed * 0.2);
+    } else {
+        runClimberMotor(speed);
+    }
   }
 
   public Command lowerClimberArmsCommand(double speed) {

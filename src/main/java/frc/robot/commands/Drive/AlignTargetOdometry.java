@@ -11,6 +11,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -31,15 +33,13 @@ public class AlignTargetOdometry extends Command {
   private final SwerveSubsystem m_swerve;
   public PIDController m_alignTargetPID = new PIDController(0.03, 0, 0);
 
-
   private double rotationVal;
 
   public AlignTargetOdometry(
       SwerveSubsystem swerve,
       DoubleSupplier translationSup,
       DoubleSupplier strafeSup,
-      DoubleSupplier rotSup)
-  {
+      DoubleSupplier rotSup) {
     m_swerve = swerve;
     this.translationSup = translationSup;
     this.strafeSup = strafeSup;
@@ -74,11 +74,16 @@ public class AlignTargetOdometry extends Command {
     double angle = Units.radiansToDegrees(angleRad);
 
     double angleError = Math.IEEEremainder(Math.abs(angle-180), 180);
-    SmartDashboard.putNumber("AngleError", angleError);
+    // SmartDashboard.putNumber("AngleError", angleError);
     double angleErrorRobot = angleError + robotPose.getRotation().getDegrees();
-    SmartDashboard.putNumber("AngleErrorSign", angleErrorRobot);
+    // SmartDashboard.putNumber("AngleErrorSign", angleErrorRobot);
 
-    rotationVal = m_alignTargetPID.calculate(angleErrorRobot, 180);
+    if (DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get() == Alliance.Red) {
+      rotationVal = m_alignTargetPID.calculate(angleErrorRobot, 0);
+    } else {
+      rotationVal = m_alignTargetPID.calculate(angleErrorRobot, 180);
+    }
 
     m_swerve.drive(
         translationVal *= Constants.SwerveConstants.kmaxSpeed,

@@ -55,7 +55,7 @@ public class Robot extends TimedRobot implements Logged {
     // Shuffleboard.selectTab("Autonomous");
     Monologue.setupMonologue(m_robotContainer, "/Monologue", false, true);
 
-   
+   DriverStation.startDataLog(DataLogManager.getLog());
    // Monologue.setupMonologue(this, "/Monologue", false, true);
   }
 
@@ -130,6 +130,8 @@ public class Robot extends TimedRobot implements Logged {
     m_startDelay = m_robotContainer.m_startDelayChooser.getSelected();
 
     m_robotContainer.m_swerve.cameraSelection = m_robotContainer.m_cameraChooser.getSelected();
+
+    m_robotContainer.m_swerve.resetModuleEncoders();
 
     startTime = Timer.getFPGATimestamp();
 

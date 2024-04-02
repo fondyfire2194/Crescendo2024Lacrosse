@@ -52,6 +52,6 @@ public class TransferIntakeToSensor extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return sensorDebouncer.calculate(m_transfer.noteAtIntake());
+    return m_transfer.noteAtIntake();//sensorDebouncer.calculate(m_transfer.noteAtIntake());
   }
 }

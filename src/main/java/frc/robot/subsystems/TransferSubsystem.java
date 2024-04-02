@@ -36,7 +36,7 @@ public class TransferSubsystem extends SubsystemBase {
   public SparkPIDController transferController;
   RelativeEncoder transferEncoder;
 
-  private final TimeOfFlight m_detectNoteSensor = new TimeOfFlight(CANIDConstants.transferDistanceSensorID);
+  //private final TimeOfFlight m_detectNoteSensor = new TimeOfFlight(CANIDConstants.transferDistanceSensorID);
 
   public boolean m_showScreens;
 
@@ -56,7 +56,7 @@ public class TransferSubsystem extends SubsystemBase {
     m_limitSwitch = transferMotor.getForwardLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
     m_limitSwitch.enableLimitSwitch(true);
 
-    m_detectNoteSensor.setRangingMode(RangingMode.Short, 40);
+    //m_detectNoteSensor.setRangingMode(RangingMode.Short, 40);
 
     if (m_showScreens) {
 
@@ -74,10 +74,10 @@ public class TransferSubsystem extends SubsystemBase {
           .withSize(1, 1)
           .withPosition(4, 1);
 
-      Shuffleboard.getTab("IntakeSubsystem").addNumber("NoteSensorInches",
-          () -> round2dp(getSensorDistanceInches(), 1))
-          .withSize(1, 1)
-          .withPosition(3, 2);
+      // Shuffleboard.getTab("IntakeSubsystem").addNumber("NoteSensorInches",
+      //     () -> round2dp(getSensorDistanceInches(), 1))
+      //     .withSize(1, 1)
+      //     .withPosition(3, 2);
 
       Shuffleboard.getTab("IntakeSubsystem").addBoolean("NoteSensed", () -> noteAtIntake())
           .withSize(1, 1)
@@ -141,9 +141,9 @@ public class TransferSubsystem extends SubsystemBase {
     transferController.setReference(Pref.getPref("TransferIntakingSpeed"), ControlType.kVelocity);
   }
 
-  public double getSensorDistanceInches() {
-    return Units.metersToInches(m_detectNoteSensor.getRange() / 1000);
-  }
+  // public double getSensorDistanceInches() {
+  //   return Units.metersToInches(m_detectNoteSensor.getRange() / 1000);
+  // }
 
   // public boolean noteAtIntake() {
   //   return getSensorDistanceInches() > 0
@@ -158,12 +158,12 @@ public class TransferSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    SmartDashboard.putNumber("SENSINCHES", getSensorDistanceInches());
-    loopctr++;
-    SmartDashboard.putBoolean("LSE", m_limitSwitch.isLimitSwitchEnabled());
+    //SmartDashboard.putNumber("SENSINCHES", getSensorDistanceInches());
+    // loopctr++;
+    // SmartDashboard.putBoolean("LSE", m_limitSwitch.isLimitSwitchEnabled());
 
-    SmartDashboard.putBoolean("PLLIM", m_limitSwitch.isPressed());
-    ;
+    // SmartDashboard.putBoolean("PLLIM", m_limitSwitch.isPressed());
+    
 
   }
 

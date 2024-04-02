@@ -92,7 +92,7 @@ public final class Constants {
 
                 /* Swerve Current Limiting */
                 public static final int angleContinuousCurrentLimit = 20;
-                public static final int driveContinuousCurrentLimit = 30;
+                public static final int driveContinuousCurrentLimit = 40; //60
 
                 /* Swerve Profiling Values */
                 public static final double kmaxTheoreticalSpeed = 4.6; // 3.7;// mps *1.2 L2
@@ -546,7 +546,7 @@ public final class Constants {
                 public static final double transferConversionPositionFactor = 1;
                 public static final double voltageComp = 12;
                 public static final IdleMode transferIdleMode = IdleMode.kBrake;
-                public static final int transferContinuousCurrentLimit = 20;
+                public static final int transferContinuousCurrentLimit = 40; 
                 public static double clearShooterTime = 0.6;
                 public static double noNoteStopTime = 20;
                 public static double jogSpeed = 1;
