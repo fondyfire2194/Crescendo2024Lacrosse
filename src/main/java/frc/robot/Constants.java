@@ -114,9 +114,9 @@ public final class Constants {
                 public static final double driveKFF = .5 / kmaxTheoreticalSpeed;
 
                 /* Drive Motor Characterization Values */
-                public static final double driveKS = 0.25;
-                public static final double driveKV = 2.55;// 2.5636; //2.59
-                public static final double driveKA = 0.4; /// 0.46
+                public static final double driveKS = 0.55; //0.25
+                public static final double driveKV = 2.8;// 2.5636; //2.59 //2.55
+                public static final double driveKA = 0.59; /// 0.4
 
                 /* Drive Motor Conversion Factors */
                 public static final double driveConversionPositionFactor = (wheelDiameter.magnitude() * Math.PI)
@@ -188,8 +188,8 @@ public final class Constants {
                 }
 
                 public static final HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig(
-                                new PIDConstants(2, 0, 0), // 2.0 Translation constants
-                                new PIDConstants(1.3, 0, 0), // 1.3 Rotation constants
+                                new PIDConstants(2, 0, 0), // 2.0 Translation constants 3
+                                new PIDConstants(1.5, 0, 0), // 1.3 Rotation constants 3
                                 kmaxSpeed,
                                 flModuleOffset.getNorm(), // Drive base radius (distance from center to furthest module)
                                 new ReplanningConfig());

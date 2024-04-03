@@ -160,6 +160,10 @@ public class SwerveModule extends SubsystemBase {
     driveController.setI(Constants.SwerveConstants.driveKI);
     driveController.setD(Constants.SwerveConstants.driveKD);
     driveController.setFF(Constants.SwerveConstants.driveKFF);// 3.24=max speed
+    driveController.setP(0.4 , 1);
+    driveController.setI(0, 1);
+    driveController.setD(0, 1);
+    driveController.setFF(0, 1);
     driveMotor.enableVoltageCompensation(Constants.SwerveConstants.voltageComp);
     driveMotor.burnFlash();
     driveEncoder.setPosition(0.0);
@@ -203,7 +207,7 @@ public class SwerveModule extends SubsystemBase {
       SmartDashboard.putNumber(String.valueOf(moduleNumber) + " driveKv",
           percentOutput * RobotController.getBatteryVoltage() / getDriveVelocity());
     }
-    boolean feedforward = false;
+    boolean feedforward = true;
     if (!isOpenLoop) {
       if (!feedforward) {
         driveController.setReference(desiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);

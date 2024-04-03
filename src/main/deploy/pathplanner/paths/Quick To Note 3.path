@@ -3,49 +3,49 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.260529885988683,
-        "y": 2.3246704313313837
+        "x": 2.8914165885203804,
+        "y": 5.583099697005081
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.929289523710799,
-        "y": 1.6336241810847247
+        "x": 1.481051682482512,
+        "y": 5.495559806285489
       },
       "isLocked": false,
-      "linkedName": "Center 4"
+      "linkedName": "Note 2"
     },
     {
       "anchor": {
-        "x": 5.056475183944282,
-        "y": 2.023183600119737
+        "x": 2.6385235708860044,
+        "y": 4.08
       },
       "prevControl": {
-        "x": 6.704314675597675,
-        "y": 1.0588250354219557
+        "x": 1.2410976634594144,
+        "y": 4.332192056284435
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ShootingPoint"
+      "linkedName": "Note 3"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 2.5,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 180.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 145.0,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Source",
+  "folder": "SubWfrQuick",
   "previewStartingState": {
-    "rotation": -157.69,
+    "rotation": 180.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

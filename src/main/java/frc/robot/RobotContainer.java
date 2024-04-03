@@ -321,6 +321,13 @@ public class RobotContainer implements Logged {
         }
 
         private void registerNamedCommands() {
+
+                NamedCommands.registerCommand("Arm Before Note 2", m_cf.positionArmRunShooterSpecialCase(44,
+                                                3000).asProxy());
+
+                NamedCommands.registerCommand("Arm Note 2", m_cf.positionArmRunShooterSpecialCase(35,
+                                                3200).asProxy());
+
                 NamedCommands.registerCommand("Halt Intake", m_intake.stopIntakeCommand().asProxy());
 
                 NamedCommands.registerCommand("Prestart Shooter Wheels", m_shooter.startShooterCommand(4000).asProxy());
