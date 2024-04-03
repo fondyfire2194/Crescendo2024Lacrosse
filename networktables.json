@@ -215,5 +215,21 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/LockNumber",
+    "type": "double",
+    "value": 1.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/UnlockNumber",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
   }
 ]
