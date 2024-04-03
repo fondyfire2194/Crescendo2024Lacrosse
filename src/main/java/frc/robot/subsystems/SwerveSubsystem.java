@@ -544,7 +544,7 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
 
     swervePoseEstimator.update(getYaw(), getPositions());
 
-    //getPose();
+    getPose();
 
     putStates();
 
