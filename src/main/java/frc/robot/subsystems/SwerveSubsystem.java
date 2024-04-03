@@ -540,7 +540,7 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
 
     loopctr++;
 
-    getPose();
+    //getPose();
 
     swervePoseEstimator.update(getYaw(), getPositions());
 
@@ -548,7 +548,7 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
 
     putStates();
 
-    doNoteVisionCorrection();
+   // doNoteVisionCorrection();
 
     if(firstTime&&isStopped())firstTime=false;
 
@@ -632,7 +632,7 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
           VecBuilder.fill(xyStds, xyStds, radStds));
       if ((numberTargets > 1 && poseDifference < 2) || tagDistance < 8 || poseDifference < 0.5 || area > 0.3) {
         
-          SmartDashboard.putNumber("VOR", timestampSeconds);
+          SmartDashboard.putNumber("VOL", timestampSeconds);
           swervePoseEstimator.addVisionMeasurement(
               llpose,
               timestampSeconds);

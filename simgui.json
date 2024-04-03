@@ -120,21 +120,6 @@
           "visible": true
         }
       },
-      "/Shuffleboard/ShooterSubsystem/Arm to 0 Deg": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/Shuffleboard/ShooterSubsystem/Arm to 30 Deg": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/Shuffleboard/ShooterSubsystem/Arm to 90 Deg": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Field": {
         "bottom": 1476,
         "height": 8.210550308227539,
