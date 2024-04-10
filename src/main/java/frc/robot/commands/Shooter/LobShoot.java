@@ -37,17 +37,17 @@ public class LobShoot extends Command {
     
     double rpm = 2700;
     if (distance > 10.0) {
-      rpm = 3200;
-    } else if (distance < 8.0) {
-      rpm = 2700;
+      rpm = 3100;
+    } else if (distance < 7.0) {
+      rpm = 2600;
     } else {
-      rpm = 2700 + ((10.0-distance) / 2) * 500;
+      rpm = 2600 + ((10.0-distance) / 2) * 500;
     }
 
     ChassisSpeeds fieldSpeeds = m_swerve.getSpeeds();
 
     double velocity = Math.sqrt(Math.pow(fieldSpeeds.vxMetersPerSecond, 2) + Math.pow(fieldSpeeds.vxMetersPerSecond, 2));
-    double velocityDecreasor = velocity * 100;
+    double velocityDecreasor = velocity * 150;
     rpm = rpm - velocityDecreasor;
 
     m_shooter.commandRPM = rpm;

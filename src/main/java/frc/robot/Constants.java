@@ -114,9 +114,9 @@ public final class Constants {
                 public static final double driveKFF = .5 / kmaxTheoreticalSpeed;
 
                 /* Drive Motor Characterization Values */
-                public static final double driveKS = 0.55; //0.25
-                public static final double driveKV = 2.8;// 2.5636; //2.59 //2.55
-                public static final double driveKA = 0.59; /// 0.4
+                public static final double driveKS = 0.60; //0.25 55
+                public static final double driveKV = 2.70;// 2.5636; //2.59 //2.55 2.8
+                public static final double driveKA = 0.59; /// 0.4 0.59
 
                 /* Drive Motor Conversion Factors */
                 public static final double driveConversionPositionFactor = (wheelDiameter.magnitude() * Math.PI)
@@ -228,6 +228,10 @@ public final class Constants {
                 public static final Pose2d speakerBlueAlliance = new Pose2d(0.0, 5.5, Rotation2d.fromDegrees(0.0));
                 public static final Pose2d speakerRedAlliance = new Pose2d(16.54, 5.5, Rotation2d.fromDegrees(180.0));
 
+                 public static final Pose2d lobBlueAlliance = new Pose2d(0.0, 7.1, Rotation2d.fromDegrees(0.0));
+                public static final Pose2d lobRedAlliance = new Pose2d(16.54, 7.1, Rotation2d.fromDegrees(180.0));
+
+
                 public static Pose2d driverStationBlueAlliance = new Pose2d();
                 public static Pose2d driverStationRedAlliance = new Pose2d();
 
@@ -249,6 +253,15 @@ public final class Constants {
                         return FieldConstants.speakerRedAlliance;
                 else
                         return FieldConstants.speakerBlueAlliance;
+
+        }
+
+         public static Pose2d getActiveLobPose() {
+                if (DriverStation.getAlliance().isPresent()
+                                && DriverStation.getAlliance().get() == Alliance.Red)
+                        return FieldConstants.lobRedAlliance;
+                else
+                        return FieldConstants.lobBlueAlliance;
 
         }
 
@@ -456,12 +469,12 @@ public final class Constants {
         public static double ampShooterSpeed = 700;// rpm
 
         public static double lobArmAngle = 50;// degrees
-        public static double lobShooterSpeed = 3000;// rpm
+        public static double lobShooterSpeed = 2800;// rpm
 
         public static double subwfrArmAngle = 60;// degrees
         public static double subwfrShooterSpeed = 3000;// rpm
 
-        public static double shotSourceAngle = 22.0; // 26
+        public static double shotSourceAngle = 21.5; // 26
         public static double shotSourceSpeed = 4700; // 4000
 
         public static double wing1ArmAngle = 34;// degrees
@@ -487,7 +500,7 @@ public final class Constants {
 
         public static final class ArmConstants {
 
-                public static final double cancoderOffsetRadians = Units.degreesToRadians(18); // This measurement works
+                public static final double cancoderOffsetRadians = Units.degreesToRadians(17); // This measurement works 18?
 
                 public static final double maxarmMotorRPM = 5700;
 

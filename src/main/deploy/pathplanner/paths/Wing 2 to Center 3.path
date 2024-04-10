@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.056475183944282,
-        "y": 2.023183600119737
+        "x": 2.9,
+        "y": 5.56
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.572678407020099,
-        "y": 1.6901492626514667
+        "x": 4.535221203143829,
+        "y": 5.515013115334288
       },
       "isLocked": false,
-      "linkedName": "ShootingPoint"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.50369624909866,
-        "y": 0.7781323619519257
+        "x": 5.537066619156935,
+        "y": 4.114374863820816
       },
       "prevControl": {
-        "x": 6.943678552686295,
-        "y": 0.7979262898218853
+        "x": 4.537066619156935,
+        "y": 4.114374863820816
+      },
+      "nextControl": {
+        "x": 6.537066619156935,
+        "y": 4.114374863820816
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.260529885988683,
+        "y": 4.114374863820816
+      },
+      "prevControl": {
+        "x": 7.102094454555308,
+        "y": 4.114374863820816
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Center 5"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -43,9 +59,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Source",
+  "folder": "SubWfrMid",
   "previewStartingState": {
-    "rotation": 145.0,
+    "rotation": 180.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

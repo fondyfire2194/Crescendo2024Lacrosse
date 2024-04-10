@@ -4,9 +4,10 @@
   "holonomicMode": true,
   "pathFolders": [
     "Amp Start",
-    "SubWfrQuick",
+    "SubWfrMid",
     "Source",
-    "SubWfr"
+    "SubWfr",
+    "SubWfrQuick"
   ],
   "autoFolders": [
     "Amp Start",

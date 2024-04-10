@@ -12,22 +12,15 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Arm Shooter SubWfr"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
-              }
-            ]
+            "name": "Arm Shooter SubWfr"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
@@ -37,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Quick Sub To Note 1"
+                  "pathName": "Subwfr Shoot to Wing 3"
                 }
               },
               {
@@ -49,13 +42,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Start Intake"
+                  "name": "Transfer To Sensor"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Transfer To Sensor"
+                  "name": "Start Intake"
                 }
               }
             ]
@@ -68,13 +61,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Quick Note 1 to Before Note 2"
+                  "pathName": "Wing 3 to Subwfr Shoot"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Arm Before Note 2"
+                  "name": "Arm Shooter SubWfr"
                 }
               }
             ]
@@ -87,19 +80,19 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Arm To Intake"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Quick To Note 2"
+                  "pathName": "Subwfr Shoot to Wing 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm To Intake"
                 }
               },
               {
@@ -130,19 +123,19 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Quick To Note 3"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Transfer To Sensor"
+                  "pathName": "Wing 2 to Center 3"
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "Arm To Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Transfer To Sensor"
                 }
               }
             ]
@@ -155,13 +148,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Quick Note 3 Shoot"
+                  "pathName": "Center 3 to Shoot"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Arm Shooter SubWfr"
+                  "name": "Arm Note 2"
                 }
               }
             ]
@@ -171,6 +164,37 @@
           "type": "named",
           "data": {
             "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Shooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Arm To Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Transfer Stop"
+                }
+              }
+            ]
           }
         }
       ]

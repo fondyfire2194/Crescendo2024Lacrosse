@@ -4,11 +4,15 @@
 
 package frc.robot;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
+
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -22,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.CameraConstants;
@@ -29,6 +34,7 @@ import frc.robot.commands.CommandFactory;
 import frc.robot.commands.JogClimber;
 import frc.robot.commands.Arm.CheckArmAtTarget;
 import frc.robot.commands.Drive.AlignTargetOdometry;
+import frc.robot.commands.Drive.AlignTargetOdometryLob;
 import frc.robot.commands.Drive.AlignToNote;
 import frc.robot.commands.Drive.AutoPickupNote;
 import frc.robot.commands.Drive.TeleopSwerve;
@@ -132,24 +138,31 @@ public class RobotContainer implements Logged {
                                 () -> -driver.getLeftY(),
                                 () -> driver.getLeftX(),
                                 () -> driver.getRightX()),
-                                //.alongWith(m_cf.rumbleCommand(driver)),
+                                // .alongWith(m_cf.rumbleCommand(driver)),
                                 new ShootFromDistance(m_shooter, m_swerve, m_arm)));
 
                 driver.rightBumper().onTrue(Commands.parallel(
                                 m_intake.startIntakeCommand(),
-                                new TransferIntakeToSensor(m_transfer,m_intake),
+                                new TransferIntakeToSensor(m_transfer, m_intake),
                                 m_cf.rumbleCommand(driver),
                                 m_arm.setGoalCommand(ArmConstants.pickupAngle))
                                 .withTimeout(10));
 
-           driver.leftBumper().whileTrue(new ParallelCommandGroup(new AlignTargetOdometry(
+                // driver.leftBumper().whileTrue(new ParallelCommandGroup(new
+                // AlignTargetOdometry(
+                // m_swerve,
+                // () -> -driver.getLeftY(),
+                // () -> driver.getLeftX(),
+                // () -> driver.getRightX()),
+                // // .alongWith(m_cf.rumbleCommand(driver)),
+                // new LobShoot(m_shooter, m_swerve)))
+                // .onTrue(m_arm.setGoalCommand(Units.degreesToRadians(Constants.lobArmAngle)));
+                driver.leftBumper().whileTrue(new AlignTargetOdometryLob(
                                 m_swerve,
                                 () -> -driver.getLeftY(),
                                 () -> driver.getLeftX(),
-                                () -> driver.getRightX()),
-                                //.alongWith(m_cf.rumbleCommand(driver)),
-                                new LobShoot(m_shooter, m_swerve)))
-                                .onTrue(m_arm.setGoalCommand(Units.degreesToRadians(Constants.lobArmAngle)));
+                                () -> driver.getRightX()));
+                // .onTrue(m_arm.setGoalCommand(Units.degreesToRadians(Constants.lobArmAngle)));
 
                 driver.rightTrigger().onTrue(Commands.sequence(
                                 m_transfer.transferToShooterCommand(),
@@ -197,7 +210,8 @@ public class RobotContainer implements Logged {
                 codriver.leftTrigger().whileTrue(m_climber.raiseClimberArmsCommand(0.6))
                                 .onFalse(m_climber.stopClimberCommand());
 
-                codriver.leftBumper().onTrue(m_arm.positionToIntakeUDACommand());
+                // codriver.leftBumper().onTrue(m_arm.positionToIntakeUDACommand());
+                codriver.leftBumper().whileTrue(new JogClimber(m_climber, codriver));
 
                 codriver.rightTrigger().whileTrue(m_climber.lowerClimberArmsCommand(0.6))
                                 .onFalse(m_climber.stopClimberCommand());
@@ -214,8 +228,16 @@ public class RobotContainer implements Logged {
                 codriver.x().onTrue(m_cf.positionArmRunShooterSpecialCase(Constants.tapeLineArmAngle,
                                 Constants.tapeLineShooterSpeed));
 
-                codriver.y().onTrue(m_cf.positionArmRunShooterSpecialCase(Constants.allianceLineArmAngle,
-                                Constants.allianceLineShooterSpeed));
+                // codriver.y().onTrue(m_cf.positionArmRunShooterSpecialCase(Constants.allianceLineArmAngle,
+                // Constants.allianceLineShooterSpeed));
+                codriver.y().whileTrue(new ParallelCommandGroup(new AlignTargetOdometry(
+                                m_swerve,
+                                () -> -driver.getLeftY(),
+                                () -> driver.getLeftX(),
+                                () -> driver.getRightX()),
+                                // .alongWith(m_cf.rumbleCommand(driver)),
+                                new LobShoot(m_shooter, m_swerve)))
+                                .onTrue(m_arm.setGoalCommand(Units.degreesToRadians(Constants.lobArmAngle)));
 
                 codriver.povUp().onTrue(m_climber.raiseClimberArmsCommand(.3));
 
@@ -229,9 +251,10 @@ public class RobotContainer implements Logged {
                                 new TransferIntakeToSensor(m_transfer, m_intake),
                                 m_cf.autopickup()));
 
-                // codriver.start().
+                codriver.start().onTrue(Commands.runOnce(() -> m_swerve.resetModuleEncoders()));
 
-                // codriver.back()
+                codriver.back().whileTrue(Commands.runOnce(() -> m_intake.intakeMotor.setVoltage(-8)))
+                                .onFalse(Commands.runOnce(() -> m_intake.intakeMotor.setVoltage(0)));
 
         }
 
@@ -323,10 +346,10 @@ public class RobotContainer implements Logged {
         private void registerNamedCommands() {
 
                 NamedCommands.registerCommand("Arm Before Note 2", m_cf.positionArmRunShooterSpecialCase(44,
-                                                3000).asProxy());
+                                3000).asProxy());
 
                 NamedCommands.registerCommand("Arm Note 2", m_cf.positionArmRunShooterSpecialCase(35,
-                                                3200).asProxy());
+                                3200).asProxy());
 
                 NamedCommands.registerCommand("Halt Intake", m_intake.stopIntakeCommand().asProxy());
 
@@ -407,6 +430,24 @@ public class RobotContainer implements Logged {
                 m_cameraChooser.addOption("BothCameras", 3);
 
                 autoChooser = AutoBuilder.buildAutoChooser();
+
+                // autoChooser.addOption("Source 2 with Vision",
+                //                 new SequentialCommandGroup(
+                //                                 m_cf.positionArmRunShooterSpecialCase(Constants.subwfrArmAngle,
+                //                                                 Constants.subwfrShooterSpeed),
+                //                                 m_transfer.transferToShooterCommand(),
+                //                                 AutoBuilder.followPath(PathPlannerPath
+                //                                                 .fromPathFile("Source To Near Center 4")),
+                //                                 new ParallelCommandGroup(m_cf.autopickup(),
+                //                                                 m_intake.startIntakeCommand(),
+                //                                                 m_arm.setGoalCommand(ArmConstants.pickupAngle),
+                //                                                 m_cf.runToSensorCommand()),
+                //                                 AutoBuilder.followPath(m_swerve.getPathToNearSource()),
+                //                                 AutoBuilder.followPath(
+                //                                                 PathPlannerPath.fromPathFile("Near Center 4 to Shoot")),
+                //                                 m_cf.positionArmRunShooterSpecialCase(Constants.shotSourceAngle,
+                //                                                 Constants.shotSourceSpeed),
+                //                                 m_transfer.transferToShooterCommand()));
 
                 Shuffleboard.getTab("Autonomous").add("AutoSelection", autoChooser)
                                 .withSize(3, 1).withPosition(0, 0);

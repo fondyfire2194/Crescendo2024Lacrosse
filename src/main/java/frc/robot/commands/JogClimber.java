@@ -35,9 +35,18 @@ public class JogClimber extends Command {
   public void execute() {
     double yval = -m_controller.getLeftY();
     SmartDashboard.putNumber("ClimbNum", yval);
-    m_climber.runClimberMotor(yval*0.5);
-   
-
+    if (m_climber.getPositionLeft() > 145 && yval > 0) {
+      m_climber.runClimberMotor(0);
+    } else if (m_climber.getPositionLeft() > 140 && yval > 0) {
+      m_climber.runClimberMotor(yval*0.2);
+    } 
+    
+    else if (m_climber.getPositionLeft() < 10 && yval < 0) {
+      m_climber.runClimberMotor(0);
+    } else {
+      m_climber.runClimberMotor(yval);
+    }
+    
   }
 
   // Called once the command ends or is interrupted.

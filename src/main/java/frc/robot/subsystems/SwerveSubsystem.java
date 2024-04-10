@@ -5,8 +5,13 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.List;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.Matrix;
@@ -299,6 +304,16 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
     firstTime = true;
   }
 
+  // public PathPlannerPath getPathToNearSource() {
+  //   List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+  //     new Pose2d(getPose().getTranslation().getX(), getPose().getTranslation().getY(), Rotation2d.fromDegrees(180)),
+  //     new Pose2d(6.79, 1.60, Rotation2d.fromDegrees(180))
+  //   );
+  //   PathPlannerPath path = new PathPlannerPath(bezierPoints, new PathConstraints(3.0, 3.0, 2 * Math.PI, 3 * Math.PI), new GoalEndState(0.0, Rotation2d.fromDegrees(180)));
+  //   path.preventFlipping = false; 
+  //   return path;
+  // }
+
   public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
     driveRobotRelative(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, getPose().getRotation()));
   }
@@ -540,7 +555,7 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
 
     loopctr++;
 
-    //getPose();
+    // getPose();
 
     swervePoseEstimator.update(getYaw(), getPositions());
 
@@ -548,9 +563,10 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
 
     putStates();
 
-   // doNoteVisionCorrection();
+    // doNoteVisionCorrection();
 
-    if(firstTime&&isStopped())firstTime=false;
+    if (firstTime && isStopped())
+      firstTime = false;
 
     boolean leftHasTarget = CameraConstants.frontLeftCamera.isActive
         && LimelightHelpers.getTV(CameraConstants.frontLeftCamera.camname);
@@ -564,6 +580,7 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
     if (rightHasTarget)
       doVisionValuesFR();
   }
+  
 
   @Log.NT(key = "SpeakerDistance")
   public double getDistanceFromSpeaker() {
@@ -631,12 +648,12 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
       swervePoseEstimator.setVisionMeasurementStdDevs(
           VecBuilder.fill(xyStds, xyStds, radStds));
       if ((numberTargets > 1 && poseDifference < 2) || tagDistance < 8 || poseDifference < 0.5 || area > 0.3) {
-        
-          SmartDashboard.putNumber("VOL", timestampSeconds);
-          swervePoseEstimator.addVisionMeasurement(
-              llpose,
-              timestampSeconds);
-        
+
+        SmartDashboard.putNumber("VOL", timestampSeconds);
+        swervePoseEstimator.addVisionMeasurement(
+            llpose,
+            timestampSeconds);
+
       }
     }
 
@@ -703,11 +720,11 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
           VecBuilder.fill(xyStds, xyStds, radStds));
       if ((numberTargets > 1 && poseDifference < 2) || tagDistance < 8 || poseDifference < 0.5 || area > 0.3) {
         SmartDashboard.putNumber("VOR", timestampSeconds);
-        
-          swervePoseEstimator.addVisionMeasurement(
-              llpose,
-              timestampSeconds);
-        
+
+        swervePoseEstimator.addVisionMeasurement(
+            llpose,
+            timestampSeconds);
+
       }
     }
   }
@@ -717,7 +734,7 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
     double corrGain = .001;
 
     if (LimelightHelpers.getTV(rname)) {
-     
+
       yerror = LimelightHelpers.getTX(rname);
       capLatency = LimelightHelpers.getLatency_Capture(rname);
       pipelineLatency = LimelightHelpers.getLatency_Pipeline(rname);
