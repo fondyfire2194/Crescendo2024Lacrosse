@@ -16,6 +16,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -32,6 +33,8 @@ import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.CANIDConstants;
 import frc.robot.Pref;
+import monologue.Annotations.Log;
+
 import static edu.wpi.first.units.Units.Volts;
 
 public class ArmSubsystem extends ProfiledPIDSubsystem {
@@ -340,12 +343,12 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
         return getController().getGoal().position;
     }
 
+      @Log.NT(key = "armrads")
     public double getAngleRadians() {
-        return getCanCoderRad();
-        // if (RobotBase.isReal())
-        // return armEncoder.getPosition();
-        // else
-        // return getCurrentGoal();
+        if (RobotBase.isReal())
+            return getCanCoderRad();
+        else
+            return getCurrentGoal();
     }
 
     public double getAngleDegrees() {
@@ -356,6 +359,8 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
         return Math.abs(getCurrentGoal() - getAngleRadians()) < angleTolerance;
         // return getController().atSetpoint() || RobotBase.isSimulation();
     }
+
+    
 
     public double getVoltsPerRadPerSec() {
         appliedVolts = armMotor.getAppliedOutput() * RobotController.getBatteryVoltage();

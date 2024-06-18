@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Arm;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmSubsystem;
 
@@ -29,6 +30,7 @@ public class CheckArmAtTarget extends Command {
   @Override
   public void execute() {
     loopCtr++;
+    SmartDashboard.putNumber("Armlpctr", loopCtr);
   }
 
   // Called once the command ends or is interrupted.

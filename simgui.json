@@ -115,6 +115,11 @@
       "/SmartDashboard/VisSet": "Mechanism2d"
     },
     "windows": {
+      "/FMSInfo": {
+        "window": {
+          "visible": true
+        }
+      },
       "/Shuffleboard/Autonomous/AutoSelection": {
         "window": {
           "visible": true
@@ -141,6 +146,9 @@
       "open": false
     },
     "transitory": {
+      "PathPlanner": {
+        "open": true
+      },
       "Shuffleboard": {
         "Autonomous": {
           "CenterStart": {

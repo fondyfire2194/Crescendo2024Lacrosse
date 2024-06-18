@@ -12,31 +12,6 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Start Intake"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Arm To Intake"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Source To Near Center 4"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "LocatePickupNote"

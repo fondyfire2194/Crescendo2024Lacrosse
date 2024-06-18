@@ -67,6 +67,7 @@ public class AlignTargetOdometry extends Command {
 
     // get horizontal angle
     Pose2d speakerPose = Constants.getActiveSpeakerPose();
+    SmartDashboard.putString("ACTSPKRPOSE", speakerPose.toString());
     Pose2d robotPose = m_swerve.getPose();
     double XDiff = speakerPose.getX() - robotPose.getX();
     double YDiff = speakerPose.getY() - robotPose.getY();

@@ -129,7 +129,6 @@ public class RobotContainer implements Logged {
         private void configureDriverBindings() {
 
                 // KEEP IN BUTTON ORDER
-
                 fieldCentric = driver.a();
                 keepAngle = () -> false;
 

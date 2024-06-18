@@ -5,13 +5,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.List;
-
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.Matrix;
@@ -29,11 +24,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.util.datalog.StringLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -55,7 +45,6 @@ import frc.robot.LimelightHelpers;
 import frc.robot.Pref;
 import frc.robot.utils.AllianceUtil;
 import monologue.Annotations.Log;
-import monologue.LogLevel;
 import monologue.Logged;
 
 public class SwerveSubsystem extends SubsystemBase implements Logged {
@@ -385,7 +374,10 @@ public class SwerveSubsystem extends SubsystemBase implements Logged {
 
   @Log.NT(key = "Poseestimate")
   public Pose2d getPose() {
-    return swervePoseEstimator.getEstimatedPosition();
+    if (RobotBase.isReal())
+      return swervePoseEstimator.getEstimatedPosition();
+    else
+      return simOdometryPose;
   }
 
   public double getX() {
