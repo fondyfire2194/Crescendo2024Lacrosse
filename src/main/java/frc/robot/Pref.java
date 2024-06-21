@@ -32,59 +32,63 @@ public class Pref {
 
   static {
 
-    // drive tune
-    prefDict.put("DriveKp", .001);
-    prefDict.put("DriveFF", .5);
-
-    // angle tune
-
-    prefDict.put("AngleKp", .01);
+    // amp shot
+    prefDict.put("AmpArmIncrementDelay", .1);
+    prefDict.put("AmpBottomRPM", 500.);
+    prefDict.put("AmpArmDegrees", 92.);
+    prefDict.put("AmpDegreeIncrement", 10.);
+    prefDict.put("AmpTopRPM", 1000.);
+    prefDict.put("AmpTransferToShootSpeed", 4000.);
 
     // align to tag
+    prefDict.put("AlignKp", 0.01);
 
-    prefDict.put("AlignKp", .01);
+    // swerveangle tune
+    prefDict.put("AngleKp", .028);
+    // arm
+    prefDict.put("armFFKa", 0.);
+    prefDict.put("armFFKg", .2);
+    prefDict.put("armFFKs", 0.31);
+    prefDict.put("armFFKv", 2.0);
+    prefDict.put("armKd", 0.);
+    prefDict.put("armKi", .5);
+    prefDict.put("armKiZone", 0.);
+    prefDict.put("armKp", 30.);
+    prefDict.put("armUpFFKv", 2.75);
 
+    // drive tune
+
+    prefDict.put("DriveFF", .95);
+    prefDict.put("DriveKp", .1);
+    prefDict.put("IntakeKp", 0.00035);
+    prefDict.put("IntakeSpeed", 4500.);
+
+    prefDict.put("LockNumber", 1.);
+
+    prefDict.put("rotkd", 0.00001);
+    prefDict.put("rotki", 0.005);
+    prefDict.put("rotkp", 0.003);
+
+    prefDict.put("SensorDistance", 6.);
     // shooter
+    prefDict.put("ShooterBottomKd", .0001);
+    prefDict.put("ShooterBottomKi", .0);
+    prefDict.put("ShooterBottomKp", .0004);
+    prefDict.put("ShooterBottomKpFF", .0007);
+    
+    prefDict.put("ShooterSpeedRatio", 1.);
 
-    prefDict.put("ShooterSpeedRatio", 0.5);
-    prefDict.put("ShooterTopKp", .0007);
-    prefDict.put("ShooterTopKd", .001);
-    prefDict.put("ShooterTopKi", .001);
-
+    prefDict.put("ShooterTopKd", .01);
+    prefDict.put("ShooterTopKi", 0.);
+    prefDict.put("ShooterTopKp", .0004);
     prefDict.put("ShooterTopKpFF", .0007);
 
-    prefDict.put("ShooterBottomKp", .0007);
-    prefDict.put("ShooterBottomKd", .001);
-    prefDict.put("ShooterBottomKi", .001);
-
-    prefDict.put("ShooterBottomKpFF", .0007);
-
-    prefDict.put("IntakeSpeed", 3000.);
-    prefDict.put("IntakeKp", 0.001);
-
-    prefDict.put("TransferToShootSpeed", 2000.);
-    prefDict.put("TransferIntakingSpeed", 3000.);
-    prefDict.put("SensorDistance", 3.);
-
-    // arm
-
-    prefDict.put("armFFKs", 0.001);
-    prefDict.put("armFFKv", 2.01);
-    prefDict.put("armUpFFKv", 2.75);
-    
-    prefDict.put("armFFKa", .00001);
-    prefDict.put("armFFKg", .00001);
-
-    prefDict.put("armKp", .00001);
-    prefDict.put("armKi", .00001);
-    prefDict.put("armKd", .00001);
-    prefDict.put("armKIZone", .00001);
+    prefDict.put("TransferIntakingSpeed", 5500.);
+    prefDict.put("TransferToShootSpeed", 7000.);
 
     // climber
 
-    prefDict.put("LockNumber", 1.);
     prefDict.put("UnlockNumber", 0.);
-
 
   }
 
